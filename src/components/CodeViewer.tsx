@@ -23,7 +23,7 @@ const IFrame: React.FC<IFrameProps> = ({ html }) => {
   return (
     <iframe
       title="Rendered Output"
-      className="w-full h-full"
+      className="w-full h- bg-white"
       srcDoc={`<!DOCTYPE html>
                 <html>
                     <head>
