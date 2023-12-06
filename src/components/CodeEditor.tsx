@@ -6,7 +6,7 @@ interface CodeEditorProps {
 const CodeEditor = ({ code, onChange }: CodeEditorProps) => {
   return (
     <textarea
-      className="bg-red-200 w-full"
+      className="w-full resize-none overflow-auto whitespace-nowrap"
       value={code}
       onChange={onChange}
       rows={10}

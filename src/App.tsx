@@ -10,7 +10,7 @@ function App() {
   };
 
   return (
-    <div className="bg-green-800 h-screen p-2 space-y-3 w-screen flex flex-col items-stretch">
+    <div className="bg-green-800 h-screen p-2 space-x-3 w-screen flex flex-row items-stretch">
       <CodeEditor code={code} onChange={handleCodeChange} />
       <CodeViewer html={code} />
     </div>
