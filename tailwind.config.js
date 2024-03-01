@@ -1,4 +1,7 @@
 /** @type {import('tailwindcss').Config} */
+/* import prettierPluginTailwindcss from "prettier-plugin-tailwindcss"; */
+import tailwindScrollbar from "tailwind-scrollbar";
+
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
@@ -12,5 +15,5 @@ export default {
       },
     },
   },
-  plugins: ["prettier-plugin-tailwindcss"],
+  plugins: [tailwindScrollbar],
 };

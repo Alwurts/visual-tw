@@ -42,7 +42,7 @@ const CodeViewer: React.FC<CodeViewerProps> = ({ code }) => {
   }, [code]);
 
   return (
-    <div className="overflow-auto h-full w-full">
+    <div className="overflow-auto h-full w-full scrollbar scrollbar-thumb-neutral-700">
       <iframe
         title="Rendered Output"
         className="w-[330px] h-[620px] border-2 border-black rounded-xl m-auto"

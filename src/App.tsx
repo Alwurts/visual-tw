@@ -4,8 +4,7 @@ import CodeViewer from "./components/CodeViewer";
 import useCodeManager from "./hooks/useCodeManager";
 import StructureIcon from "./components/icons/StructureIcon";
 import CodeIcon from "./components/icons/CodeIcon";
-import './App.css'
-
+import "./App.css";
 
 function App() {
   const initialCode = `<!DOCTYPE html>
@@ -31,22 +30,21 @@ function App() {
 
   return (
     <main className="bg-editor-black bg-yellow-300">
-      <nav className="bg-editor-gray-medium py-1 px-3 h-[32px]">
-        <h1 className="text-white font-bold">Visual-TW</h1>
+      <nav className="h-[32px] bg-editor-gray-medium px-3 py-1">
+        <h1 className="font-bold text-white">
+          Visual<span className="text-editor-accent">TW</span>
+        </h1>
       </nav>
-      <div className="h-[calc(100dvh-32px)] flex bg-green-300">
-        <div className="bg-editor-gray-light w-12 flex flex-col items-stretch">
-          <button className="py-2 border-l-white border-l-2 text-white hover:text-white">
-            <StructureIcon className="w-7 h-7 inline-flex" />
+      <div className="flex h-[calc(100dvh-32px)] bg-green-300">
+        <div className="flex w-12 flex-col items-stretch bg-editor-gray-light">
+          <button className="border-l-2 border-l-white py-2 text-white hover:text-white">
+            <StructureIcon className="inline-flex h-7 w-7" />
           </button>
           <button className="py-2 text-neutral-600 hover:text-white">
-            <CodeIcon className="w-7 h-7 inline-flex" />
+            <CodeIcon className="inline-flex h-7 w-7" />
           </button>
         </div>
-        <PanelGroup
-          direction="horizontal"
-          className="bg-editor-black"
-        >
+        <PanelGroup direction="horizontal" className="bg-editor-black">
           <Panel collapsible={true} minSize={30}>
             <CodeEditor code={code} setCode={setCode} />
           </Panel>
