@@ -1,6 +1,11 @@
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import CodeEditor from "./components/CodeEditor";
 import CodeViewer from "./components/CodeViewer";
 import useCodeManager from "./hooks/useCodeManager";
+import StructureIcon from "./components/icons/StructureIcon";
+import CodeIcon from "./components/icons/CodeIcon";
+import './App.css'
+
 
 function App() {
   const initialCode = `<!DOCTYPE html>
@@ -25,10 +30,38 @@ function App() {
   const { code, setCode, parsedCode } = useCodeManager(initialCode);
 
   return (
-    <div className="bg-gray-800 p-1 space-x-1 flex flex-row items-stretch">
-      <CodeEditor code={code} setCode={setCode} />
-      <CodeViewer code={parsedCode} />
-    </div>
+    <main className="bg-editor-black bg-yellow-300">
+      <nav className="bg-editor-gray-medium py-1 px-3 h-[32px]">
+        <h1 className="text-white font-bold">Visual-TW</h1>
+      </nav>
+      <div className="h-[calc(100dvh-32px)] flex bg-green-300">
+        <div className="bg-editor-gray-light w-12 flex flex-col items-stretch">
+          <button className="py-2 border-l-white border-l-2 text-white hover:text-white">
+            <StructureIcon className="w-7 h-7 inline-flex" />
+          </button>
+          <button className="py-2 text-neutral-600 hover:text-white">
+            <CodeIcon className="w-7 h-7 inline-flex" />
+          </button>
+        </div>
+        <PanelGroup
+          direction="horizontal"
+          className="bg-editor-black"
+        >
+          <Panel collapsible={true} minSize={30}>
+            <CodeEditor code={code} setCode={setCode} />
+          </Panel>
+          <PanelResizeHandle className="ResizeHandle" />
+          <Panel>
+            {/* <div className="overflow-auto h-full w-full">
+              <div className="bg-green-300 m-auto w-[375px] h-[667px] border-2 border-black rounded-xl">
+                sds
+              </div>
+            </div> */}
+            <CodeViewer code={parsedCode} />
+          </Panel>
+        </PanelGroup>
+      </div>
+    </main>
   );
 }
 

@@ -18,13 +18,13 @@ const CodeEditor = ({ setCode, code }: CodeEditorProps) => {
 
   return (
     <Editor
-      height="100%"
-      width="100%"
+      //height="100%"
+      //width="100%"
       defaultLanguage="html"
       onChange={handleEditorChange}
       defaultValue={code}
       theme="vs-dark"
-      options={{ fontSize: 14, glyphMargin: true }} // Change the font size here
+      options={{ fontSize: 14, glyphMargin: true }}
     />
   );
 };

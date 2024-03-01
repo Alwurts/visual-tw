@@ -17,7 +17,7 @@ const CodeViewer: React.FC<CodeViewerProps> = ({ code }) => {
     const iframe = iframeRef.current;
     if (!iframe) return;
 
-    const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document
+    const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
     if (!iframeDoc) return;
 
     iframe.srcdoc = code;
@@ -39,18 +39,15 @@ const CodeViewer: React.FC<CodeViewerProps> = ({ code }) => {
     return () => {
       iframeDoc.body.removeEventListener('mouseover', handleMouseOver);
     }; */
-
   }, [code]);
 
   return (
-    <div className="overflow-auto w-full bg-zinc-700">
-      <div className="w-[1000px] h-[1000px] flex justify-center items-center">
-        <iframe
-          title="Rendered Output"
-          className="w-[375px] h-[667px] border-2 border-black rounded-xl"
-          ref={iframeRef}
-        />
-      </div>
+    <div className="overflow-auto h-full w-full">
+      <iframe
+        title="Rendered Output"
+        className="w-[330px] h-[620px] border-2 border-black rounded-xl m-auto"
+        ref={iframeRef}
+      />
     </div>
   );
 };

@@ -1,0 +1,25 @@
+.ResizeHandle,
+.ResizeHandleCollapsed {
+  width: 0.13rem;
+  transition: 150ms linear background-color;
+  outline: none;
+  @apply bg-editor-gray-light;
+}
+
+.ResizeHandle:hover,
+.ResizeHandle[data-resize-handle-active],
+.ResizeHandleCollapsed:hover,
+.ResizeHandleCollapsed[data-resize-handle-active] {
+  @apply bg-editor-accent;
+}
+
+/* .ResizeHandleCollapsed {
+  background-color: var(--color-button-background-hover);
+} */
+
+@media (pointer: coarse) {
+  .ResizeHandle,
+  .ResizeHandleCollapsed {
+    width: 0.9rem;
+  }
+}

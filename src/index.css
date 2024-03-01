@@ -1,7 +1,7 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  font-family: Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif;
+#root {
+  height: 100vh;
 }
