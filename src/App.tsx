@@ -1,16 +1,9 @@
-import { useEffect, useState } from "react";
 import CodeEditor from "./components/CodeEditor";
 import CodeViewer from "./components/CodeViewer";
-import { CodeBlock } from "./types/Code";
-import * as parse5 from "parse5";
-import { traverseParse5Document } from "./utils/html";
-
-const codeBlockTracker: {
-  [key: string]: CodeBlock;
-} = {};
+import useCodeManager from "./hooks/useCodeManager";
 
 function App() {
-  const [code, setCode] = useState(`<!DOCTYPE html>
+  const initialCode = `<!DOCTYPE html>
 <html>
 
 <head>
@@ -27,53 +20,14 @@ function App() {
     </div>
 </body>
 
-</html>`);
+</html>`;
 
-  /* const [code, setCode] = useState(
-    `<h2 class="text-3xl font-bold mb-3 text-center">Get Started</h2>`
-  ); */
-
-  const [parsedCode, setParsedCode] = useState<string>("");
-
-  useEffect(() => {
-    const document = parse5.parse(code, { sourceCodeLocationInfo: true });
-
-    traverseParse5Document(document, (node) => {
-      if (node.tagName && node.sourceCodeLocation) {
-        const { tagName } = node;
-        const { startLine, startCol, endLine, endCol } =
-          node.sourceCodeLocation;
-
-        const codeBlockIdentifier = `${startLine}-${startCol}-${endLine}-${endCol}`;
-
-        codeBlockTracker[codeBlockIdentifier] = {
-          startLine,
-          startCol,
-          endLine,
-          endCol,
-          tagName,
-        };
-
-        node.attrs.push({
-          name: "re-id",
-          value: codeBlockIdentifier,
-        });
-      }
-    });
-
-    const updatedHtml = parse5.serialize(document);
-
-    setParsedCode(updatedHtml);
-  }, [code]);
+  const { code, setCode, parsedCode } = useCodeManager(initialCode);
 
   return (
-    <div className="bg-gray-800 h-screen p-1 space-x-1 w-screen flex flex-row items-stretch">
-      <CodeEditor
-        code={code}
-        setCode={setCode}
-        codeBlockTracker={codeBlockTracker}
-      />
-      <CodeViewer code={parsedCode} codeBlockTracker={codeBlockTracker} />
+    <div className="bg-gray-800 p-1 space-x-1 flex flex-row items-stretch">
+      <CodeEditor code={code} setCode={setCode} />
+      <CodeViewer code={parsedCode} />
     </div>
   );
 }

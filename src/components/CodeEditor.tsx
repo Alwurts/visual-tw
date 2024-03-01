@@ -1,12 +1,12 @@
 import { Editor } from "@monaco-editor/react";
-import { CodeBlock } from "../types/Code";
+/* import { CodeBlock } from "../types/Code"; */
 
 interface CodeEditorProps {
   code?: string;
   setCode: (code: string) => void;
-  codeBlockTracker: {
+  /* codeBlockTracker: {
     [key: string]: CodeBlock;
-  };
+  }; */
 }
 
 const CodeEditor = ({ setCode, code }: CodeEditorProps) => {
