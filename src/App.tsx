@@ -38,23 +38,24 @@ function App() {
       <div className="flex h-[calc(100dvh-32px)] bg-green-300">
         <div className="flex w-12 flex-col items-stretch bg-editor-gray-light">
           <button className="border-l-2 border-l-white py-2 text-white hover:text-white">
-            <StructureIcon className="inline-flex h-7 w-7" />
+            <StructureIcon className="inline-flex h-6 w-6" />
           </button>
           <button className="py-2 text-neutral-600 hover:text-white">
             <CodeIcon className="inline-flex h-7 w-7" />
           </button>
         </div>
         <PanelGroup direction="horizontal" className="bg-editor-black">
-          <Panel collapsible={true} minSize={30}>
+          {/* <Panel minSize={30}>
+            <div>
+              <h2 className="text-white uppercase">Node Explorer</h2>
+              
+            </div>
+          </Panel> */}
+          <Panel minSize={30}>
             <CodeEditor code={code} setCode={setCode} />
           </Panel>
           <PanelResizeHandle className="ResizeHandle" />
-          <Panel>
-            {/* <div className="overflow-auto h-full w-full">
-              <div className="bg-green-300 m-auto w-[375px] h-[667px] border-2 border-black rounded-xl">
-                sds
-              </div>
-            </div> */}
+          <Panel minSize={30}>
             <CodeViewer code={parsedCode} />
           </Panel>
         </PanelGroup>
