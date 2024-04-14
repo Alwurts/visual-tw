@@ -1,6 +1,6 @@
 import { useEffect, useReducer } from "react";
 import * as parse5 from "parse5";
-import { traverseParse5Document } from "../utils/html";
+import { traverseParse5Document } from "../utils/parseDom";
 import { CodeBlock } from "../types/Code";
 import renderScript from "../utils/render.js?raw";
 
@@ -81,11 +81,10 @@ const useCodeManager = (initialCode: string) => {
       }
     });
 
-    console.log("Document", document);
 
     const updatedHtml = parse5.serialize(document);
 
-    console.log("Updated HTML", updatedHtml);
+    console.log(updatedHtml);
 
     dispatch({ type: "setCodeBlockTracker", payload: updatedCodeBlockTracker });
     dispatch({ type: "setParsedCode", payload: updatedHtml });

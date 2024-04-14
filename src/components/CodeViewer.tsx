@@ -1,52 +1,26 @@
-import { useEffect, useRef } from "react";
-/* import { CodeBlock } from "../types/Code"; */
+import { useEffect, useState } from "react";
+import { editorManager } from "../utils/editorManager/EditorManager";
 
-interface CodeViewerProps {
-  code: string;
-  /* codeBlockTracker: {
-    [key: string]: CodeBlock;
-  }; */
-}
-
-const CodeViewer: React.FC<CodeViewerProps> = ({ code }) => {
-  const iframeRef = useRef<HTMLIFrameElement>(null);
+const CodeViewer = () => {
+  const [srcDoc, setSrcDoc] = useState<string>("");
 
   useEffect(() => {
-    //const renderIframe = document.querySelector("iframe");
-
-    const iframe = iframeRef.current;
-    if (!iframe) return;
-
-    /* const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
-    if (!iframeDoc) return; */
-
-    iframe.srcdoc = code;
-    //iframeDoc.body.innerHTML = code;
-
-    /* if (!iframeDoc.body) return;
-
-    const handleMouseOver = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      const id = target.getAttribute('re-id');
-      if (id) {
-        alert(`Hovered over element with id: ${id}`);
-      }
+    const updateSrcDoc = (newHTML: string): void => {
+      setSrcDoc(newHTML);
     };
 
-
-    iframeDoc.body.addEventListener('mouseover', handleMouseOver);
-
+    editorManager.subscribe(updateSrcDoc);
     return () => {
-      iframeDoc.body.removeEventListener('mouseover', handleMouseOver);
-    }; */
-  }, [code]);
+      editorManager.unsubscribe(updateSrcDoc);
+    };
+  }, []);
 
   return (
-    <div className="overflow-auto h-full w-full scrollbar scrollbar-thumb-neutral-700">
+    <div className="h-full w-full overflow-auto scrollbar scrollbar-thumb-neutral-700">
       <iframe
         title="Rendered Output"
-        className="w-[330px] h-[620px] border-2 border-black rounded-xl m-auto"
-        ref={iframeRef}
+        className="m-auto h-[620px] w-[330px] rounded-xl border-2 border-black"
+        srcDoc={srcDoc}
       />
     </div>
   );
