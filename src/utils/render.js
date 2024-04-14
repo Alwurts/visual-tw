@@ -1,16 +1,17 @@
 document.addEventListener("mouseover", function (event) {
   var target = event.target;
-
-  var existingOverlay = document.getElementById("hoverOverlay");
-  var existingMarginOverlay = document.getElementById("hoverMarginOverlay");
-  if (existingOverlay) existingOverlay.remove();
-  if (existingMarginOverlay) existingMarginOverlay.remove();
+  const id = target.getAttribute("visual-tw-id");
 
   // Get the bounding rectangle of target
   var rect = target.getBoundingClientRect();
 
   // Get computed style of target
   var style = window.getComputedStyle(target);
+
+  var existingOverlay = document.getElementById("hoverOverlay");
+  var existingMarginOverlay = document.getElementById("hoverMarginOverlay");
+  if (existingOverlay) existingOverlay.remove();
+  if (existingMarginOverlay) existingMarginOverlay.remove();
 
   // Calculate margins
   var marginTop = parseInt(style.marginTop);
@@ -22,10 +23,10 @@ document.addEventListener("mouseover", function (event) {
   var marginOverlay = document.createElement("div");
   marginOverlay.id = "hoverMarginOverlay";
   marginOverlay.style.position = "fixed";
-  marginOverlay.style.left = (rect.left - marginLeft) + "px";
-  marginOverlay.style.top = (rect.top - marginTop) + "px";
-  marginOverlay.style.width = (rect.width + marginLeft + marginRight) + "px";
-  marginOverlay.style.height = (rect.height + marginTop + marginBottom) + "px";
+  marginOverlay.style.left = rect.left - marginLeft + "px";
+  marginOverlay.style.top = rect.top - marginTop + "px";
+  marginOverlay.style.width = rect.width + marginLeft + marginRight + "px";
+  marginOverlay.style.height = rect.height + marginTop + marginBottom + "px";
   marginOverlay.style.backgroundColor = "rgba(255, 165, 0, 0.5)"; // Orange with opacity
   marginOverlay.style.pointerEvents = "none";
 
@@ -56,6 +57,17 @@ document.addEventListener("mouseover", function (event) {
   // Add the overlays to the document
   document.body.appendChild(marginOverlay);
   document.body.appendChild(overlay);
+
+  window.parent.postMessage(
+    {
+      type: "elementhovered",
+      target: {
+        tagName: target.tagName,
+        id,
+      },
+    },
+    "*",
+  );
 });
 
 document.addEventListener("mouseout", function () {

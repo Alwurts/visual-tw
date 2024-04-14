@@ -9,8 +9,21 @@ const CodeViewer = () => {
       setSrcDoc(newHTML);
     };
 
+    /* const handleMessage = (event: MessageEvent) => {
+      if (event.data.type === "elementhovered") {
+        // Call the external code here
+        const id = event.data.data;
+        console.log(`Mouseover event on ${id}`);
+        const element = editorManager.getNodeLocation(id);
+        console.log(element);
+      }
+    }; */
+
+    //window.addEventListener("message", handleMessage);
+
     editorManager.subscribe(updateSrcDoc);
     return () => {
+      //window.removeEventListener("message", handleMessage);
       editorManager.unsubscribe(updateSrcDoc);
     };
   }, []);

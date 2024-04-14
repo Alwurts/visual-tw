@@ -1,9 +1,10 @@
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import CodeEditor from "./components/CodeEditor";
 import CodeViewer from "./components/CodeViewer";
-import StructureIcon from "./components/icons/StructureIcon";
-import CodeIcon from "./components/icons/CodeIcon";
+
 import "./App.css";
+import { Button } from "./components/ui/button";
+import { Code2Icon, FolderTree } from "lucide-react";
 
 function App() {
   return (
@@ -16,10 +17,13 @@ function App() {
       <div className="flex h-[calc(100dvh-32px)]">
         <div className="flex w-12 flex-col items-stretch bg-editor-gray-light">
           <button className="border-l-2 border-l-white py-2 text-white hover:text-white">
-            <StructureIcon className="inline-flex h-6 w-6" />
+            <FolderTree className="inline-flex h-6 w-6" />
           </button>
+          <Button variant="navigation" size="full-width">
+            <FolderTree className="h-7 w-7" />
+          </Button>
           <button className="py-2 text-neutral-600 hover:text-white">
-            <CodeIcon className="inline-flex h-7 w-7" />
+            <Code2Icon className="inline-flex h-7 w-7" />
           </button>
         </div>
         <PanelGroup direction="horizontal" className="bg-editor-black">

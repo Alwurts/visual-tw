@@ -1,8 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export const traverseParse5Document = (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   document: any,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  callback: (node: any) => void
+  callback: (node: any) => void,
 ) => {
   const traverse = (node: Node) => {
     callback(node);
@@ -12,3 +11,27 @@ export const traverseParse5Document = (
   };
   traverse(document);
 };
+
+export function findNodeById(dom: any, id: string): any {
+  let result:any = null;
+
+  function traverse(node: any) {
+    if (
+      node.attrs &&
+      node.attrs.some(
+        (attr: any) => attr.name === "visual-tw-id" && attr.value === id,
+      )
+    ) {
+      result = node;
+      return;
+    }
+
+    for (const child of node.childNodes || []) {
+      traverse(child);
+      if (result) return;
+    }
+  }
+
+  traverse(dom);
+  return result;
+}

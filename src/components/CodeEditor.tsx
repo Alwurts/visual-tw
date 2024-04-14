@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Editor } from "@monaco-editor/react";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { editorManager } from "../utils/editorManager/EditorManager";
 import DEFAULT_CODE from "../utils/editorManager/default.html?raw";
+import { Button } from "./ui/button";
 /* import { CodeBlock } from "../types/Code"; */
 
 /* const defaultCode = `<!DOCTYPE html>
@@ -34,12 +35,36 @@ const CodeEditor = () => {
     editorRef.current = editor;
   }
 
-  /* function selectCode(range: any) {
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data.type === "elementhovered") {
+        const targetElement = event.data.target;
+        console.log(targetElement);
+        const id = targetElement.id;
+        const domNodeCodeLocation = editorManager.getNodeLocation(id);
+        if (domNodeCodeLocation) {
+          selectCode(domNodeCodeLocation);
+        }
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
+  }, []);
+
+  function selectCode(range: {
+    startLineNumber: number;
+    startColumn: number;
+    endLineNumber: number;
+    endColumn: number;
+  }) {
     if (editorRef.current) {
       // @ts-expect-error dsds
       editorRef.current.setSelection(range);
     }
-  } */
+  }
 
   /* function selectFirstTenChars() {
     selectCode({
@@ -68,6 +93,9 @@ const CodeEditor = () => {
       {/* <div>
         <button onClick={undefined}>Format Code</button>
       </div> */}
+      <Button variant={"secondary"} onClick={undefined}>
+        Format Code
+      </Button>
       <Editor
         theme="vs-dark"
         defaultLanguage="html"

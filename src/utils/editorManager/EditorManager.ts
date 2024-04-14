@@ -1,7 +1,8 @@
 // CodeManager.ts
 import * as parse5 from "parse5";
-import { traverseParse5Document } from "../parseDom";
+import { findNodeById, traverseParse5Document } from "../parseDom";
 import renderScript from "../../utils/render.js?raw";
+import { v4 as uuidv4 } from "uuid";
 
 type ObserverFunction = (htmlContent: string) => void;
 
@@ -24,7 +25,7 @@ class EditorManager {
   }
 
   private parseHTMLString(html: string) {
-    const completeHTML = `<!doctype html>
+    /* const completeHTML = `<!doctype html>
     <html>
       <head>
         <meta charset="UTF-8" />
@@ -35,14 +36,20 @@ class EditorManager {
       <body class="bg-white">
         ${html}
       </body>
-    </html>`;
+    </html>`; */
 
-    const document = parse5.parse(completeHTML, {
+    const document = parse5.parse(html, {
       sourceCodeLocationInfo: true,
     });
 
     traverseParse5Document(document, (node) => {
-      if (node.tagName && node.sourceCodeLocation) {
+      const nodeIdentifier = uuidv4();
+
+      if (node.tagName) {
+        node.attrs.push({
+          name: "visual-tw-id",
+          value: nodeIdentifier,
+        });
         if (node.tagName === "body") {
           const scriptNode = parse5.parseFragment(
             `<script>${renderScript}</script>`,
@@ -54,6 +61,8 @@ class EditorManager {
 
     const serializedDom = parse5.serialize(document);
 
+    console.log(document);
+
     this.code = html;
     this.dom = document;
     this.serializedDom = serializedDom;
@@ -64,6 +73,31 @@ class EditorManager {
     const serializedDom = this.parseHTMLString(html);
     this.notifyObservers(serializedDom);
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private getNodeById(id: string): any {
+    return findNodeById(this.dom, id);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public getNodeLocation = (id: string): any => {
+    const node = this.getNodeById(id);
+    if (!node) return null;
+    if (!node.sourceCodeLocation) return null;
+    if (
+      !node.sourceCodeLocation.startLine ||
+      !node.sourceCodeLocation.startCol ||
+      !node.sourceCodeLocation.endLine ||
+      !node.sourceCodeLocation.endCol
+    )
+      return null;
+    return {
+      startLineNumber: node.sourceCodeLocation.startLine,
+      startColumn: node.sourceCodeLocation.startCol,
+      endLineNumber: node.sourceCodeLocation.endLine,
+      endColumn: node.sourceCodeLocation.endCol,
+    };
+  };
 
   public getDOM(): unknown {
     return this.dom;
