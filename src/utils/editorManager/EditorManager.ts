@@ -24,7 +24,22 @@ class EditorManager {
   }
 
   private parseHTMLString(html: string) {
-    const document = parse5.parse(html, { sourceCodeLocationInfo: true });
+    const completeHTML = `<!doctype html>
+    <html>
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <script src="https://cdn.tailwindcss.com"></script>
+      </head>
+    
+      <body class="bg-white">
+        ${html}
+      </body>
+    </html>`;
+
+    const document = parse5.parse(completeHTML, {
+      sourceCodeLocationInfo: true,
+    });
 
     traverseParse5Document(document, (node) => {
       if (node.tagName && node.sourceCodeLocation) {
@@ -37,18 +52,7 @@ class EditorManager {
       }
     });
 
-    const serializedDom = `<!doctype html>
-    <html>
-      <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <script src="https://cdn.tailwindcss.com"></script>
-      </head>
-    
-      <body class="bg-white">
-        ${parse5.serialize(document)}
-      </body>
-    </html>`;
+    const serializedDom = parse5.serialize(document);
 
     this.code = html;
     this.dom = document;
