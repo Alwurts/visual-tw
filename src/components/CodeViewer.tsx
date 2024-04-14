@@ -17,8 +17,8 @@ const CodeViewer: React.FC<CodeViewerProps> = ({ code }) => {
     const iframe = iframeRef.current;
     if (!iframe) return;
 
-    const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
-    if (!iframeDoc) return;
+    /* const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+    if (!iframeDoc) return; */
 
     iframe.srcdoc = code;
     //iframeDoc.body.innerHTML = code;
