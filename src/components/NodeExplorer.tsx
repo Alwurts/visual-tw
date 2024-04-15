@@ -1,5 +1,14 @@
 import { editorManager } from "@/utils/editorManager/EditorManager";
 import { useEffect, useState } from "react";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "./ui/collapsible";
+import { Button } from "./ui/button";
+import { ChevronDown, ChevronRight } from "lucide-react";
+import { findNodeByTagName } from "@/utils/parseDom";
+import { Separator } from "./ui/separator";
 
 export default function NodeExplorer() {
   const [dom, setDom] = useState<unknown>(null);
@@ -9,7 +18,9 @@ export default function NodeExplorer() {
       dom: unknown;
     }): void => {
       console.log("dom", editorNotification.dom);
-      setDom(editorNotification.dom);
+      const bodyNode = findNodeByTagName(editorNotification.dom, "body")
+        .childNodes[0];
+      setDom(bodyNode);
     };
 
     /* const handleMessage = (event: MessageEvent) => {
@@ -30,9 +41,48 @@ export default function NodeExplorer() {
       editorManager.unsubscribe(updateTreeExplorer);
     };
   }, []);
+  if (!dom) return null;
   return (
-    <div className="h-full bg-stone-500">
-      <h2 className="uppercase text-white">Node Explorer</h2>
+    <div className="h-full bg-editor-gray-dark text-white">
+      <h2 className="uppercase">Node Explorer</h2>
+      <NodeCollapsible node={dom} />
     </div>
+  );
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function NodeCollapsible({ node }: { node: any }) {
+  const [isOpen, setIsOpen] = useState(false);
+  console.log("node", node);
+  return (
+    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+      <CollapsibleTrigger asChild>
+        <Button
+          variant="ghost"
+          className="flex h-full w-full justify-start space-x-1 rounded-none p-1 hover:bg-stone-300"
+          onMouseEnter={}
+        >
+          {!!node.childNodes &&
+            (isOpen ? (
+              <ChevronDown className="h-4 w-4" />
+            ) : (
+              <ChevronRight className="h-4 w-4" />
+            ))}
+          <span>{node.nodeName}</span>
+        </Button>
+      </CollapsibleTrigger>
+      <CollapsibleContent className="w-full">
+        <div className="flex items-stretch justify-stretch">
+          <div className="h-full w-2 bg-gray-200 dark:bg-gray-700" />
+          <div className="">
+            {node.childNodes &&
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              node.childNodes.map((child: any, index: number) => (
+                <NodeCollapsible key={child.nodeName + index} node={child} />
+              ))}
+          </div>
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
   );
 }

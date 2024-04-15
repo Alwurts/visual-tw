@@ -13,7 +13,7 @@ export const traverseParse5Document = (
 };
 
 export function findNodeById(dom: any, id: string): any {
-  let result:any = null;
+  let result: any = null;
 
   function traverse(node: any) {
     if (
@@ -22,6 +22,25 @@ export function findNodeById(dom: any, id: string): any {
         (attr: any) => attr.name === "visual-tw-id" && attr.value === id,
       )
     ) {
+      result = node;
+      return;
+    }
+
+    for (const child of node.childNodes || []) {
+      traverse(child);
+      if (result) return;
+    }
+  }
+
+  traverse(dom);
+  return result;
+}
+
+export function findNodeByTagName(dom: any, tagName: string) {
+  let result: any = null;
+
+  function traverse(node: any) {
+    if (node.tagName === tagName) {
       result = node;
       return;
     }
