@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { editorManager } from "../utils/editorManager/EditorManager";
+import { editorManager } from "../lib/editor/EditorManager";
 
 const CodeViewer = () => {
   const [srcDoc, setSrcDoc] = useState<string>("");
@@ -7,26 +7,12 @@ const CodeViewer = () => {
   useEffect(() => {
     const updateSrcDoc = (editorNotification: {
       htmlContent: string;
-      dom: unknown;
     }): void => {
       setSrcDoc(editorNotification.htmlContent);
     };
 
-    /* const handleMessage = (event: MessageEvent) => {
-      if (event.data.type === "elementhovered") {
-        // Call the external code here
-        const id = event.data.data;
-        console.log(`Mouseover event on ${id}`);
-        const element = editorManager.getNodeLocation(id);
-        console.log(element);
-      }
-    }; */
-
-    //window.addEventListener("message", handleMessage);
-
     editorManager.subscribe(updateSrcDoc);
     return () => {
-      //window.removeEventListener("message", handleMessage);
       editorManager.unsubscribe(updateSrcDoc);
     };
   }, []);

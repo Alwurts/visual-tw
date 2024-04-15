@@ -1,4 +1,4 @@
-import { editorManager } from "@/utils/editorManager/EditorManager";
+import { editorManager } from "@/lib/editor/EditorManager";
 import { useEffect, useState } from "react";
 import {
   Collapsible,
@@ -7,9 +7,7 @@ import {
 } from "./ui/collapsible";
 import { Button } from "./ui/button";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { findNodeByTagName } from "@/utils/parseDom";
-import { Separator } from "./ui/separator";
-
+import { getElementsByTagName } from "@/lib/dom";
 export default function NodeExplorer() {
   const [dom, setDom] = useState<unknown>(null);
   useEffect(() => {
@@ -17,10 +15,9 @@ export default function NodeExplorer() {
       htmlContent: string;
       dom: unknown;
     }): void => {
-      console.log("dom", editorNotification.dom);
-      const bodyNode = findNodeByTagName(editorNotification.dom, "body")
-        .childNodes[0];
-      setDom(bodyNode);
+      const bodyNode = getElementsByTagName(editorNotification.dom, "body")[0];
+      const bodyChild = bodyNode?.childNodes[0];
+      setDom(bodyChild);
     };
 
     /* const handleMessage = (event: MessageEvent) => {
@@ -53,14 +50,12 @@ export default function NodeExplorer() {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function NodeCollapsible({ node }: { node: any }) {
   const [isOpen, setIsOpen] = useState(false);
-  console.log("node", node);
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <CollapsibleTrigger asChild>
         <Button
           variant="ghost"
           className="flex h-full w-full justify-start space-x-1 rounded-none p-1 hover:bg-stone-300"
-          onMouseEnter={}
         >
           {!!node.childNodes &&
             (isOpen ? (

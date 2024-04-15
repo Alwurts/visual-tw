@@ -1,85 +1,40 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Editor } from "@monaco-editor/react";
+import type { editor as monacoEditor, IRange } from "monaco-editor";
 import { useEffect, useRef } from "react";
-import { editorManager } from "../utils/editorManager/EditorManager";
-import DEFAULT_CODE from "../utils/editorManager/default.html?raw";
-/* import { CodeBlock } from "../types/Code"; */
-
-/* const defaultCode = `<!DOCTYPE html>
-    <html>
-    
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="https://cdn.tailwindcss.com"></script>
-    </head>
-    
-    <body>
-        <div class="bg-white text-blue-800 w-screen h-screen">
-            <div class="max-w-6xl mx-auto px-6 sm:px-6 lg:px-8">
-                <h2 class="text-3xl font-bold mb-3 text-center">Get Started</h2>
-            </div>
-        </div>
-    </body>
-    
-    </html>`; */
+import { editorManager } from "../lib/editor/EditorManager";
+import { Button } from "./ui/button";
+import { ViewerMessage } from "@/types/Viewer";
 
 const CodeEditor = () => {
-  const editorRef = useRef(null);
-
-  // @ts-expect-error sdds
-  function handleEditorDidMount(editor, monaco) {
-    editor.value = editorManager.updateCode(DEFAULT_CODE);
-    editorRef.current = editor;
-  }
+  const editorRef = useRef<monacoEditor.IStandaloneCodeEditor>();
 
   useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      if (event.data.type === "elementhovered") {
-        const targetElement = event.data.target;
-        console.log(targetElement);
-        const id = targetElement.id;
-        const domNodeCodeLocation = editorManager.getNodeLocation(id);
+    const handleViewerMessage = ({
+      data: { type, data },
+    }: MessageEvent<ViewerMessage>) => {
+      if (type === "elementhovered") {
+        const domNodeCodeLocation = editorManager.getElementSourceCodeLocation(
+          data.id,
+        );
         if (domNodeCodeLocation) {
           selectCode(domNodeCodeLocation);
         }
       }
     };
 
-    window.addEventListener("message", handleMessage);
+    window.addEventListener("message", handleViewerMessage);
     return () => {
-      window.removeEventListener("message", handleMessage);
+      window.removeEventListener("message", handleViewerMessage);
     };
   }, []);
 
-  function selectCode(range: {
-    startLineNumber: number;
-    startColumn: number;
-    endLineNumber: number;
-    endColumn: number;
-  }) {
-    if (editorRef.current) {
-      // @ts-expect-error dsds
-      editorRef.current.setSelection(range);
-    }
+  function selectCode(range: IRange) {
+    editorRef.current?.setSelection(range);
   }
 
-  /* function selectFirstTenChars() {
-    selectCode({
-      startLineNumber: 1,
-      startColumn: 1,
-      endLineNumber: 1,
-      endColumn: 11,
-    });
+  function formatEditorCode() {
+    editorRef.current?.getAction("editor.action.formatDocument")?.run();
   }
-
-  function formatCode() {
-    if (editorRef.current) {
-      // @ts-expect-error dsds
-      editorRef.current.getAction("editor.action.formatDocument").run();
-    }
-  } */
 
   const handleEditorChange = (value: string | undefined) => {
     if (value) {
@@ -87,17 +42,21 @@ const CodeEditor = () => {
     }
   };
 
+  const initializeEditor = (editor: monacoEditor.IStandaloneCodeEditor) => {
+    const editorInitialCode = editorManager.getCode();
+    editor.setValue(editorInitialCode);
+    editorManager.updateCode();
+    editorRef.current = editor;
+  };
+
   return (
     <div className="h-full">
-      {/* <Button variant={"secondary"} onClick={undefined}>
-        Format Code
-      </Button> */}
+      <Button onClick={formatEditorCode}>Format Code</Button>
       <Editor
         theme="vs-dark"
         defaultLanguage="html"
-        defaultValue={DEFAULT_CODE}
         onChange={handleEditorChange}
-        onMount={handleEditorDidMount}
+        onMount={initializeEditor}
         options={{ fontSize: 14, glyphMargin: true }}
       />
     </div>

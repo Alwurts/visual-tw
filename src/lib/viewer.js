@@ -1,6 +1,7 @@
 document.addEventListener("mouseover", function (event) {
   var target = event.target;
   const id = target.getAttribute("visual-tw-id");
+  const name = target.tagName;
 
   // Get the bounding rectangle of target
   var rect = target.getBoundingClientRect();
@@ -14,13 +15,13 @@ document.addEventListener("mouseover", function (event) {
   if (existingMarginOverlay) existingMarginOverlay.remove();
 
   // Calculate margins
-  var marginTop = parseInt(style.marginTop);
-  var marginBottom = parseInt(style.marginBottom);
-  var marginLeft = parseInt(style.marginLeft);
-  var marginRight = parseInt(style.marginRight);
+  const marginTop = parseInt(style.marginTop);
+  const marginBottom = parseInt(style.marginBottom);
+  const marginLeft = parseInt(style.marginLeft);
+  const marginRight = parseInt(style.marginRight);
 
   // Create a new overlay for the margin
-  var marginOverlay = document.createElement("div");
+  const marginOverlay = document.createElement("div");
   marginOverlay.id = "hoverMarginOverlay";
   marginOverlay.style.position = "fixed";
   marginOverlay.style.left = rect.left - marginLeft + "px";
@@ -31,7 +32,7 @@ document.addEventListener("mouseover", function (event) {
   marginOverlay.style.pointerEvents = "none";
 
   // Create a new overlay for the element (excluding margin)
-  var overlay = document.createElement("div");
+  const overlay = document.createElement("div");
   overlay.id = "hoverOverlay";
   overlay.style.position = "fixed";
   overlay.style.left = rect.left + "px";
@@ -43,27 +44,26 @@ document.addEventListener("mouseover", function (event) {
   overlay.style.pointerEvents = "none";
 
   // Add the title to the overlay
-  var tagName = document.createElement("div");
-  tagName.innerText = target.tagName;
-  tagName.style.position = "absolute";
-  tagName.style.top = "0";
-  tagName.style.left = "0";
-  tagName.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
-  tagName.style.color = "white";
-  tagName.style.padding = "4px";
+  const tagNameOverlay = document.createElement("div");
+  tagNameOverlay.innerText = name;
+  tagNameOverlay.style.position = "absolute";
+  tagNameOverlay.style.top = "0";
+  tagNameOverlay.style.left = "0";
+  tagNameOverlay.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+  tagNameOverlay.style.color = "white";
+  tagNameOverlay.style.padding = "4px";
 
-  overlay.appendChild(tagName);
+  overlay.appendChild(tagNameOverlay);
 
-  // Add the overlays to the document
   document.body.appendChild(marginOverlay);
   document.body.appendChild(overlay);
 
   window.parent.postMessage(
     {
       type: "elementhovered",
-      target: {
-        tagName: target.tagName,
+      data: {
         id,
+        name,
       },
     },
     "*",
