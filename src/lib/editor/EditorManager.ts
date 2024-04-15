@@ -11,13 +11,13 @@ import { IRange } from "monaco-editor";
 
 type ObserverFunction = (editorNotification: {
   htmlContent: string;
-  dom: unknown;
+  dom: DefaultTreeAdapterMap["node"];
 }) => void;
 
 class EditorManager {
   private static instance: EditorManager;
   private observers: ObserverFunction[];
-  private dom: DefaultTreeAdapterMap["document"];
+  private dom: DefaultTreeAdapterMap["node"];
   private serializedDom: string;
   private code: string;
 
@@ -51,12 +51,19 @@ class EditorManager {
           value: nodeIdentifier,
         });
 
+        if (node.tagName === "body") {
+          node.attrs.push({
+            name: "class",
+            value: "bg-white",
+          });
+        }
+
         if (node.tagName === "head") {
           const defaultHeadNode = parse5.parseFragment(DEFAULT_HEAD_CODE);
           node.childNodes = defaultHeadNode.childNodes;
         }
 
-        if (node.tagName === "body") {
+        if (node.tagName === "head") {
           const scriptNode = parse5.parseFragment(
             `<script>${VIEWER_CODE}</script>`,
           );
@@ -141,7 +148,7 @@ class EditorManager {
 
   private notifyObservers(editorNotification: {
     htmlContent: string;
-    dom: unknown;
+    dom: DefaultTreeAdapterMap["node"];
   }): void {
     this.observers.forEach((observerFunction) =>
       observerFunction(editorNotification),
