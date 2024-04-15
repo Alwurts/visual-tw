@@ -1,15 +1,15 @@
+import { editorManager } from "@/utils/editorManager/EditorManager";
 import { useEffect, useState } from "react";
-import { editorManager } from "../utils/editorManager/EditorManager";
 
-const CodeViewer = () => {
-  const [srcDoc, setSrcDoc] = useState<string>("");
-
+export default function NodeExplorer() {
+  const [dom, setDom] = useState<unknown>(null);
   useEffect(() => {
-    const updateSrcDoc = (editorNotification: {
+    const updateTreeExplorer = (editorNotification: {
       htmlContent: string;
       dom: unknown;
     }): void => {
-      setSrcDoc(editorNotification.htmlContent);
+      console.log("dom", editorNotification.dom);
+      setDom(editorNotification.dom);
     };
 
     /* const handleMessage = (event: MessageEvent) => {
@@ -24,22 +24,15 @@ const CodeViewer = () => {
 
     //window.addEventListener("message", handleMessage);
 
-    editorManager.subscribe(updateSrcDoc);
+    editorManager.subscribe(updateTreeExplorer);
     return () => {
       //window.removeEventListener("message", handleMessage);
-      editorManager.unsubscribe(updateSrcDoc);
+      editorManager.unsubscribe(updateTreeExplorer);
     };
   }, []);
-
   return (
-    <div className="h-full w-full overflow-auto scrollbar scrollbar-thumb-neutral-700">
-      <iframe
-        title="Rendered Output"
-        className="m-auto h-[620px] w-[330px] rounded-xl border-2 border-black"
-        srcDoc={srcDoc}
-      />
+    <div className="h-full bg-stone-500">
+      <h2 className="uppercase text-white">Node Explorer</h2>
     </div>
   );
-};
-
-export default CodeViewer;
+}

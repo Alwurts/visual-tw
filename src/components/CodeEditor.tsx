@@ -4,7 +4,6 @@ import { Editor } from "@monaco-editor/react";
 import { useEffect, useRef } from "react";
 import { editorManager } from "../utils/editorManager/EditorManager";
 import DEFAULT_CODE from "../utils/editorManager/default.html?raw";
-import { Button } from "./ui/button";
 /* import { CodeBlock } from "../types/Code"; */
 
 /* const defaultCode = `<!DOCTYPE html>
@@ -90,12 +89,9 @@ const CodeEditor = () => {
 
   return (
     <div className="h-full">
-      {/* <div>
-        <button onClick={undefined}>Format Code</button>
-      </div> */}
-      <Button variant={"secondary"} onClick={undefined}>
+      {/* <Button variant={"secondary"} onClick={undefined}>
         Format Code
-      </Button>
+      </Button> */}
       <Editor
         theme="vs-dark"
         defaultLanguage="html"

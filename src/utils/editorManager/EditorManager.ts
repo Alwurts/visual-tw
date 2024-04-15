@@ -1,10 +1,14 @@
 // CodeManager.ts
 import * as parse5 from "parse5";
 import { findNodeById, traverseParse5Document } from "../parseDom";
-import renderScript from "../../utils/render.js?raw";
+import viewerElementOverlay from "../../utils/viewerElementOverlay.js?raw";
+import DEFAULT_HEAD from "../../utils/editorManager/defaultHead.html?raw";
 import { v4 as uuidv4 } from "uuid";
 
-type ObserverFunction = (htmlContent: string) => void;
+type ObserverFunction = (editorNotification: {
+  htmlContent: string;
+  dom: unknown;
+}) => void;
 
 class EditorManager {
   private static instance: EditorManager;
@@ -50,9 +54,15 @@ class EditorManager {
           name: "visual-tw-id",
           value: nodeIdentifier,
         });
+
+        if (node.tagName === "head") {
+          const defaultHeadNode = parse5.parseFragment(DEFAULT_HEAD);
+          node.childNodes = defaultHeadNode.childNodes;
+        }
+
         if (node.tagName === "body") {
           const scriptNode = parse5.parseFragment(
-            `<script>${renderScript}</script>`,
+            `<script>${viewerElementOverlay}</script>`,
           );
           node.childNodes.push(scriptNode.childNodes[0]);
         }
@@ -61,12 +71,13 @@ class EditorManager {
 
     const serializedDom = parse5.serialize(document);
 
-    console.log(document);
-
     this.code = html;
     this.dom = document;
     this.serializedDom = serializedDom;
-    return serializedDom;
+    return {
+      htmlContent: serializedDom,
+      dom: document,
+    };
   }
 
   public updateCode(html: string): void {
@@ -121,8 +132,13 @@ class EditorManager {
     );
   }
 
-  private notifyObservers(htmlContent: string): void {
-    this.observers.forEach((observerFunction) => observerFunction(htmlContent));
+  private notifyObservers(editorNotification: {
+    htmlContent: string;
+    dom: unknown;
+  }): void {
+    this.observers.forEach((observerFunction) =>
+      observerFunction(editorNotification),
+    );
   }
 }
 

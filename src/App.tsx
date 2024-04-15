@@ -5,6 +5,7 @@ import CodeViewer from "./components/CodeViewer";
 import "./App.css";
 import { Button } from "./components/ui/button";
 import { Code2Icon, FolderTree } from "lucide-react";
+import NodeExplorer from "./components/NodeExplorer";
 
 function App() {
   return (
@@ -27,12 +28,10 @@ function App() {
           </button>
         </div>
         <PanelGroup direction="horizontal" className="bg-editor-black">
-          {/* <Panel minSize={30}>
-            <div>
-              <h2 className="text-white uppercase">Node Explorer</h2>
-              
-            </div>
-          </Panel> */}
+          <Panel defaultSize={15} minSize={15} maxSize={20}>
+            <NodeExplorer />
+          </Panel>
+          <PanelResizeHandle className="ResizeHandle" />
           <Panel minSize={30}>
             <CodeEditor />
           </Panel>
