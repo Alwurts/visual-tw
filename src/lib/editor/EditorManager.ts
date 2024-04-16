@@ -1,28 +1,26 @@
 import * as parse5 from "parse5";
 import type { DefaultTreeAdapterMap } from "parse5";
 
-import { getElementByUUID, traverseDocument } from "../dom";
+import * as domTools from "../dom";
 import DEFAULT_HEAD_CODE from "./defaultHeadCode.html?raw";
 import VIEWER_CODE from "../viewer.js?raw";
 import DEFAULT_EDITOR_CODE from "./defaultEditorCode.html?raw";
 
 import { v4 as uuidv4 } from "uuid";
 import { IRange } from "monaco-editor";
+import { EditorNotification } from "@/types/EditorManager";
 
-type ObserverFunction = (editorNotification: {
-  htmlContent: string;
-  dom: DefaultTreeAdapterMap["node"];
-}) => void;
+type SubscriberFunction = (editorNotification: EditorNotification) => void;
 
 class EditorManager {
   private static instance: EditorManager;
-  private observers: ObserverFunction[];
+  private subscribers: SubscriberFunction[];
   private dom: DefaultTreeAdapterMap["node"];
   private serializedDom: string;
   private code: string;
 
   private constructor() {
-    this.observers = [];
+    this.subscribers = [];
     const { code, dom, serializedDom } =
       this.parseHTMLString(DEFAULT_EDITOR_CODE);
     this.code = code;
@@ -42,7 +40,7 @@ class EditorManager {
       sourceCodeLocationInfo: true,
     });
 
-    traverseDocument(document, (node) => {
+    domTools.traverseDocument(document, (node) => {
       const nodeIdentifier = uuidv4();
 
       if ("attrs" in node) {
@@ -81,15 +79,23 @@ class EditorManager {
       this.dom = parsedResponse.dom;
       this.serializedDom = parsedResponse.serializedDom;
     }
-    this.notifyObservers({
-      htmlContent: this.serializedDom,
-      dom: this.dom,
+    this.notifySubscribers({
+      type: "code-update",
+      data: {
+        code: this.code,
+        dom: this.dom,
+        serializedDom: this.serializedDom,
+      },
     });
   }
 
   private getElement(uuid: string) {
-    return getElementByUUID(this.dom, uuid);
+    return domTools.getElementByUUID(this.dom, uuid);
   }
+
+  public getElementByTagName = (tagName: string) => {
+    return domTools.getElementsByTagName(this.dom, tagName);
+  };
 
   public getElementSourceCodeLocation = (uuid: string): IRange | null => {
     const node = this.getElement(uuid);
@@ -129,22 +135,23 @@ class EditorManager {
     return this.code;
   }
 
-  public subscribe(observerFunction: ObserverFunction): void {
-    this.observers.push(observerFunction);
+  public relayMessage(message: EditorNotification) {
+    this.notifySubscribers(message);
   }
 
-  public unsubscribe(observerFunction: ObserverFunction): void {
-    this.observers = this.observers.filter(
-      (subscriber) => subscriber !== observerFunction,
+  public subscribe(subscriberFunction: SubscriberFunction): void {
+    this.subscribers.push(subscriberFunction);
+  }
+
+  public unsubscribe(subscriberFunction: SubscriberFunction): void {
+    this.subscribers = this.subscribers.filter(
+      (subscriber) => subscriber !== subscriberFunction,
     );
   }
 
-  private notifyObservers(editorNotification: {
-    htmlContent: string;
-    dom: DefaultTreeAdapterMap["node"];
-  }): void {
-    this.observers.forEach((observerFunction) =>
-      observerFunction(editorNotification),
+  private notifySubscribers(editorNotification: EditorNotification): void {
+    this.subscribers.forEach((subscriberFunction) =>
+      subscriberFunction(editorNotification),
     );
   }
 }

@@ -60,10 +60,9 @@ document.addEventListener("mouseover", function (event) {
 
   window.parent.postMessage(
     {
-      type: "elementhovered",
+      type: "element-selected",
       data: {
-        id,
-        name,
+        uuid: id,
       },
     },
     "*",

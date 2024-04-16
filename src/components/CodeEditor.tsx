@@ -2,19 +2,17 @@ import { Editor } from "@monaco-editor/react";
 import type { editor as monacoEditor, IRange } from "monaco-editor";
 import { useEffect, useRef } from "react";
 import { editorManager } from "../lib/editor/EditorManager";
-import { ViewerMessage } from "@/types/Viewer";
 import { Separator } from "./ui/separator";
+import type { EditorNotification } from "@/types/EditorManager";
 
 const CodeEditor = () => {
   const editorRef = useRef<monacoEditor.IStandaloneCodeEditor>();
 
   useEffect(() => {
-    const handleViewerMessage = ({
-      data: { type, data },
-    }: MessageEvent<ViewerMessage>) => {
-      if (type === "elementhovered") {
+    const subscribe = (notification: EditorNotification): void => {
+      if (notification.type === "element-selected") {
         const domNodeCodeLocation = editorManager.getElementSourceCodeLocation(
-          data.id,
+          notification.data.uuid,
         );
         if (domNodeCodeLocation) {
           selectCode(domNodeCodeLocation);
@@ -22,9 +20,9 @@ const CodeEditor = () => {
       }
     };
 
-    window.addEventListener("message", handleViewerMessage);
+    editorManager.subscribe(subscribe);
     return () => {
-      window.removeEventListener("message", handleViewerMessage);
+      editorManager.unsubscribe(subscribe);
     };
   }, []);
 

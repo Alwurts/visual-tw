@@ -7,20 +7,20 @@ import {
 } from "./ui/collapsible";
 import { Button } from "./ui/button";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { getElementsByTagName } from "@/lib/dom";
 import { DefaultTreeAdapterMap } from "parse5";
 import { Separator } from "./ui/separator";
+import type { EditorNotification } from "@/types/EditorManager";
+
 export default function NodeExplorer() {
   const [dom, setDom] = useState<DefaultTreeAdapterMap["node"][] | null>(null);
   useEffect(() => {
-    const updateTreeExplorer = (editorNotification: {
-      htmlContent: string;
-      dom: DefaultTreeAdapterMap["node"];
-    }): void => {
-      const bodyNode = getElementsByTagName(editorNotification.dom, "body")[0];
-      if ("childNodes" in bodyNode === false) return;
-      const bodyChild = bodyNode.childNodes;
-      setDom(bodyChild);
+    const updateTreeExplorer = (notification: EditorNotification): void => {
+      if (notification.type === "code-update") {
+        const bodyNode = editorManager.getElementByTagName("body")[0];
+        if ("childNodes" in bodyNode === false) return;
+        const bodyChilds = bodyNode.childNodes;
+        setDom(bodyChilds);
+      }
     };
 
     editorManager.subscribe(updateTreeExplorer);

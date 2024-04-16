@@ -4,6 +4,7 @@ import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
 import { Laptop, Smartphone, Tablet } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { EditorNotification } from "@/types/EditorManager";
 
 const CodeViewer = () => {
   const [srcDoc, setSrcDoc] = useState<string>("");
@@ -23,15 +24,28 @@ const CodeViewer = () => {
   };
 
   useEffect(() => {
-    const updateSrcDoc = (editorNotification: {
-      htmlContent: string;
-    }): void => {
-      setSrcDoc(editorNotification.htmlContent);
+    const subscription = (notification: EditorNotification): void => {
+      if (notification.type === "code-update") {
+        setSrcDoc(notification.data.serializedDom);
+      }
     };
 
-    editorManager.subscribe(updateSrcDoc);
+    editorManager.subscribe(subscription);
     return () => {
-      editorManager.unsubscribe(updateSrcDoc);
+      editorManager.unsubscribe(subscription);
+    };
+  }, []);
+
+  useEffect(() => {
+    const relayViewerMessage = ({
+      data: notification,
+    }: MessageEvent<EditorNotification>) => {
+      editorManager.relayMessage(notification);
+    };
+
+    window.addEventListener("message", relayViewerMessage);
+    return () => {
+      window.removeEventListener("message", relayViewerMessage);
     };
   }, []);
 
