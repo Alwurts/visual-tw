@@ -45,18 +45,11 @@ class EditorManager {
     traverseDocument(document, (node) => {
       const nodeIdentifier = uuidv4();
 
-      if ("tagName" in node) {
+      if ("attrs" in node) {
         node.attrs.push({
           name: "visual-tw-id",
           value: nodeIdentifier,
         });
-
-        if (node.tagName === "body") {
-          node.attrs.push({
-            name: "class",
-            value: "bg-white",
-          });
-        }
 
         if (node.tagName === "head") {
           const defaultHeadNode = parse5.parseFragment(DEFAULT_HEAD_CODE);
