@@ -10,6 +10,7 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import { DefaultTreeAdapterMap } from "parse5";
 import { Separator } from "./ui/separator";
 import type { EditorNotification } from "@/types/EditorManager";
+import { getElementAttribute } from "@/lib/dom";
 
 export default function NodeExplorer() {
   const [dom, setDom] = useState<DefaultTreeAdapterMap["node"][] | null>(null);
@@ -78,6 +79,12 @@ function NodeCollapsible({
             paddingLeft: `${level * 11}px`,
           }}
           className="flex h-full w-full justify-start space-x-1 rounded-none p-0 text-sm font-normal text-white hover:bg-editor-gray-medium hover:text-white"
+          onMouseOver={() => {
+            const elementUuid = getElementAttribute(node, "visual-tw-id");
+            if (elementUuid) {
+              editorManager.selectElement(elementUuid);
+            }
+          }}
         >
           {"childNodes" in node &&
             !!node.childNodes.length &&

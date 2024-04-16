@@ -89,6 +89,15 @@ class EditorManager {
     });
   }
 
+  public selectElement(uuid: string) {
+    this.notifySubscribers({
+      type: "element-selected",
+      data: {
+        uuid,
+      },
+    });
+  }
+
   private getElement(uuid: string) {
     return domTools.getElementByUUID(this.dom, uuid);
   }

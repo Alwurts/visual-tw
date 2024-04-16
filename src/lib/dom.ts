@@ -58,3 +58,10 @@ export function getElementsByTagName(dom: Node, tagName: string) {
   traverse(dom);
   return result;
 }
+
+export function getElementAttribute(node: Node, attrName: string) {
+  if ("attrs" in node) {
+    const attr = node.attrs.find((attr) => attr.name === attrName);
+    return attr?.value;
+  }
+}
