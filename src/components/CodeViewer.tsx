@@ -51,7 +51,7 @@ const CodeViewer = () => {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex h-10 items-center justify-between px-6">
+      <div className="flex h-10 flex-shrink-0 items-center justify-between px-6">
         <h2 className="text-xs uppercase text-white">Display</h2>
         <div className="flex space-x-1">
           <Button

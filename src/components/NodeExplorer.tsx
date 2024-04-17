@@ -1,5 +1,5 @@
 import { editorManager } from "@/lib/editor/EditorManager";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -7,13 +7,16 @@ import {
 } from "./ui/collapsible";
 import { Button } from "./ui/button";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { DefaultTreeAdapterMap } from "parse5";
+import { Node } from "node_modules/parse5/dist/tree-adapters/default";
 import { Separator } from "./ui/separator";
 import type { EditorNotification } from "@/types/EditorManager";
 import { getElementAttribute } from "@/lib/dom";
+import { cn } from "@/lib/utils";
 
 export default function NodeExplorer() {
-  const [dom, setDom] = useState<DefaultTreeAdapterMap["node"][] | null>(null);
+  const [selectedElement, setSelectedElement] = useState<string | null>(null);
+
+  const [dom, setDom] = useState<Node[] | null>(null);
   useEffect(() => {
     const updateTreeExplorer = (notification: EditorNotification): void => {
       if (notification.type === "code-update") {
@@ -32,7 +35,7 @@ export default function NodeExplorer() {
 
   return (
     <div className="flex h-full flex-col bg-editor-gray-dark">
-      <div className="p-3">
+      <div className="flex h-10 items-center px-6">
         <h2 className="text-xs uppercase text-white">Explorer</h2>
       </div>
       <Separator className="bg-editor-gray-light" />
@@ -48,6 +51,8 @@ export default function NodeExplorer() {
                   key={node.nodeName + index}
                   level={1}
                   node={node}
+                  selectedElement={selectedElement}
+                  setSelectedElement={setSelectedElement}
                 />
               );
           })}
@@ -64,11 +69,20 @@ export default function NodeExplorer() {
 function NodeCollapsible({
   node,
   level,
+  selectedElement,
+  setSelectedElement,
 }: {
-  node: DefaultTreeAdapterMap["node"];
+  node: Node;
   level: number;
+  selectedElement: string | null;
+  setSelectedElement: (uuid: string) => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+
+  const nodeUuid = useMemo(
+    () => getElementAttribute(node, "visual-tw-id"),
+    [node],
+  );
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
@@ -78,11 +92,21 @@ function NodeCollapsible({
           style={{
             paddingLeft: `${level * 11}px`,
           }}
-          className="flex h-full w-full justify-start space-x-1 rounded-none p-0 text-sm font-normal text-white hover:bg-editor-gray-medium hover:text-white"
-          onMouseOver={() => {
-            const elementUuid = getElementAttribute(node, "visual-tw-id");
-            if (elementUuid) {
-              editorManager.selectElement(elementUuid);
+          className={cn(
+            selectedElement === nodeUuid
+              ? "bg-editor-accent hover:bg-editor-accent"
+              : "hover:bg-editor-gray-medium",
+            "flex h-full w-full justify-start space-x-1 rounded-none p-0 text-sm font-normal text-white hover:text-white",
+          )}
+          onClick={() => {
+            if (nodeUuid) {
+              setSelectedElement(nodeUuid);
+              editorManager.relayMessage({
+                type: "explorer-element-selected",
+                data: {
+                  uuid: nodeUuid,
+                },
+              });
             }
           }}
         >
@@ -114,6 +138,8 @@ function NodeCollapsible({
                   level={level + 1}
                   key={child.nodeName + index}
                   node={child}
+                  selectedElement={selectedElement}
+                  setSelectedElement={setSelectedElement}
                 />
               );
           })}

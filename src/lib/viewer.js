@@ -60,7 +60,7 @@ document.addEventListener("mouseover", function (event) {
 
   window.parent.postMessage(
     {
-      type: "element-selected",
+      type: "viewer-element-selected",
       data: {
         uuid: id,
       },

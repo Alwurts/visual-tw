@@ -3,14 +3,19 @@ import type { editor as monacoEditor, IRange } from "monaco-editor";
 import { useEffect, useRef } from "react";
 import { editorManager } from "../lib/editor/EditorManager";
 import { Separator } from "./ui/separator";
-import type { EditorNotification } from "@/types/EditorManager";
+import {
+  isNotificationElementSelected,
+  type EditorNotification,
+} from "@/types/EditorManager";
+import { Button } from "./ui/button";
+import { CopyIcon } from "lucide-react";
 
 const CodeEditor = () => {
   const editorRef = useRef<monacoEditor.IStandaloneCodeEditor>();
 
   useEffect(() => {
     const subscribe = (notification: EditorNotification): void => {
-      if (notification.type === "element-selected") {
+      if (isNotificationElementSelected(notification)) {
         const domNodeCodeLocation = editorManager.getElementSourceCodeLocation(
           notification.data.uuid,
         );
@@ -34,6 +39,13 @@ const CodeEditor = () => {
     editorRef.current?.getAction("editor.action.formatDocument")?.run();
   } */
 
+  function copyEditorCode() {
+    const editorCode = editorRef.current?.getValue();
+    if (editorCode) {
+      navigator.clipboard.writeText(editorCode);
+    }
+  }
+
   const handleEditorChange = (value: string | undefined) => {
     if (value) {
       editorManager.updateCode(value);
@@ -49,8 +61,17 @@ const CodeEditor = () => {
 
   return (
     <div className="h-full">
-      <div className="p-3">
+      <div className="flex h-10 items-center justify-between px-6">
         <h2 className="text-xs uppercase text-white">Code</h2>
+        <div className="flex space-x-1">
+          <Button
+            size="icon"
+            className="h-auto w-auto rounded-sm p-1 hover:bg-editor-accent"
+            onClick={copyEditorCode}
+          >
+            <CopyIcon className="h-4 w-4 flex-shrink-0" />
+          </Button>
+        </div>
       </div>
       <Separator className="bg-editor-gray-light" />
       <Editor

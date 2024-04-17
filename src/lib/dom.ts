@@ -1,6 +1,4 @@
-import type { DefaultTreeAdapterMap } from "parse5";
-
-export type Node = DefaultTreeAdapterMap["node"];
+import { Node } from "node_modules/parse5/dist/tree-adapters/default";
 
 export const traverseDocument = (
   document: Node,

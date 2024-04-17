@@ -1,5 +1,4 @@
 import * as parse5 from "parse5";
-import type { DefaultTreeAdapterMap } from "parse5";
 
 import * as domTools from "../dom";
 import DEFAULT_HEAD_CODE from "./defaultHeadCode.html?raw";
@@ -9,13 +8,14 @@ import DEFAULT_EDITOR_CODE from "./defaultEditorCode.html?raw";
 import { v4 as uuidv4 } from "uuid";
 import { IRange } from "monaco-editor";
 import { EditorNotification } from "@/types/EditorManager";
+import { Node } from "node_modules/parse5/dist/tree-adapters/default";
 
 type SubscriberFunction = (editorNotification: EditorNotification) => void;
 
 class EditorManager {
   private static instance: EditorManager;
   private subscribers: SubscriberFunction[];
-  private dom: DefaultTreeAdapterMap["node"];
+  private dom: Node;
   private serializedDom: string;
   private code: string;
 
@@ -89,25 +89,16 @@ class EditorManager {
     });
   }
 
-  public selectElement(uuid: string) {
-    this.notifySubscribers({
-      type: "element-selected",
-      data: {
-        uuid,
-      },
-    });
-  }
-
-  private getElement(uuid: string) {
+  public getElementByUUID(uuid: string) {
     return domTools.getElementByUUID(this.dom, uuid);
   }
 
-  public getElementByTagName = (tagName: string) => {
+  public getElementByTagName(tagName: string) {
     return domTools.getElementsByTagName(this.dom, tagName);
-  };
+  }
 
-  public getElementSourceCodeLocation = (uuid: string): IRange | null => {
-    const node = this.getElement(uuid);
+  public getElementSourceCodeLocation(uuid: string): IRange | null {
+    const node = this.getElementByUUID(uuid);
     if (!node) {
       return null;
     }
@@ -130,7 +121,7 @@ class EditorManager {
       endLineNumber: sourceCodeLocation.endLine,
       endColumn: sourceCodeLocation.endCol,
     };
-  };
+  }
 
   public getDOM() {
     return this.dom;
