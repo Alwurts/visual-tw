@@ -21,9 +21,10 @@ export default function NodeExplorer() {
     const updateTreeExplorer = (notification: EditorNotification): void => {
       if (notification.type === "code-update") {
         const bodyNode = editorManager.getElementByTagName("body")[0];
-        if ("childNodes" in bodyNode === false) return;
-        const bodyChilds = bodyNode.childNodes;
-        setDom(bodyChilds);
+        if ("childNodes" in bodyNode === true) {
+          const bodyChilds = bodyNode.childNodes;
+          setDom(bodyChilds);
+        }
       }
     };
 
@@ -101,12 +102,10 @@ function NodeCollapsible({
           onClick={() => {
             if (nodeUuid) {
               setSelectedElement(nodeUuid);
-              editorManager.relayMessage({
-                type: "explorer-element-selected",
-                data: {
-                  uuid: nodeUuid,
-                },
-              });
+              editorManager.selectElement(
+                "explorer-element-selected",
+                nodeUuid,
+              );
             }
           }}
         >

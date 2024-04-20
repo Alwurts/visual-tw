@@ -13,10 +13,13 @@ export default function AttributesPanel() {
   useEffect(() => {
     const subscribe = (notification: EditorNotification): void => {
       if (isNotificationElementSelected(notification)) {
+        console.log("attributes panel", notification.data.uuid);
         const nodeSelected = editorManager.getElementByUUID(
           notification.data.uuid,
         );
+        console.log("attributes nodeSelected", nodeSelected);
         if (nodeSelected) {
+          console.log("Update selected element");
           setSelectedElement(nodeSelected);
         }
       }

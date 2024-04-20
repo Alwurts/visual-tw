@@ -7,7 +7,10 @@ import DEFAULT_EDITOR_CODE from "./defaultEditorCode.html?raw";
 
 import { v4 as uuidv4 } from "uuid";
 import { IRange } from "monaco-editor";
-import { EditorNotification } from "@/types/EditorManager";
+import {
+  EditorNotification,
+  ElementSelectedTypes,
+} from "@/types/EditorManager";
 import { Node } from "node_modules/parse5/dist/tree-adapters/default";
 
 type SubscriberFunction = (editorNotification: EditorNotification) => void;
@@ -18,6 +21,7 @@ class EditorManager {
   private dom: Node;
   private serializedDom: string;
   private code: string;
+  private selectedElement: Node | null = null;
 
   private constructor() {
     this.subscribers = [];
@@ -85,6 +89,38 @@ class EditorManager {
         code: this.code,
         dom: this.dom,
         serializedDom: this.serializedDom,
+      },
+    });
+
+    if (this.selectedElement) {
+      const selectedElementUUID = domTools.getElementAttribute(
+        this.selectedElement,
+        "visual-tw-id",
+      );
+
+      console.log(selectedElementUUID);
+
+      if (selectedElementUUID) {
+        /* this.selectElement("editor-element-selected", selectedElementUUID); */
+        this.notifySubscribers({
+          type: "editor-element-selected",
+          data: {
+            uuid: selectedElementUUID,
+          },
+        });
+      }
+    }
+  }
+
+  public selectElement(
+    type: (typeof ElementSelectedTypes)[number],
+    uuid: string,
+  ) {
+    this.selectedElement = domTools.getElementByUUID(this.dom, uuid);
+    this.notifySubscribers({
+      type,
+      data: {
+        uuid,
       },
     });
   }

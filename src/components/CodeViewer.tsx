@@ -4,7 +4,10 @@ import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
 import { Laptop, Smartphone, Tablet } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { EditorNotification } from "@/types/EditorManager";
+import {
+  isNotificationElementSelected,
+  type EditorNotification,
+} from "@/types/EditorManager";
 
 const CodeViewer = () => {
   const [srcDoc, setSrcDoc] = useState<string>("");
@@ -40,6 +43,13 @@ const CodeViewer = () => {
     const relayViewerMessage = ({
       data: notification,
     }: MessageEvent<EditorNotification>) => {
+      if (isNotificationElementSelected(notification)) {
+        editorManager.selectElement(
+          "viewer-element-selected",
+          notification.data.uuid,
+        );
+        return;
+      }
       editorManager.relayMessage(notification);
     };
 

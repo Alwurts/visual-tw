@@ -1,6 +1,5 @@
 document.addEventListener("mouseover", function (event) {
   var target = event.target;
-  const id = target.getAttribute("visual-tw-id");
   const name = target.tagName;
 
   // Get the bounding rectangle of target
@@ -57,6 +56,18 @@ document.addEventListener("mouseover", function (event) {
 
   document.body.appendChild(marginOverlay);
   document.body.appendChild(overlay);
+});
+
+document.addEventListener("mouseout", function () {
+  var existingOverlay = document.getElementById("hoverOverlay");
+  var existingMarginOverlay = document.getElementById("hoverMarginOverlay");
+  if (existingOverlay) existingOverlay.remove();
+  if (existingMarginOverlay) existingMarginOverlay.remove();
+});
+
+document.addEventListener("click", function (event) {
+  var target = event.target;
+  const id = target.getAttribute("visual-tw-id");
 
   window.parent.postMessage(
     {
@@ -67,11 +78,4 @@ document.addEventListener("mouseover", function (event) {
     },
     "*",
   );
-});
-
-document.addEventListener("mouseout", function () {
-  var existingOverlay = document.getElementById("hoverOverlay");
-  var existingMarginOverlay = document.getElementById("hoverMarginOverlay");
-  if (existingOverlay) existingOverlay.remove();
-  if (existingMarginOverlay) existingMarginOverlay.remove();
 });

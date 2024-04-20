@@ -15,7 +15,7 @@ interface SideNavigationProps {
   >;
 }
 
-export default function SideNavigation({ setOpenTabs }: SideNavigationProps) {
+export default function SideNavigation({ openTabs, setOpenTabs }: SideNavigationProps) {
   return (
     <div className="flex w-12 flex-col items-stretch bg-editor-gray-light">
       <NavigationButton
@@ -24,12 +24,13 @@ export default function SideNavigation({ setOpenTabs }: SideNavigationProps) {
         }
         icon={<FolderTree />}
         text="Explorer"
-        active
+        active={openTabs.explorer}
       />
       <NavigationButton
         onClick={() => setOpenTabs((prev) => ({ ...prev, code: !prev.code }))}
         icon={<Code2Icon />}
         text="Code"
+        active={openTabs.code}
       />
       <NavigationButton
         onClick={() =>
@@ -37,6 +38,7 @@ export default function SideNavigation({ setOpenTabs }: SideNavigationProps) {
         }
         icon={<Palette />}
         text="Attributes"
+        active={openTabs.attributes}
       />
     </div>
   );
