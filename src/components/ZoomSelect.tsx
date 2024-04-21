@@ -27,7 +27,7 @@ export default function ZoomSelect({
 
   return (
     <Select onValueChange={handleZoomChange} value={zoom}>
-      <SelectTrigger className="h-auto border-editor-gray-dark bg-editor-gray-light px-2 py-1 text-white hover:bg-editor-accent">
+      <SelectTrigger className="h-auto px-2 py-1 text-white dark:hover:bg-editor-accent">
         <SelectValue placeholder="Zoom Level" />
       </SelectTrigger>
       <SelectContent className="border-editor-gray-dark bg-editor-gray-light text-white">

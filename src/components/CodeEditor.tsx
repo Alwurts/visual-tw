@@ -1,37 +1,43 @@
 import { Editor } from "@monaco-editor/react";
 import type { IRange, editor as monacoEditor } from "monaco-editor";
-import { useRef } from "react";
 import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
-import { CopyIcon } from "lucide-react";
+import { CopyIcon, Paintbrush } from "lucide-react";
 import { useEditorManager } from "@/hooks/useEditorManager";
-import { getElementSourceCodeLocation, getElementVisualTwId } from "@/lib/dom";
+import { elementSourceCodeLocationToIRange } from "@/lib/dom";
+import * as editorTools from "@/lib/editor";
 
-const CodeEditor = () => {
-  const editorRef = useRef<monacoEditor.IStandaloneCodeEditor>();
+interface CodeEditorProps {
+  editorRef: React.MutableRefObject<
+    monacoEditor.IStandaloneCodeEditor | undefined
+  >;
+}
+
+const CodeEditor = ({ editorRef }: CodeEditorProps) => {
+  //const editorRef = useRef<monacoEditor.IStandaloneCodeEditor>();
 
   const updateCode = useEditorManager((state) => state.updateCode);
   const initialCode = useEditorManager((state) => state.code);
 
-  useEditorManager(({ dom, selectedElement }) => {
+  useEditorManager(({ selectedElement }) => {
     if (!selectedElement) return;
-    const uuid = getElementVisualTwId(selectedElement);
 
-    if (!uuid) return;
-    const domNodeCodeLocation = getElementSourceCodeLocation(dom, uuid);
-
-    if (domNodeCodeLocation) {
-      selectCode(domNodeCodeLocation);
-    }
+    const domNodeCodeLocation =
+      elementSourceCodeLocationToIRange(selectedElement);
+    selectCode(domNodeCodeLocation);
   });
 
   function selectCode(range: IRange) {
     editorRef.current?.setSelection(range);
+    editorRef.current?.revealLineInCenter(range.startLineNumber);
   }
 
-  /* function formatEditorCode() {
+  function formatEditorCode() {
     editorRef.current?.getAction("editor.action.formatDocument")?.run();
-  } */
+    if (editorRef.current) {
+      editorTools.formatEditorCode(editorRef.current);
+    }
+  }
 
   function copyEditorCode() {
     const editorCode = editorRef.current?.getValue();
@@ -55,12 +61,11 @@ const CodeEditor = () => {
       <div className="flex h-10 items-center justify-between px-6">
         <h2 className="text-xs uppercase text-white">Code</h2>
         <div className="flex space-x-1">
-          <Button
-            size="icon"
-            className="h-auto w-auto rounded-sm p-1 hover:bg-editor-accent"
-            onClick={copyEditorCode}
-          >
+          <Button size="tool" variant="tool" onClick={copyEditorCode}>
             <CopyIcon className="h-4 w-4 flex-shrink-0" />
+          </Button>
+          <Button size="tool" variant="tool" onClick={formatEditorCode}>
+            <Paintbrush className="h-4 w-4 flex-shrink-0" />
           </Button>
         </div>
       </div>

@@ -11,8 +11,16 @@ import { Separator } from "./ui/separator";
 import { getElementVisualTwId, getElementsByTagName } from "@/lib/dom";
 import { cn } from "@/lib/utils";
 import { useEditorManager } from "@/hooks/useEditorManager";
+import type { editor as monacoEditor } from "monaco-editor";
+import InsertButton from "./InsertButton";
 
-export default function NodeExplorer() {
+interface NodeExplorerProps {
+  editorRef: React.MutableRefObject<
+    monacoEditor.IStandaloneCodeEditor | undefined
+  >;
+}
+
+export default function NodeExplorer({ editorRef }: NodeExplorerProps) {
   const domExplorer = useEditorManager(({ dom }) => {
     const bodyNode = getElementsByTagName(dom, "body")[0];
     if ("childNodes" in bodyNode === true) {
@@ -27,8 +35,9 @@ export default function NodeExplorer() {
         <h2 className="text-xs uppercase text-white">Explorer</h2>
       </div>
       <Separator className="bg-editor-gray-light" />
-      <div className="px-3 py-1">
+      <div className="flex items-center justify-between space-y-1 px-3 py-1">
         <h3 className="text-xs font-semibold uppercase text-white">Document</h3>
+        <InsertButton editorRef={editorRef} />
       </div>
       {domExplorer ? (
         <div className="flex-grow overflow-y-auto scrollbar scrollbar-thumb-neutral-700">
@@ -77,8 +86,8 @@ function NodeCollapsible({ node, level }: { node: Node; level: number }) {
           className={cn(
             "flex h-full w-full justify-start space-x-1 rounded-none p-0 text-sm font-normal text-white hover:text-white",
             selectedElement && selectedElementUuid === nodeUuid
-              ? "bg-editor-accent hover:bg-editor-accent"
-              : "hover:bg-editor-gray-medium",
+              ? "bg-editor-accent dark:hover:bg-editor-accent"
+              : "dark:hover:bg-editor-gray-medium",
           )}
           onClick={() => {
             if (nodeUuid) {

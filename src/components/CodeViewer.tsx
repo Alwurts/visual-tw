@@ -75,25 +75,25 @@ const CodeViewer = () => {
     <div className="flex h-full flex-col">
       <div className="flex h-10 flex-shrink-0 items-center justify-between px-6">
         <h2 className="text-xs uppercase text-white">Display</h2>
-        <div className="flex space-x-1">
+        <div className="flex items-center space-x-1">
           <ZoomSelect handleZoomChange={setZoom} zoom={zoom} />
           <Button
-            size="icon"
-            className="h-auto w-auto rounded-sm p-1 hover:bg-editor-accent"
+            size="tool"
+            variant="tool"
             onClick={() => handleScreenSizeChange("mobile")}
           >
             <Smartphone className="h-4 w-4 flex-shrink-0" />
           </Button>
           <Button
-            size="icon"
-            className="h-auto w-auto rounded-sm p-1 hover:bg-editor-accent"
+            size="tool"
+            variant="tool"
             onClick={() => handleScreenSizeChange("tablet")}
           >
             <Tablet className="h-4 w-4 flex-shrink-0" />
           </Button>
           <Button
-            size="icon"
-            className="h-auto w-auto rounded-sm p-1 hover:bg-editor-accent"
+            size="tool"
+            variant="tool"
             onClick={() => handleScreenSizeChange("desktop")}
           >
             <Laptop className="h-4 w-4 flex-shrink-0" />

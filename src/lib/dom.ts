@@ -81,16 +81,8 @@ export function getElementByUUID(dom: Node, uuid: string): Node | null {
   return result;
 }
 
-export function getElementSourceCodeLocation(
-  dom: Node,
-  uuid: string,
-): IRange | null {
-  const node = getElementByUUID(dom, uuid);
-  if (!node) {
-    return null;
-  }
-
-  const sourceCodeLocation = node.sourceCodeLocation;
+export function elementSourceCodeLocationToIRange(element: Node): IRange {
+  const sourceCodeLocation = element.sourceCodeLocation;
 
   if (
     !sourceCodeLocation ||
@@ -99,7 +91,12 @@ export function getElementSourceCodeLocation(
     !sourceCodeLocation.endLine ||
     !sourceCodeLocation.endCol
   ) {
-    return null;
+    return {
+      startLineNumber: 0,
+      startColumn: 0,
+      endLineNumber: 0,
+      endColumn: 0,
+    };
   }
 
   return {

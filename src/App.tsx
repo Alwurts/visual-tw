@@ -4,11 +4,12 @@ import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import CodeEditor from "./components/CodeEditor";
 import CodeViewer from "./components/CodeViewer";
 import SideNavigation from "./components/SideNavigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { TWindowTabs } from "./types/EditorManager";
 import { cn } from "./lib/utils";
 import NodeExplorer from "./components/NodeExplorer";
 import AttributesPanel from "./components/AttributesPanel";
+import type { editor as monacoEditor } from "monaco-editor";
 
 function App() {
   const [openTabs, setOpenTabs] = useState<{
@@ -20,8 +21,10 @@ function App() {
     attributes: true,
   });
 
+  const editorRef = useRef<monacoEditor.IStandaloneCodeEditor>();
+
   return (
-    <main className="bg-editor-black">
+    <main className="dark bg-editor-black">
       <nav className="h-[32px] bg-editor-gray-medium px-3 py-1">
         <h1 className="font-bold text-white">
           Visual<span className="text-editor-accent">TW</span>
@@ -38,7 +41,7 @@ function App() {
             minSize={10}
             maxSize={15}
           >
-            <NodeExplorer />
+            <NodeExplorer editorRef={editorRef} />
           </Panel>
           <PanelResizeHandle
             className={cn("ResizeHandle", {
@@ -52,7 +55,7 @@ function App() {
               hidden: !openTabs.code,
             })}
           >
-            <CodeEditor />
+            <CodeEditor editorRef={editorRef} />
           </Panel>
           <PanelResizeHandle
             className={cn("ResizeHandle", {

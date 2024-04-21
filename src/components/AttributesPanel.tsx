@@ -1,6 +1,9 @@
 import { Separator } from "./ui/separator";
 import { useMemo } from "react";
 import { useEditorManager } from "@/hooks/useEditorManager";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
+import { CircleArrowDown } from "lucide-react";
 
 export default function AttributesPanel() {
   const selectedElement = useEditorManager((state) => state.selectedElement);
@@ -27,14 +30,9 @@ export default function AttributesPanel() {
         </h3>
       </div>
       {selectedElement && "attrs" in selectedElement ? (
-        <div className="h-full overflow-y-auto scrollbar scrollbar-thumb-neutral-700">
+        <div className="flex h-full flex-col space-y-2 overflow-y-auto p-2 scrollbar scrollbar-thumb-neutral-700">
           {nodeClassAttribute?.map((className, index) => (
-            <div
-              key={index}
-              className="flex items-center justify-between px-3 py-1"
-            >
-              <span className="text-xs text-white">{className}</span>
-            </div>
+            <AttributeInput key={index} value={className} />
           ))}
         </div>
       ) : (
@@ -42,6 +40,28 @@ export default function AttributesPanel() {
           <span>No element selected</span>
         </div>
       )}
+    </div>
+  );
+}
+
+interface AttributeInputProps {
+  value: string;
+}
+
+function AttributeInput({ value }: AttributeInputProps) {
+  return (
+    <div className="flex space-x-2">
+      <Input
+        className="h-auto px-3 py-0"
+        type="text"
+        value={value}
+        onChange={() => {
+          //console.log(e.target.value);
+        }}
+      />
+      <Button variant="secondary" size="icon">
+        <CircleArrowDown className="h-4 w-4" />
+      </Button>
     </div>
   );
 }
