@@ -3,12 +3,12 @@ import "./App.css";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import CodeEditor from "./components/CodeEditor";
 import CodeViewer from "./components/CodeViewer";
-import NodeExplorer from "./components/NodeExplorer";
 import SideNavigation from "./components/SideNavigation";
 import { useState } from "react";
 import { TWindowTabs } from "./types/EditorManager";
-import AttributesPanel from "./components/AttributesPanel";
 import { cn } from "./lib/utils";
+import NodeExplorer from "./components/NodeExplorer";
+import AttributesPanel from "./components/AttributesPanel";
 
 function App() {
   const [openTabs, setOpenTabs] = useState<{

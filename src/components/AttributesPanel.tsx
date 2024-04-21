@@ -1,35 +1,9 @@
-import { Node } from "node_modules/parse5/dist/tree-adapters/default";
 import { Separator } from "./ui/separator";
-import { useEffect, useMemo, useState } from "react";
-import {
-  EditorNotification,
-  isNotificationElementSelected,
-} from "@/types/EditorManager";
-import { editorManager } from "@/lib/editor/EditorManager";
+import { useMemo } from "react";
+import { useEditorManager } from "@/hooks/useEditorManager";
 
 export default function AttributesPanel() {
-  const [selectedElement, setSelectedElement] = useState<Node | null>(null);
-
-  useEffect(() => {
-    const subscribe = (notification: EditorNotification): void => {
-      if (isNotificationElementSelected(notification)) {
-        console.log("attributes panel", notification.data.uuid);
-        const nodeSelected = editorManager.getElementByUUID(
-          notification.data.uuid,
-        );
-        console.log("attributes nodeSelected", nodeSelected);
-        if (nodeSelected) {
-          console.log("Update selected element");
-          setSelectedElement(nodeSelected);
-        }
-      }
-    };
-
-    editorManager.subscribe(subscribe);
-    return () => {
-      editorManager.unsubscribe(subscribe);
-    };
-  }, []);
+  const selectedElement = useEditorManager((state) => state.selectedElement);
 
   const nodeClassAttribute = useMemo(() => {
     if (selectedElement && "attrs" in selectedElement) {

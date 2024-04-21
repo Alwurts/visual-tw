@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react";
-import { editorManager } from "../lib/editor/EditorManager";
 import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
 import { Laptop, Smartphone, Tablet } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useEditorManager } from "@/hooks/useEditorManager";
 import {
+  EditorNotification,
   isNotificationElementSelected,
-  type EditorNotification,
 } from "@/types/EditorManager";
 
 const CodeViewer = () => {
-  const [srcDoc, setSrcDoc] = useState<string>("");
+  const srcDoc = useEditorManager((state) => state.serializedDom);
+
+  const selectElement = useEditorManager((state) => state.selectElement);
 
   const [screenSize, setScreenSize] = useState<"mobile" | "tablet" | "desktop">(
     "mobile",
@@ -27,36 +29,19 @@ const CodeViewer = () => {
   };
 
   useEffect(() => {
-    const subscription = (notification: EditorNotification): void => {
-      if (notification.type === "code-update") {
-        setSrcDoc(notification.data.serializedDom);
-      }
-    };
-
-    editorManager.subscribe(subscription);
-    return () => {
-      editorManager.unsubscribe(subscription);
-    };
-  }, []);
-
-  useEffect(() => {
-    const relayViewerMessage = ({
+    const viewerMessage = ({
       data: notification,
     }: MessageEvent<EditorNotification>) => {
       if (isNotificationElementSelected(notification)) {
-        editorManager.selectElement(
-          "viewer-element-selected",
-          notification.data.uuid,
-        );
-        return;
+        selectElement(notification.data.uuid);
       }
-      editorManager.relayMessage(notification);
     };
 
-    window.addEventListener("message", relayViewerMessage);
+    window.addEventListener("message", viewerMessage);
     return () => {
-      window.removeEventListener("message", relayViewerMessage);
+      window.removeEventListener("message", viewerMessage);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

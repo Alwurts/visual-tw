@@ -1,35 +1,29 @@
 import { Editor } from "@monaco-editor/react";
-import type { editor as monacoEditor, IRange } from "monaco-editor";
-import { useEffect, useRef } from "react";
-import { editorManager } from "../lib/editor/EditorManager";
+import type { IRange, editor as monacoEditor } from "monaco-editor";
+import { useRef } from "react";
 import { Separator } from "./ui/separator";
-import {
-  isNotificationElementSelected,
-  type EditorNotification,
-} from "@/types/EditorManager";
 import { Button } from "./ui/button";
 import { CopyIcon } from "lucide-react";
+import { useEditorManager } from "@/hooks/useEditorManager";
+import { getElementSourceCodeLocation, getElementVisualTwId } from "@/lib/dom";
 
 const CodeEditor = () => {
   const editorRef = useRef<monacoEditor.IStandaloneCodeEditor>();
 
-  useEffect(() => {
-    const subscribe = (notification: EditorNotification): void => {
-      if (isNotificationElementSelected(notification)) {
-        const domNodeCodeLocation = editorManager.getElementSourceCodeLocation(
-          notification.data.uuid,
-        );
-        if (domNodeCodeLocation) {
-          selectCode(domNodeCodeLocation);
-        }
-      }
-    };
+  const updateCode = useEditorManager((state) => state.updateCode);
+  const initialCode = useEditorManager((state) => state.code);
 
-    editorManager.subscribe(subscribe);
-    return () => {
-      editorManager.unsubscribe(subscribe);
-    };
-  }, []);
+  useEditorManager(({ dom, selectedElement }) => {
+    if (!selectedElement) return;
+    const uuid = getElementVisualTwId(selectedElement);
+
+    if (!uuid) return;
+    const domNodeCodeLocation = getElementSourceCodeLocation(dom, uuid);
+
+    if (domNodeCodeLocation) {
+      selectCode(domNodeCodeLocation);
+    }
+  });
 
   function selectCode(range: IRange) {
     editorRef.current?.setSelection(range);
@@ -46,16 +40,13 @@ const CodeEditor = () => {
     }
   }
 
-  const handleEditorChange = (value: string | undefined) => {
-    if (value) {
-      editorManager.updateCode(value);
+  const handleEditorChange = (code: string | undefined) => {
+    if (code) {
+      updateCode(code);
     }
   };
 
   const initializeEditor = (editor: monacoEditor.IStandaloneCodeEditor) => {
-    const editorInitialCode = editorManager.getCode();
-    editor.setValue(editorInitialCode);
-    editorManager.updateCode();
     editorRef.current = editor;
   };
 
@@ -77,8 +68,9 @@ const CodeEditor = () => {
       <Editor
         theme="vs-dark"
         defaultLanguage="html"
-        onChange={handleEditorChange}
+        defaultValue={initialCode}
         onMount={initializeEditor}
+        onChange={handleEditorChange}
         options={{ fontSize: 14, glyphMargin: true }}
       />
     </div>
