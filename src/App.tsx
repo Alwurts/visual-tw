@@ -69,7 +69,7 @@ function App() {
 
           <PanelResizeHandle
             className={cn("ResizeHandle", {
-              hidden: !openTabs.viewer,
+              hidden: !openTabs.attributes,
             })}
           />
           <Panel
@@ -80,7 +80,7 @@ function App() {
               hidden: !openTabs.attributes,
             })}
           >
-            <AttributesPanel />
+            <AttributesPanel editorRef={editorRef} />
           </Panel>
         </PanelGroup>
       </div>

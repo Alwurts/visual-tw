@@ -75,7 +75,10 @@ const CodeEditor = ({ editorRef }: CodeEditorProps) => {
         defaultLanguage="html"
         defaultValue={initialCode}
         onMount={initializeEditor}
-        onChange={handleEditorChange}
+        onChange={(value, event) => {
+          console.log("Monaco Event", event);
+          handleEditorChange(value);
+        }}
         options={{ fontSize: 14, glyphMargin: true }}
       />
     </div>

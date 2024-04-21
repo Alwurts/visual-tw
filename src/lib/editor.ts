@@ -1,18 +1,19 @@
 import { IRange, type editor as monacoEditor } from "monaco-editor";
 
-/* endCol: 60
-endLine: 2
-endOffset: 132
-startCol: 5
-startLine: 2
-startOffset: 77 */
+export function selectCode(
+  editor: monacoEditor.IStandaloneCodeEditor,
+  range: IRange,
+) {
+  editor.setSelection(range);
+  editor.revealLineInCenter(range.startLineNumber);
+}
 
 export function insertCode(
   editor: monacoEditor.IStandaloneCodeEditor,
   range: IRange,
   newCode: string,
 ) {
-  editor.executeEdits("", [
+  editor.executeEdits("ALWURTS", [
     {
       range,
       text: newCode,
@@ -26,7 +27,6 @@ export function insertElements(
   range: IRange,
   type: "h1" | "h2" | "h3" | "div" | "span" | "p",
 ) {
-  console.log("insertElements", range, type);
   switch (type) {
     case "h1":
       insertCode(editor, range, "\r\n<h1>Lorem ipsum</h1>\r\n");
