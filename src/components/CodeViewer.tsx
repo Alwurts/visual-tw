@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
 import { Laptop, Smartphone, Tablet } from "lucide-react";
@@ -8,8 +8,11 @@ import {
   EditorNotification,
   isNotificationElementSelected,
 } from "@/types/EditorManager";
+import ZoomSelect from "./ZoomSelect";
 
 const CodeViewer = () => {
+  const iframeContainerRef = useRef(null); // New ref for iframe's parent container
+
   const srcDoc = useEditorManager((state) => state.serializedDom);
 
   const selectElement = useEditorManager((state) => state.selectElement);
@@ -27,6 +30,30 @@ const CodeViewer = () => {
   const handleScreenSizeChange = (size: "mobile" | "tablet" | "desktop") => {
     setScreenSize(size);
   };
+
+  const [zoom, setZoom] = useState<string>("1");
+
+  const derivedZoom = useMemo(() => {
+    const widthAndHeigthSizes = {
+      mobile: { width: 330, height: 620 },
+      tablet: { width: 768, height: 1024 },
+      desktop: { width: 1024, height: 768 },
+    };
+    if (zoom === "AUTO") {
+      const container = iframeContainerRef.current;
+      if (container) {
+        const { clientWidth: containerWidth, clientHeight: containerHeight } =
+          container;
+        const iframeWidth = widthAndHeigthSizes[screenSize].width;
+        const iframeHeight = widthAndHeigthSizes[screenSize].height;
+        const zoomWidth = containerWidth / iframeWidth;
+        const zoomHeight = containerHeight / iframeHeight;
+        return Math.min(zoomWidth, zoomHeight).toString();
+      }
+    } else {
+      return zoom;
+    }
+  }, [screenSize, zoom]);
 
   useEffect(() => {
     const viewerMessage = ({
@@ -49,6 +76,7 @@ const CodeViewer = () => {
       <div className="flex h-10 flex-shrink-0 items-center justify-between px-6">
         <h2 className="text-xs uppercase text-white">Display</h2>
         <div className="flex space-x-1">
+          <ZoomSelect handleZoomChange={setZoom} zoom={zoom} />
           <Button
             size="icon"
             className="h-auto w-auto rounded-sm p-1 hover:bg-editor-accent"
@@ -73,7 +101,10 @@ const CodeViewer = () => {
         </div>
       </div>
       <Separator className="bg-editor-gray-light" />
-      <div className="h-full w-full flex-grow overflow-auto scrollbar scrollbar-thumb-neutral-700">
+      <div
+        className="h-full w-full flex-grow overflow-auto scrollbar scrollbar-thumb-neutral-700"
+        ref={iframeContainerRef}
+      >
         <iframe
           title="Rendered Output"
           className={cn(
@@ -81,6 +112,10 @@ const CodeViewer = () => {
             screenSizes[screenSize],
           )}
           srcDoc={srcDoc}
+          style={{
+            transform: `scale(${derivedZoom})`,
+            transformOrigin: "center",
+          }}
         />
       </div>
     </div>
