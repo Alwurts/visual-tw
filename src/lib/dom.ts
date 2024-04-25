@@ -4,7 +4,6 @@ import { v4 as uuidv4 } from "uuid";
 import DEFAULT_HEAD_CODE from "./editor/defaultHeadCode.html?raw";
 import VIEWER_CODE from "./viewer.js?raw";
 import { IRange } from "monaco-editor";
-import { TtailwindClass } from "./tailwind_classes";
 
 export function parseHTMLString(html: string) {
   const document = parse5.parse(html, {
@@ -164,23 +163,4 @@ export function getElementAttribute(node: Node, attrName: string) {
 
 export function getElementVisualTwId(node: Node) {
   return getElementAttribute(node, "visual-tw-id");
-}
-
-export function classAttributeToTwClasses(classAttribute: TtailwindClass) {
-  let currentIndex = 7;
-  return classAttribute.value.split(" ").map((className) => {
-    const startPosition = currentIndex;
-    const endPosition = startPosition + className.length;
-    currentIndex = endPosition + 1;
-
-    return {
-      value: className,
-      sourceCodeLocation: {
-        startLine: classAttribute.sourceCodeLocation.startLine,
-        startCol: classAttribute.sourceCodeLocation.startCol + startPosition,
-        endLine: classAttribute.sourceCodeLocation.endLine,
-        endCol: classAttribute.sourceCodeLocation.startCol + endPosition,
-      },
-    };
-  });
 }

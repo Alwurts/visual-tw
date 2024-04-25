@@ -3,14 +3,15 @@ import { useMemo, useRef } from "react";
 import { useEditorManager } from "@/hooks/useEditorManager";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { CircleArrowDown } from "lucide-react";
+import { CircleArrowDown, ScanSearch } from "lucide-react";
 import type { editor as monacoEditor } from "monaco-editor";
-import { insertCode } from "@/lib/editor";
+import { insertCode, selectCode } from "@/lib/editor";
+import { sourceCodeLocationToIRange } from "@/lib/dom";
 import {
+  categorizeTailwindClasses,
   classAttributeToTwClasses,
-  sourceCodeLocationToIRange,
-} from "@/lib/dom";
-import { TtailwindClass, categorizeClasses } from "@/lib/tailwind_classes";
+} from "@/lib/tailwind";
+import { ITailwindClass } from "@/types/Tailwind";
 
 interface AttributesPanelProps {
   editorRef: React.MutableRefObject<
@@ -26,15 +27,19 @@ export default function AttributesPanel({ editorRef }: AttributesPanelProps) {
       const classAttribute = selectedElement.attrs.find(
         (attr) => attr.name === "class",
       )?.value;
-      const classSourceCodeLocation =
+
+      const classAttributeSourceCodeLocation =
         selectedElement.sourceCodeLocation?.attrs?.class;
-      if (classAttribute && classSourceCodeLocation) {
-        return categorizeClasses(
-          classAttributeToTwClasses({
-            value: classAttribute,
-            sourceCodeLocation: classSourceCodeLocation,
-          }),
-        );
+
+      if (classAttribute && classAttributeSourceCodeLocation) {
+        const twClasses = classAttributeToTwClasses({
+          value: classAttribute,
+          sourceCodeLocation: classAttributeSourceCodeLocation,
+        });
+
+        const categorizedClasses = categorizeTailwindClasses(twClasses);
+
+        return categorizedClasses;
       }
     }
     return null;
@@ -42,50 +47,51 @@ export default function AttributesPanel({ editorRef }: AttributesPanelProps) {
 
   return (
     <div className="flex max-h-full flex-col">
-      <div className="flex h-10 flex-shrink-0 items-center justify-between px-6">
-        <h2 className="text-xs uppercase text-white">Node detail</h2>
+      <div className="flex h-10 flex-shrink-0 items-center justify-between px-5">
+        <h3 className="text-xs uppercase text-white">Attributes</h3>
       </div>
       <Separator className="bg-editor-gray-light" />
-      <div className="px-3 py-1">
-        <h3 className="text-xs font-semibold uppercase text-white">
-          Attributes
-        </h3>
-      </div>
       {selectedElement && "attrs" in selectedElement ? (
         <div className="flex flex-grow flex-col space-y-2 overflow-y-auto p-2 scrollbar scrollbar-thumb-neutral-700">
           {twClassesCategorized &&
             Object.entries(twClassesCategorized).map(
               ([categoryName, tailwindClasses], index) => {
-                if (tailwindClasses.length === 0) return null;
+                if (Object.keys(tailwindClasses).length === 0) return null;
                 return (
-                  <div key={index} className="space-y-2">
-                    <h4 className="text-xs font-semibold text-white">
-                      {categoryName === "Uncategorized"
+                  <div key={index + categoryName} className="space-y-2">
+                    <h4 className="text-xs font-semibold uppercase text-white">
+                      {categoryName === "Other"
                         ? "Other classes"
-                        : categoryName}
+                        : categoryName.split("_").join(" ")}
                     </h4>
-                    <div className="flex flex-col space-y-2">
-                      {tailwindClasses.length ? (
-                        tailwindClasses.map((twClass, index) => (
-                          <AttributeInput
-                            key={index + twClass.value}
-                            twClass={twClass}
-                            editorRef={editorRef}
-                          />
-                        ))
-                      ) : (
-                        <span className="ml-1 text-sm font-light text-white">
-                          No classes found
-                        </span>
+                    <div className="mx-1 flex flex-col space-y-2">
+                      {Object.entries(tailwindClasses).map(
+                        ([subcategory, twClasses], index) => (
+                          <div key={index + subcategory} className="space-y-1">
+                            <h5 className="text-xs font-normal text-white">
+                              {subcategory.split("_").join(" ")}
+                            </h5>
+                            <div className="flex flex-col space-y-2">
+                              {twClasses.map((twClass, index) => (
+                                <AttributeInput
+                                  key={index + twClass.value}
+                                  twClass={twClass}
+                                  editorRef={editorRef}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        ),
                       )}
                     </div>
+                    <Separator />
                   </div>
                 );
               },
             )}
         </div>
       ) : (
-        <div className="flex h-full flex-grow items-center justify-center text-sm text-white">
+        <div className="flex flex-grow items-center justify-center text-sm text-white">
           <span>No element selected</span>
         </div>
       )}
@@ -97,7 +103,7 @@ interface AttributeInputProps {
   editorRef: React.MutableRefObject<
     monacoEditor.IStandaloneCodeEditor | undefined
   >;
-  twClass: TtailwindClass;
+  twClass: ITailwindClass;
 }
 
 function AttributeInput({
@@ -130,6 +136,21 @@ function AttributeInput({
         }}
       >
         <CircleArrowDown className="h-4 w-4" />
+        <span className="sr-only">{value}</span>
+      </Button>
+      <Button
+        variant="secondary"
+        size="icon"
+        onClick={() => {
+          if (editorRef.current) {
+            selectCode(
+              editorRef.current,
+              sourceCodeLocationToIRange(sourceCodeLocation),
+            );
+          }
+        }}
+      >
+        <ScanSearch className="h-4 w-4" />
         <span className="sr-only">{value}</span>
       </Button>
     </div>
