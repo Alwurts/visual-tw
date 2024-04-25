@@ -7,22 +7,17 @@ import {
   Text,
 } from "lucide-react";
 import { Button } from "./ui/button";
-import type { editor as monacoEditor } from "monaco-editor";
-import { insertElements } from "@/lib/editor";
 import { useEditorManager } from "@/hooks/useEditorManager";
 import { getElementsByTagName } from "@/lib/dom";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Command, CommandGroup, CommandItem, CommandList } from "./ui/command";
 import { useState } from "react";
 
-interface InsertButtonProps {
-  editorRef: React.MutableRefObject<
-    monacoEditor.IStandaloneCodeEditor | undefined
-  >;
-}
-
-export default function InsertButton({ editorRef }: InsertButtonProps) {
+export default function InsertButton() {
   const selectedElement = useEditorManager((state) => state.selectedElement);
+  const insertHtmlElement = useEditorManager(
+    (state) => state.insertHtmlElement,
+  );
 
   const [open, setOpen] = useState(false);
 
@@ -35,46 +30,33 @@ export default function InsertButton({ editorRef }: InsertButtonProps) {
   });
 
   function handleInsertClick(type: "h1" | "h2" | "h3" | "div" | "span" | "p") {
-    if (editorRef.current) {
-      if (
-        selectedElement &&
-        selectedElement.sourceCodeLocation &&
-        "startTag" in selectedElement.sourceCodeLocation &&
-        selectedElement.sourceCodeLocation.startTag?.endLine &&
-        selectedElement.sourceCodeLocation.startTag?.endCol
-      ) {
-        insertElements(
-          editorRef.current,
-          {
-            startLineNumber:
-              selectedElement.sourceCodeLocation.startTag.endLine,
-            startColumn: selectedElement.sourceCodeLocation.startTag.endCol,
-            endLineNumber: selectedElement.sourceCodeLocation.startTag.endLine,
-            endColumn: selectedElement.sourceCodeLocation.startTag.endCol,
-          },
+    const createInsertParams = (line: number, col: number) => ({
+      startLineNumber: line,
+      startColumn: col,
+      endLineNumber: line,
+      endColumn: col,
+    });
+
+    if (
+      selectedElement?.sourceCodeLocation &&
+      "startTag" in selectedElement.sourceCodeLocation
+    ) {
+      const selectedLocation = selectedElement?.sourceCodeLocation?.startTag;
+      if (selectedLocation?.endLine && selectedLocation?.endCol) {
+        insertHtmlElement(
           type,
+          createInsertParams(selectedLocation.endLine, selectedLocation.endCol),
         );
       }
-      if (!selectedElement) {
-        const endLine =
-          domExplorer?.[domExplorer.length - 1]?.sourceCodeLocation?.endLine;
-        const endCol =
-          domExplorer?.[domExplorer.length - 1]?.sourceCodeLocation?.endCol;
-        if (endLine && endCol) {
-          insertElements(
-            editorRef.current,
-            {
-              startLineNumber: endLine,
-              startColumn: endCol,
-              endLineNumber: endLine,
-              endColumn: endCol,
-            },
-            type,
-          );
-        }
+    } else {
+      const { endLine, endCol } =
+        domExplorer?.[domExplorer.length - 1]?.sourceCodeLocation ?? {};
+      if (endLine && endCol) {
+        insertHtmlElement(type, createInsertParams(endLine, endCol));
       }
-      setOpen(false);
     }
+
+    setOpen(false);
   }
 
   return (

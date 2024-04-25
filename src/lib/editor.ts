@@ -13,7 +13,7 @@ export function insertCode(
   range: IRange,
   newCode: string,
 ) {
-  editor.executeEdits("ALWURTS", [
+  editor.executeEdits("visual-tw", [
     {
       range,
       text: newCode,
@@ -24,8 +24,8 @@ export function insertCode(
 
 export function insertElements(
   editor: monacoEditor.IStandaloneCodeEditor,
-  range: IRange,
   type: "h1" | "h2" | "h3" | "div" | "span" | "p",
+  range: IRange,
 ) {
   switch (type) {
     case "h1":

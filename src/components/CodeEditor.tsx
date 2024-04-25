@@ -1,36 +1,16 @@
 import { Editor } from "@monaco-editor/react";
-import type { IRange, editor as monacoEditor } from "monaco-editor";
+import type { editor as monacoEditor } from "monaco-editor";
 import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
 import { CopyIcon, Paintbrush } from "lucide-react";
 import { useEditorManager } from "@/hooks/useEditorManager";
-import { elementSourceCodeLocationToIRange } from "@/lib/dom";
 import * as editorTools from "@/lib/editor";
 
-interface CodeEditorProps {
-  editorRef: React.MutableRefObject<
-    monacoEditor.IStandaloneCodeEditor | undefined
-  >;
-}
-
-const CodeEditor = ({ editorRef }: CodeEditorProps) => {
-  //const editorRef = useRef<monacoEditor.IStandaloneCodeEditor>();
-
-  const updateCode = useEditorManager((state) => state.updateCode);
+const CodeEditor = () => {
+  const editorRef = useEditorManager((state) => state.editorRef);
   const initialCode = useEditorManager((state) => state.code);
 
-  useEditorManager(({ selectedElement }) => {
-    if (!selectedElement) return;
-
-    const domNodeCodeLocation =
-      elementSourceCodeLocationToIRange(selectedElement);
-    selectCode(domNodeCodeLocation);
-  });
-
-  function selectCode(range: IRange) {
-    editorRef.current?.setSelection(range);
-    editorRef.current?.revealLineInCenter(range.startLineNumber);
-  }
+  const updateCode = useEditorManager((state) => state.updateCode);
 
   function formatEditorCode() {
     editorRef.current?.getAction("editor.action.formatDocument")?.run();
@@ -75,11 +55,8 @@ const CodeEditor = ({ editorRef }: CodeEditorProps) => {
         defaultLanguage="html"
         defaultValue={initialCode}
         onMount={initializeEditor}
-        onChange={(value, event) => {
-          console.log("Monaco Event", event);
-          handleEditorChange(value);
-        }}
-        options={{ fontSize: 14, glyphMargin: true }}
+        onChange={handleEditorChange}
+        options={{ fontSize: 14 }}
       />
     </div>
   );

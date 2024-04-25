@@ -4,12 +4,11 @@ import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import CodeEditor from "./components/CodeEditor";
 import CodeViewer from "./components/CodeViewer";
 import SideNavigation from "./components/SideNavigation";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { TWindowTabs } from "./types/EditorManager";
 import { cn } from "./lib/utils";
 import NodeExplorer from "./components/NodeExplorer";
 import AttributesPanel from "./components/AttributesPanel";
-import type { editor as monacoEditor } from "monaco-editor";
 
 function App() {
   const [openTabs, setOpenTabs] = useState<{
@@ -20,8 +19,6 @@ function App() {
     viewer: true,
     attributes: true,
   });
-
-  const editorRef = useRef<monacoEditor.IStandaloneCodeEditor>();
 
   return (
     <main className="bg-editor-black">
@@ -41,7 +38,7 @@ function App() {
             minSize={10}
             maxSize={15}
           >
-            <NodeExplorer editorRef={editorRef} />
+            <NodeExplorer />
           </Panel>
           <PanelResizeHandle
             className={cn("ResizeHandle", {
@@ -55,7 +52,7 @@ function App() {
               hidden: !openTabs.code,
             })}
           >
-            <CodeEditor editorRef={editorRef} />
+            <CodeEditor />
           </Panel>
           <PanelResizeHandle
             className={cn("ResizeHandle", {
@@ -80,7 +77,7 @@ function App() {
               hidden: !openTabs.attributes,
             })}
           >
-            <AttributesPanel editorRef={editorRef} />
+            <AttributesPanel />
           </Panel>
         </PanelGroup>
       </div>

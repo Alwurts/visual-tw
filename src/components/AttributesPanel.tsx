@@ -4,8 +4,7 @@ import { useEditorManager } from "@/hooks/useEditorManager";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { CircleArrowDown, ScanSearch } from "lucide-react";
-import type { editor as monacoEditor } from "monaco-editor";
-import { insertCode, selectCode } from "@/lib/editor";
+import { insertCode } from "@/lib/editor";
 import { sourceCodeLocationToIRange } from "@/lib/dom";
 import {
   categorizeTailwindClasses,
@@ -13,13 +12,7 @@ import {
 } from "@/lib/tailwind";
 import { ITailwindClass } from "@/types/Tailwind";
 
-interface AttributesPanelProps {
-  editorRef: React.MutableRefObject<
-    monacoEditor.IStandaloneCodeEditor | undefined
-  >;
-}
-
-export default function AttributesPanel({ editorRef }: AttributesPanelProps) {
+export default function AttributesPanel() {
   const selectedElement = useEditorManager((state) => state.selectedElement);
 
   const twClassesCategorized = useMemo(() => {
@@ -76,7 +69,6 @@ export default function AttributesPanel({ editorRef }: AttributesPanelProps) {
                                 <AttributeInput
                                   key={index + twClass.value}
                                   twClass={twClass}
-                                  editorRef={editorRef}
                                 />
                               ))}
                             </div>
@@ -100,17 +92,16 @@ export default function AttributesPanel({ editorRef }: AttributesPanelProps) {
 }
 
 interface AttributeInputProps {
-  editorRef: React.MutableRefObject<
-    monacoEditor.IStandaloneCodeEditor | undefined
-  >;
   twClass: ITailwindClass;
 }
 
 function AttributeInput({
-  editorRef,
   twClass: { value, sourceCodeLocation },
 }: AttributeInputProps) {
+  const editorRef = useEditorManager((state) => state.editorRef);
+  const highlightCode = useEditorManager((state) => state.highlightCode);
   const inputRef = useRef<HTMLInputElement>(null);
+
   return (
     <div className="flex space-x-2">
       <Input
@@ -143,10 +134,7 @@ function AttributeInput({
         size="icon"
         onClick={() => {
           if (editorRef.current) {
-            selectCode(
-              editorRef.current,
-              sourceCodeLocationToIRange(sourceCodeLocation),
-            );
+            highlightCode(sourceCodeLocationToIRange(sourceCodeLocation));
           }
         }}
       >
