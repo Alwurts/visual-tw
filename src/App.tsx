@@ -24,7 +24,7 @@ function App() {
   const editorRef = useRef<monacoEditor.IStandaloneCodeEditor>();
 
   return (
-    <main className="dark bg-editor-black">
+    <main className="bg-editor-black">
       <nav className="h-[32px] bg-editor-gray-medium px-3 py-1">
         <h1 className="font-bold text-white">
           Visual<span className="text-editor-accent">TW</span>

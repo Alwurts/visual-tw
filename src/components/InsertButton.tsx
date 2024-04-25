@@ -84,7 +84,7 @@ export default function InsertButton({ editorRef }: InsertButtonProps) {
           <PlusIcon className="h-4 w-4 flex-shrink-0" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="dark w-48 p-0">
+      <PopoverContent className="w-48 p-0">
         <Command className="rounded-lg border-red-600 shadow-md">
           {/* <CommandInput placeholder="Search" />
           <CommandEmpty>No results found.</CommandEmpty> */}
