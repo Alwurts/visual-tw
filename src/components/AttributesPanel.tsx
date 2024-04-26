@@ -4,7 +4,6 @@ import { useEditorManager } from "@/hooks/useEditorManager";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { CircleArrowDown, ScanSearch } from "lucide-react";
-import { insertCode } from "@/lib/editor";
 import { sourceCodeLocationToIRange } from "@/lib/dom";
 import {
   categorizeTailwindClasses,
@@ -95,12 +94,13 @@ interface AttributeInputProps {
   twClass: ITailwindClass;
 }
 
-function AttributeInput({
-  twClass: { value, sourceCodeLocation },
-}: AttributeInputProps) {
+function AttributeInput({ twClass }: AttributeInputProps) {
   const editorRef = useEditorManager((state) => state.editorRef);
   const highlightCode = useEditorManager((state) => state.highlightCode);
+  const changeTwClass = useEditorManager((state) => state.changeTwClass);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const selectedElement = useEditorManager((state) => state.selectedElement);
 
   return (
     <div className="flex space-x-2">
@@ -108,38 +108,34 @@ function AttributeInput({
         ref={inputRef}
         className="h-auto px-3 py-0"
         type="text"
-        defaultValue={value}
+        defaultValue={twClass.value}
       />
       <Button
         variant="secondary"
         size="icon"
         onClick={() => {
-          if (inputRef.current) {
+          if (inputRef.current && selectedElement) {
             const inputValue = inputRef.current.value;
-            if (editorRef.current) {
-              insertCode(
-                editorRef.current,
-                sourceCodeLocationToIRange(sourceCodeLocation),
-                inputValue,
-              );
-            }
+            changeTwClass(selectedElement, twClass, inputValue);
           }
         }}
       >
         <CircleArrowDown className="h-4 w-4" />
-        <span className="sr-only">{value}</span>
+        <span className="sr-only">{twClass.value}</span>
       </Button>
       <Button
         variant="secondary"
         size="icon"
+        aria-label="Highlight atribute in code"
         onClick={() => {
           if (editorRef.current) {
-            highlightCode(sourceCodeLocationToIRange(sourceCodeLocation));
+            highlightCode(
+              sourceCodeLocationToIRange(twClass.sourceCodeLocation),
+            );
           }
         }}
       >
         <ScanSearch className="h-4 w-4" />
-        <span className="sr-only">{value}</span>
       </Button>
     </div>
   );

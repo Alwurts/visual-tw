@@ -4,10 +4,7 @@ import { Button } from "./ui/button";
 import { Laptop, Smartphone, Tablet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEditorManager } from "@/hooks/useEditorManager";
-import {
-  EditorNotification,
-  isNotificationElementSelected,
-} from "@/types/EditorManager";
+import { ViewerMessage } from "@/types/EditorManager";
 import ZoomSelect from "./ZoomSelect";
 
 const CodeViewer = () => {
@@ -56,11 +53,9 @@ const CodeViewer = () => {
   }, [screenSize, zoom]);
 
   useEffect(() => {
-    const viewerMessage = ({
-      data: notification,
-    }: MessageEvent<EditorNotification>) => {
-      if (isNotificationElementSelected(notification)) {
-        selectElement(notification.data.uuid);
+    const viewerMessage = ({ data: message }: MessageEvent<ViewerMessage>) => {
+      if (message.type === "viewer-element-selected") {
+        selectElement(message.data.uuid);
       }
     };
 
@@ -68,8 +63,7 @@ const CodeViewer = () => {
     return () => {
       window.removeEventListener("message", viewerMessage);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [selectElement]);
 
   return (
     <div className="flex h-full flex-col">

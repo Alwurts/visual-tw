@@ -15,7 +15,7 @@ function App() {
     [K in TWindowTabs]: boolean;
   }>({
     explorer: true,
-    code: true,
+    monacoEditor: true,
     viewer: true,
     attributes: true,
   });
@@ -49,14 +49,14 @@ function App() {
           <Panel
             minSize={30}
             className={cn({
-              hidden: !openTabs.code,
+              hidden: !openTabs.monacoEditor,
             })}
           >
             <CodeEditor />
           </Panel>
           <PanelResizeHandle
             className={cn("ResizeHandle", {
-              hidden: !openTabs.code,
+              hidden: !openTabs.monacoEditor,
             })}
           />
 

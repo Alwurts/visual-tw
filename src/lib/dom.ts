@@ -1,9 +1,10 @@
-import { Node } from "node_modules/parse5/dist/tree-adapters/default";
+import { Node, Document } from "node_modules/parse5/dist/tree-adapters/default";
 import * as parse5 from "parse5";
 import { v4 as uuidv4 } from "uuid";
 import DEFAULT_HEAD_CODE from "./editor/defaultHeadCode.html?raw";
 import VIEWER_CODE from "./viewer.js?raw";
 import { IRange } from "monaco-editor";
+import { ITailwindClass } from "@/types/Tailwind";
 
 export function parseHTMLString(html: string) {
   const document = parse5.parse(html, {
@@ -82,15 +83,7 @@ export function getElementByUUID(dom: Node, uuid: string): Node | null {
 }
 
 export function elementSourceCodeLocationToIRange(element: Node): IRange {
-  const sourceCodeLocation = element.sourceCodeLocation;
-
-  if (
-    !sourceCodeLocation ||
-    !sourceCodeLocation.startLine ||
-    !sourceCodeLocation.startCol ||
-    !sourceCodeLocation.endLine ||
-    !sourceCodeLocation.endCol
-  ) {
+  if (!element.sourceCodeLocation) {
     return {
       startLineNumber: 0,
       startColumn: 0,
@@ -98,13 +91,7 @@ export function elementSourceCodeLocationToIRange(element: Node): IRange {
       endColumn: 0,
     };
   }
-
-  return {
-    startLineNumber: sourceCodeLocation.startLine,
-    startColumn: sourceCodeLocation.startCol,
-    endLineNumber: sourceCodeLocation.endLine,
-    endColumn: sourceCodeLocation.endCol,
-  };
+  return sourceCodeLocationToIRange(element.sourceCodeLocation);
 }
 
 export function sourceCodeLocationToIRange(sourceCodeLocation: {
@@ -154,13 +141,55 @@ export function getElementsByTagName(dom: Node, tagName: string) {
   return result;
 }
 
-export function getElementAttribute(node: Node, attrName: string) {
+export function getElementAttributeValue(node: Node, attrName: string) {
   if ("attrs" in node) {
     const attr = node.attrs.find((attr) => attr.name === attrName);
     return attr?.value;
   }
 }
 
+export function setElementAttributeValue(
+  node: Node,
+  attrName: string,
+  value: string,
+) {
+  if ("attrs" in node) {
+    const attr = node.attrs.find((attr) => attr.name === attrName);
+    if (attr) {
+      attr.value = value;
+    } else {
+      node.attrs.push({ name: attrName, value });
+    }
+  }
+}
+
 export function getElementVisualTwId(node: Node) {
-  return getElementAttribute(node, "visual-tw-id");
+  return getElementAttributeValue(node, "visual-tw-id");
+}
+
+export function changeElementTWClass(
+  dom: Document,
+  uuid: string,
+  twClass: ITailwindClass,
+  newValue: string,
+) {
+  const node = getElementByUUID(dom, uuid);
+  if (!node) return;
+
+  const classAttribute = getElementAttributeValue(node, "class");
+  if (!classAttribute) return;
+
+  const newClassAttribute = classAttribute.replace(twClass.value, newValue);
+
+  setElementAttributeValue(node, "class", newClassAttribute);
+
+  return dom;
+}
+
+function updateSourceCodeLocation (dom: Node, lin: number, linOffset: number) {
+  if (dom.sourceCodeLocation) {
+    dom.sourceCodeLocation.startLine += lin
+    dom.sourceCodeLocation.endLine += col
+
+  }
 }

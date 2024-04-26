@@ -1,27 +1,41 @@
 import { create } from "zustand";
 
 import * as domTools from "../lib/dom";
+import * as editorTools from "@/lib/editor";
+import * as parse5 from "parse5";
 
 import DEFAULT_EDITOR_CODE from "../lib/editor/defaultEditorCode.html?raw";
 
-import type { Node } from "node_modules/parse5/dist/tree-adapters/default";
+import type {
+  Node,
+  Document,
+} from "node_modules/parse5/dist/tree-adapters/default";
 import { createRef } from "react";
 import type { IRange, editor as monacoEditor } from "monaco-editor";
-import { insertElements } from "@/lib/editor";
 import { elementSourceCodeLocationToIRange } from "../lib/dom";
+import { TWindowTabs } from "@/types/EditorManager";
+import { ITailwindClass } from "@/types/Tailwind";
 
 interface EditorManagerState {
   editorRef: React.MutableRefObject<monacoEditor.IStandaloneCodeEditor | null>;
-  dom: Node;
+  dom: Document;
   serializedDom: string;
   code: string;
   selectedElement: Node | null;
+  codeUpdatedBy: TWindowTabs | null;
   updateCode: (newCode: string) => void;
   selectElement: (uuid: string) => void;
   highlightCode: (range: IRange) => void;
-  insertHtmlElement: (
+  insertCode: (code: string, range: IRange, insertedBy?: TWindowTabs) => void;
+  insertHtmlElementCode: (
     type: "h1" | "h2" | "h3" | "div" | "span" | "p",
     range: IRange,
+    insertedBy?: TWindowTabs,
+  ) => void;
+  changeTwClass: (
+    node: Node,
+    twClass: ITailwindClass,
+    newValue: string,
   ) => void;
 }
 
@@ -34,9 +48,22 @@ export const useEditorManager = create<EditorManagerState>((set) => {
     serializedDom: initialParsedCode.serializedDom,
     code: initialParsedCode.code,
     selectedElement: null,
+    codeUpdatedBy: null,
     updateCode: (newCode) => {
-      const { code, dom, serializedDom } = domTools.parseHTMLString(newCode);
-      set({ code, dom, serializedDom, selectedElement: null });
+      set(({ codeUpdatedBy }) => {
+        const { dom, code, serializedDom } = domTools.parseHTMLString(newCode);
+        if (codeUpdatedBy === "attributes") {
+          return { codeUpdatedBy: null };
+        }
+        console.log("updateCode", dom);
+        return {
+          dom,
+          serializedDom,
+          code,
+          codeUpdatedBy: null,
+          selectedElement: null,
+        };
+      });
     },
     selectElement: (uuid) => {
       set(({ dom }) => {
@@ -58,10 +85,43 @@ export const useEditorManager = create<EditorManagerState>((set) => {
         column: range.endColumn,
       });
     },
-    insertHtmlElement: (type, range) => {
+    insertCode: (code, range, insertedBy) => {
       if (!createEditorManager.editorRef.current) return;
       const editor = createEditorManager.editorRef.current;
-      insertElements(editor, type, range);
+      if (insertedBy) {
+        set({ codeUpdatedBy: insertedBy });
+      }
+      editorTools.insertCode(editor, range, code);
+    },
+    insertHtmlElementCode: (type, range, insertedBy) => {
+      if (!createEditorManager.editorRef.current) return;
+      const editor = createEditorManager.editorRef.current;
+      if (insertedBy) {
+        set({ codeUpdatedBy: insertedBy });
+      }
+      editorTools.insertElements(editor, type, range);
+    },
+    changeTwClass: (node, twClass, newValue) => {
+      const nodeUUID = domTools.getElementVisualTwId(node);
+      if (!nodeUUID) return;
+
+      createEditorManager.insertCode(
+        newValue,
+        domTools.sourceCodeLocationToIRange(twClass.sourceCodeLocation),
+        "attributes",
+      );
+      set(({ dom }) => {
+        const newDom = domTools.changeElementTWClass(
+          dom,
+          nodeUUID,
+          twClass,
+          newValue,
+        );
+
+        const newSerializedDom = parse5.serialize(dom);
+
+        return { dom: newDom, serializedDom: newSerializedDom };
+      });
     },
   };
   return createEditorManager;

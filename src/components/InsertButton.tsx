@@ -16,7 +16,7 @@ import { useState } from "react";
 export default function InsertButton() {
   const selectedElement = useEditorManager((state) => state.selectedElement);
   const insertHtmlElement = useEditorManager(
-    (state) => state.insertHtmlElement,
+    (state) => state.insertHtmlElementCode,
   );
 
   const [open, setOpen] = useState(false);
