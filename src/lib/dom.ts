@@ -186,10 +186,10 @@ export function changeElementTWClass(
   return dom;
 }
 
-function updateSourceCodeLocation (dom: Node, lin: number, linOffset: number) {
+/* function updateSourceCodeLocation (dom: Node, lin: number, linOffset: number) {
   if (dom.sourceCodeLocation) {
     dom.sourceCodeLocation.startLine += lin
     dom.sourceCodeLocation.endLine += col
 
   }
-}
+} */
