@@ -26,7 +26,7 @@ export default function BgColorPicker({ twClass }: BgColorPickerProps) {
           changeTwClass(twClass, newValue);
         }}
       >
-        <SelectTrigger className="text-white">
+        <SelectTrigger className="bg-editor-gray-dark text-white">
           <SelectValue placeholder="Select a color" />
         </SelectTrigger>
         <SelectContent>

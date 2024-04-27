@@ -26,8 +26,21 @@ const CodeEditor = () => {
     }
   }
 
+  //const debouncedUpdateCode = debounce(updateCode, 200);
+
   const handleEditorChange = (code: string | undefined) => {
     if (code) {
+      /* switch (codeUpdatedBy) {
+        case "attributes":
+        case "explorer":
+        case "viewer":
+          console.log("Without debounce");
+          updateCode(code);
+          break;
+        default:
+          console.log("With debounce");
+          debouncedUpdateCode(code);
+      } */
       updateCode(code);
     }
   };

@@ -14,7 +14,7 @@ export default function HighlightCodeButton({
 
   return (
     <Button
-      variant="secondary"
+      variant="tool"
       size="icon"
       aria-label="Highlight atribute in code"
       onClick={() => {
