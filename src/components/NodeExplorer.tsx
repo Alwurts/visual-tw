@@ -38,7 +38,7 @@ export default function NodeExplorer() {
             if ("attrs" in node && "childNodes" in node) {
               return (
                 <NodeCollapsible
-                  key={node.nodeName + index}
+                  key={`${node.nodeName}-${1}-${index}`}
                   level={1}
                   node={node}
                 />
@@ -112,7 +112,7 @@ function NodeCollapsible({ node, level }: { node: Node; level: number }) {
               return (
                 <NodeCollapsible
                   level={level + 1}
-                  key={child.nodeName + index}
+                  key={`${child.nodeName}-${level}-${index}`}
                   node={child}
                 />
               );

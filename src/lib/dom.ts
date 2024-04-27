@@ -3,7 +3,7 @@ import * as parse5 from "parse5";
 import DEFAULT_HEAD_CODE from "./editor/defaultHeadCode.html?raw";
 import VIEWER_CODE from "./viewer.js?raw";
 import { IRange } from "monaco-editor";
-import { ITailwindClass } from "@/types/Tailwind";
+import { ITailwindClass } from "@/types/tailwind/base";
 
 export function parseHTMLString(html: string) {
   const document = parse5.parse(html, {

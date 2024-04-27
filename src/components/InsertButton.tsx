@@ -51,13 +51,18 @@ export default function InsertButton() {
         insertHtmlElement(
           type,
           createInsertParams(selectedLocation.endLine, selectedLocation.endCol),
+          "explorer",
         );
       }
     } else {
       const { endLine, endCol } =
         domExplorer?.[domExplorer.length - 1]?.sourceCodeLocation ?? {};
       if (endLine && endCol) {
-        insertHtmlElement(type, createInsertParams(endLine, endCol));
+        insertHtmlElement(
+          type,
+          createInsertParams(endLine, endCol),
+          "explorer",
+        );
       }
     }
 

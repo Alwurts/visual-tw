@@ -91,6 +91,16 @@ type StylesBorders =
 
 type StylesEffects = "Box_Shadow" | "Opacity";
 
+export type SubCategoryNames =
+  | StylesLayout
+  | StylesFlexboxAndGrid
+  | StylesSpacing
+  | StylesSizing
+  | StylesTypography
+  | StylesBackgrounds
+  | StylesBorders
+  | StylesEffects;
+
 export type TailwindClassifierPatterns = {
   Layout: {
     [key in StylesLayout]: RegExp;
@@ -121,7 +131,7 @@ export type TailwindClassifierPatterns = {
 export interface ITailwindClass {
   value: string;
   category?: CategoryName;
-  subcategory?: string;
+  subcategory?: SubCategoryNames;
   sourceCodeLocation: {
     startLine: number;
     startCol: number;

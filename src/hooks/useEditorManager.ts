@@ -10,7 +10,7 @@ import { createRef } from "react";
 import type { IRange, editor as monacoEditor } from "monaco-editor";
 import { elementSourceCodeLocationToIRange } from "../lib/dom";
 import { TWindowTabs } from "@/types/EditorManager";
-import { ITailwindClass } from "@/types/Tailwind";
+import { ITailwindClass } from "@/types/tailwind/base";
 
 interface EditorManagerState {
   editorRef: React.MutableRefObject<monacoEditor.IStandaloneCodeEditor | null>;
@@ -22,11 +22,11 @@ interface EditorManagerState {
   updateCode: (newCode: string) => void;
   selectElement: (uuid: string) => void;
   highlightCode: (range: IRange) => void;
-  insertCode: (code: string, range: IRange, insertedBy?: TWindowTabs) => void;
+  insertCode: (code: string, range: IRange, insertedBy: TWindowTabs) => void;
   insertHtmlElementCode: (
     type: "h1" | "h2" | "h3" | "div" | "span" | "p",
     range: IRange,
-    insertedBy?: TWindowTabs,
+    insertedBy: TWindowTabs,
   ) => void;
   changeTwClass: (twClass: ITailwindClass, newValue: string) => void;
 }

@@ -1,9 +1,10 @@
 import {
   CategoryName,
   ITailwindClass,
+  SubCategoryNames,
   TailwindClassesClassified,
   TailwindClassifierPatterns,
-} from "@/types/Tailwind";
+} from "@/types/tailwind/base";
 
 const tailwindPatterns: TailwindClassifierPatterns = {
   Layout: {
@@ -90,8 +91,7 @@ const tailwindPatterns: TailwindClassifierPatterns = {
   },
   Backgrounds: {
     Background_Attachment: /\b(bg-fixed|bg-local|bg-scroll)\b/g,
-    Background_Color:
-      /\b(bg-transparent|bg-current|bg-black|bg-white|bg-gray|bg-red|bg-yellow|bg-green|bg-blue|bg-indigo|bg-purple|bg-pink)\b/g,
+    Background_Color: /\b(bg-[a-zA-Z]+(?:-\d+)?)\b/g,
     Background_Opacity: /\b(bg-opacity-[0-9]+)\b/g,
     Background_Position:
       /\b(bg-bottom|bg-center|bg-left|bg-left-bottom|bg-left-top|bg-right|bg-right-bottom|bg-right-top|bg-top)\b/g,
@@ -157,12 +157,12 @@ export function classAttributeToTwClasses(classAttribute: {
 // Function to categorize classes
 export function categorizeTailwindClasses(tailwindClasses: ITailwindClass[]) {
   const categorizedClasses = {
+    Backgrounds: {},
     Layout: {},
     Flexbox_and_Grid: {},
     Spacing: {},
     Sizing: {},
     Typography: {},
-    Backgrounds: {},
     Borders: {},
     Effects: {},
     Other: {},
@@ -173,17 +173,18 @@ export function categorizeTailwindClasses(tailwindClasses: ITailwindClass[]) {
     Object.entries(tailwindPatterns).forEach(([category, subcategories]) => {
       const categoryName = category as CategoryName;
       Object.entries(subcategories).forEach(([subcategory, pattern]) => {
+        const subCategoryName = subcategory as SubCategoryNames;
         if (categoryName !== "Other" && pattern.test(tailwindClass.value)) {
           if (!categorizedClasses[categoryName]) {
             categorizedClasses[categoryName] = {};
           }
-          if (!categorizedClasses[categoryName][subcategory]) {
-            categorizedClasses[categoryName][subcategory] = [];
+          if (!categorizedClasses[categoryName][subCategoryName]) {
+            categorizedClasses[categoryName][subCategoryName] = [];
           }
-          categorizedClasses[categoryName][subcategory].push({
+          categorizedClasses[categoryName][subCategoryName].push({
             ...tailwindClass,
             category: categoryName,
-            subcategory,
+            subcategory: subCategoryName,
           });
           tailwindClassCategoryFound = true;
         }

@@ -1,23 +1,25 @@
 import { Separator } from "./ui/separator";
-import { useMemo, useRef } from "react";
+import { useMemo } from "react";
 import { useEditorManager } from "@/hooks/useEditorManager";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { CircleArrowDown, ScanSearch } from "lucide-react";
-import { getElementByUUID, sourceCodeLocationToIRange } from "@/lib/dom";
+import { getElementByUUID } from "@/lib/dom";
 import {
   categorizeTailwindClasses,
   classAttributeToTwClasses,
 } from "@/lib/tailwind";
-import { ITailwindClass } from "@/types/Tailwind";
+import Classifier from "./tw/Classifier";
 
 export default function AttributesPanel() {
-  const selectedElement = useEditorManager(({ dom, selectedElementTWId }) => {
-    if (!selectedElementTWId) return null;
+  const selectedElementParsed = useEditorManager(
+    ({ dom, selectedElementTWId }) => {
+      if (!selectedElementTWId) return null;
 
-    const selectedElement = getElementByUUID(dom, selectedElementTWId);
-    return selectedElement;
-  });
+      const selectedElement = getElementByUUID(dom, selectedElementTWId);
+      return { selectedElement, selectedElementTWId };
+    },
+  );
+
+  const selectedElement = selectedElementParsed?.selectedElement;
+  const selectedElementTWId = selectedElementParsed?.selectedElementTWId;
 
   const twClassesCategorized = useMemo(() => {
     if (selectedElement && "attrs" in selectedElement) {
@@ -52,26 +54,34 @@ export default function AttributesPanel() {
         <div className="flex flex-grow flex-col space-y-2 overflow-y-auto p-2 scrollbar scrollbar-thumb-neutral-700">
           {twClassesCategorized &&
             Object.entries(twClassesCategorized).map(
-              ([categoryName, tailwindClasses], index) => {
-                if (Object.keys(tailwindClasses).length === 0) return null;
+              ([categoryName, tailwindClassesSubCategories]) => {
+                if (Object.keys(tailwindClassesSubCategories).length === 0) {
+                  return null;
+                }
                 return (
-                  <div key={index + categoryName} className="space-y-2">
+                  <div
+                    key={`${selectedElementTWId}-${categoryName}`}
+                    className="space-y-2"
+                  >
                     <h4 className="text-xs font-semibold uppercase text-white">
                       {categoryName === "Other"
                         ? "Other classes"
                         : categoryName.split("_").join(" ")}
                     </h4>
                     <div className="mx-1 flex flex-col space-y-2">
-                      {Object.entries(tailwindClasses).map(
-                        ([subcategory, twClasses], index) => (
-                          <div key={index + subcategory} className="space-y-1">
+                      {Object.entries(tailwindClassesSubCategories).map(
+                        ([subcategory, twClasses]) => (
+                          <div
+                            key={`${selectedElementTWId}-${subcategory}`}
+                            className="space-y-1"
+                          >
                             <h5 className="text-xs font-normal text-white">
                               {subcategory.split("_").join(" ")}
                             </h5>
                             <div className="flex flex-col space-y-2">
-                              {twClasses.map((twClass, index) => (
-                                <AttributeInput
-                                  key={index + twClass.value}
+                              {twClasses.map((twClass) => (
+                                <Classifier
+                                  key={`${selectedElementTWId}-${twClass.value}`}
                                   twClass={twClass}
                                 />
                               ))}
@@ -91,55 +101,6 @@ export default function AttributesPanel() {
           <span>No element selected</span>
         </div>
       )}
-    </div>
-  );
-}
-
-interface AttributeInputProps {
-  twClass: ITailwindClass;
-}
-
-function AttributeInput({ twClass }: AttributeInputProps) {
-  const editorRef = useEditorManager((state) => state.editorRef);
-  const highlightCode = useEditorManager((state) => state.highlightCode);
-  const changeTwClass = useEditorManager((state) => state.changeTwClass);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  return (
-    <div className="flex space-x-2">
-      <Input
-        ref={inputRef}
-        className="h-auto px-3 py-0"
-        type="text"
-        defaultValue={twClass.value}
-      />
-      <Button
-        variant="secondary"
-        size="icon"
-        onClick={() => {
-          if (inputRef.current) {
-            const inputValue = inputRef.current.value;
-            changeTwClass(twClass, inputValue);
-          }
-        }}
-      >
-        <CircleArrowDown className="h-4 w-4" />
-        <span className="sr-only">{twClass.value}</span>
-      </Button>
-      <Button
-        variant="secondary"
-        size="icon"
-        aria-label="Highlight atribute in code"
-        onClick={() => {
-          if (editorRef.current) {
-            highlightCode(
-              sourceCodeLocationToIRange(twClass.sourceCodeLocation),
-            );
-          }
-        }}
-      >
-        <ScanSearch className="h-4 w-4" />
-      </Button>
     </div>
   );
 }
