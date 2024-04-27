@@ -11,24 +11,24 @@ export function parseHTMLString(html: string) {
   });
 
   traverseDocument(document, (node) => {
-    if (node.sourceCodeLocation) {
-      const nodeIdentifier = `${node.sourceCodeLocation.startLine}-${node.sourceCodeLocation.startCol}`;
+    if ("attrs" in node) {
+      if (node.tagName === "head") {
+        const defaultHeadNode = parse5.parseFragment(DEFAULT_HEAD_CODE);
+        node.childNodes = defaultHeadNode.childNodes;
 
-      if ("attrs" in node) {
+        const scriptNode = parse5.parseFragment(
+          `<script>${VIEWER_CODE}</script>`,
+        );
+        node.childNodes.push(scriptNode.childNodes[0]);
+      }
+
+      if (node.sourceCodeLocation) {
+        const nodeIdentifier = `${node.sourceCodeLocation.startLine}-${node.sourceCodeLocation.startCol}`;
+
         node.attrs.push({
           name: "visual-tw-id",
           value: nodeIdentifier,
         });
-
-        if (node.tagName === "head") {
-          const defaultHeadNode = parse5.parseFragment(DEFAULT_HEAD_CODE);
-          node.childNodes = defaultHeadNode.childNodes;
-
-          const scriptNode = parse5.parseFragment(
-            `<script>${VIEWER_CODE}</script>`,
-          );
-          node.childNodes.push(scriptNode.childNodes[0]);
-        }
       }
     }
   });
