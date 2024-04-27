@@ -183,13 +183,92 @@ export function changeElementTWClass(
 
   setElementAttributeValue(node, "class", newClassAttribute);
 
-  return dom;
+  updateSourceCodeLocation(dom, twClass, newValue);
+
+  return { dom, node };
 }
 
-/* function updateSourceCodeLocation (dom: Node, lin: number, linOffset: number) {
-  if (dom.sourceCodeLocation) {
-    dom.sourceCodeLocation.startLine += lin
-    dom.sourceCodeLocation.endLine += col
+function updateSourceCodeLocation(
+  dom: Node,
+  twClass: ITailwindClass,
+  newValue: string,
+) {
+  const changeFromLine = twClass.sourceCodeLocation.endLine;
+  const changeFromCol = twClass.sourceCodeLocation.endCol;
 
-  }
-} */
+  const offset = newValue.length - twClass.value.length;
+  console.log("Change", { changeFromLine, changeFromCol, offset });
+  const modifyDom = (node: Node) => {
+    const nodeSourceCodeLocation = node.sourceCodeLocation;
+
+    if (nodeSourceCodeLocation) {
+      /* console.log("Has source code location", nodeSourceCodeLocation); */
+      if (nodeSourceCodeLocation.startLine === changeFromLine) {
+        if (nodeSourceCodeLocation.startCol > changeFromCol) {
+          nodeSourceCodeLocation.startCol += offset;
+        }
+      }
+
+      if (nodeSourceCodeLocation.endLine === changeFromLine) {
+        if (nodeSourceCodeLocation.endCol > changeFromCol) {
+          nodeSourceCodeLocation.endCol += offset;
+        }
+      }
+
+      if ("attrs" in nodeSourceCodeLocation && nodeSourceCodeLocation.attrs) {
+        Object.values(nodeSourceCodeLocation.attrs).forEach(
+          (attrSourceCodeLocation) => {
+            if (attrSourceCodeLocation.startLine === changeFromLine) {
+              if (attrSourceCodeLocation.startCol > changeFromCol) {
+                attrSourceCodeLocation.startCol += offset;
+              }
+            }
+
+            if (attrSourceCodeLocation.endLine === changeFromLine) {
+              if (attrSourceCodeLocation.endCol > changeFromCol) {
+                attrSourceCodeLocation.endCol += offset;
+              }
+            }
+          },
+        );
+
+        if (nodeSourceCodeLocation.startTag) {
+          const startTagSourceCodeLocation = nodeSourceCodeLocation.startTag;
+          if (startTagSourceCodeLocation.startLine === changeFromLine) {
+            if (startTagSourceCodeLocation.startCol > changeFromCol) {
+              startTagSourceCodeLocation.startCol += offset;
+            }
+          }
+
+          if (startTagSourceCodeLocation.endLine === changeFromLine) {
+            if (startTagSourceCodeLocation.endCol > changeFromCol) {
+              startTagSourceCodeLocation.endCol += offset;
+            }
+          }
+        }
+
+        if (nodeSourceCodeLocation.endTag) {
+          const endTagSourceCodeLocation = nodeSourceCodeLocation.endTag;
+          if (endTagSourceCodeLocation.startLine === changeFromLine) {
+            if (endTagSourceCodeLocation.startCol > changeFromCol) {
+              endTagSourceCodeLocation.startCol += offset;
+            }
+          }
+
+          if (endTagSourceCodeLocation.endLine === changeFromLine) {
+            if (endTagSourceCodeLocation.endCol > changeFromCol) {
+              endTagSourceCodeLocation.endCol += offset;
+            }
+          }
+        }
+      }
+    }
+
+    if ("childNodes" in node) {
+      //console.log("Has child nodes", node.childNodes);
+      node.childNodes.forEach(modifyDom);
+    }
+  };
+
+  modifyDom(dom);
+}

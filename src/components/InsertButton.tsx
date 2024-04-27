@@ -74,7 +74,6 @@ export default function InsertButton() {
             <CommandGroup heading="Elements">
               <CommandItem
                 onSelect={() => {
-                  console.log("click");
                   handleInsertClick("div");
                 }}
               >

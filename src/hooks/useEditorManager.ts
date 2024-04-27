@@ -102,6 +102,7 @@ export const useEditorManager = create<EditorManagerState>((set) => {
       editorTools.insertElements(editor, type, range);
     },
     changeTwClass: (node, twClass, newValue) => {
+      set({ selectedElement: null });
       const nodeUUID = domTools.getElementVisualTwId(node);
       if (!nodeUUID) return;
 
@@ -111,16 +112,24 @@ export const useEditorManager = create<EditorManagerState>((set) => {
         "attributes",
       );
       set(({ dom }) => {
-        const newDom = domTools.changeElementTWClass(
+        const changedElements = domTools.changeElementTWClass(
           dom,
           nodeUUID,
           twClass,
           newValue,
         );
 
+        if (!changedElements) return {};
+
+        const { dom: newDom, node: newNode } = changedElements;
+
         const newSerializedDom = parse5.serialize(dom);
 
-        return { dom: newDom, serializedDom: newSerializedDom };
+        return {
+          dom: newDom,
+          serializedDom: newSerializedDom,
+          selectedElement: newNode,
+        };
       });
     },
   };
