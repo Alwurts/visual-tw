@@ -1,6 +1,5 @@
 import { Node, Document } from "node_modules/parse5/dist/tree-adapters/default";
 import * as parse5 from "parse5";
-import { v4 as uuidv4 } from "uuid";
 import DEFAULT_HEAD_CODE from "./editor/defaultHeadCode.html?raw";
 import VIEWER_CODE from "./viewer.js?raw";
 import { IRange } from "monaco-editor";
@@ -12,24 +11,24 @@ export function parseHTMLString(html: string) {
   });
 
   traverseDocument(document, (node) => {
-    const nodeIdentifier = uuidv4();
+    if (node.sourceCodeLocation) {
+      const nodeIdentifier = `${node.sourceCodeLocation.startLine}-${node.sourceCodeLocation.startCol}`;
 
-    if ("attrs" in node) {
-      node.attrs.push({
-        name: "visual-tw-id",
-        value: nodeIdentifier,
-      });
+      if ("attrs" in node) {
+        node.attrs.push({
+          name: "visual-tw-id",
+          value: nodeIdentifier,
+        });
 
-      if (node.tagName === "head") {
-        const defaultHeadNode = parse5.parseFragment(DEFAULT_HEAD_CODE);
-        node.childNodes = defaultHeadNode.childNodes;
-      }
+        if (node.tagName === "head") {
+          const defaultHeadNode = parse5.parseFragment(DEFAULT_HEAD_CODE);
+          node.childNodes = defaultHeadNode.childNodes;
 
-      if (node.tagName === "head") {
-        const scriptNode = parse5.parseFragment(
-          `<script>${VIEWER_CODE}</script>`,
-        );
-        node.childNodes.push(scriptNode.childNodes[0]);
+          const scriptNode = parse5.parseFragment(
+            `<script>${VIEWER_CODE}</script>`,
+          );
+          node.childNodes.push(scriptNode.childNodes[0]);
+        }
       }
     }
   });

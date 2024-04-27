@@ -8,13 +8,18 @@ import {
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { useEditorManager } from "@/hooks/useEditorManager";
-import { getElementsByTagName } from "@/lib/dom";
+import { getElementByUUID, getElementsByTagName } from "@/lib/dom";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Command, CommandGroup, CommandItem, CommandList } from "./ui/command";
 import { useState } from "react";
 
 export default function InsertButton() {
-  const selectedElement = useEditorManager((state) => state.selectedElement);
+  const selectedElement = useEditorManager(({ dom, selectedElementTWId }) => {
+    if (!selectedElementTWId) return null;
+
+    const selectedElement = getElementByUUID(dom, selectedElementTWId);
+    return selectedElement;
+  });
   const insertHtmlElement = useEditorManager(
     (state) => state.insertHtmlElementCode,
   );

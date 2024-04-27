@@ -60,11 +60,9 @@ function NodeCollapsible({ node, level }: { node: Node; level: number }) {
 
   const nodeUuid = useMemo(() => getElementVisualTwId(node), [node]);
 
-  const selectedElement = useEditorManager((state) => state.selectedElement);
-  const selectedElementUuid = useMemo(() => {
-    if (!selectedElement) return;
-    return getElementVisualTwId(selectedElement);
-  }, [selectedElement]);
+  const selectedElementTWId = useEditorManager(
+    (state) => state.selectedElementTWId,
+  );
 
   const selectElement = useEditorManager((state) => state.selectElement);
 
@@ -78,7 +76,7 @@ function NodeCollapsible({ node, level }: { node: Node; level: number }) {
           }}
           className={cn(
             "flex h-full w-full justify-start space-x-1 rounded-none p-0 text-sm font-normal text-white hover:text-white",
-            selectedElement && selectedElementUuid === nodeUuid
+            selectedElementTWId && selectedElementTWId === nodeUuid
               ? "bg-editor-accent dark:hover:bg-editor-accent"
               : "dark:hover:bg-editor-gray-medium",
           )}

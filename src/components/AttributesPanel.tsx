@@ -4,7 +4,7 @@ import { useEditorManager } from "@/hooks/useEditorManager";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { CircleArrowDown, ScanSearch } from "lucide-react";
-import { sourceCodeLocationToIRange } from "@/lib/dom";
+import { getElementByUUID, sourceCodeLocationToIRange } from "@/lib/dom";
 import {
   categorizeTailwindClasses,
   classAttributeToTwClasses,
@@ -12,7 +12,12 @@ import {
 import { ITailwindClass } from "@/types/Tailwind";
 
 export default function AttributesPanel() {
-  const selectedElement = useEditorManager((state) => state.selectedElement);
+  const selectedElement = useEditorManager(({ dom, selectedElementTWId }) => {
+    if (!selectedElementTWId) return null;
+
+    const selectedElement = getElementByUUID(dom, selectedElementTWId);
+    return selectedElement;
+  });
 
   const twClassesCategorized = useMemo(() => {
     if (selectedElement && "attrs" in selectedElement) {
@@ -100,8 +105,6 @@ function AttributeInput({ twClass }: AttributeInputProps) {
   const changeTwClass = useEditorManager((state) => state.changeTwClass);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const selectedElement = useEditorManager((state) => state.selectedElement);
-
   return (
     <div className="flex space-x-2">
       <Input
@@ -114,9 +117,9 @@ function AttributeInput({ twClass }: AttributeInputProps) {
         variant="secondary"
         size="icon"
         onClick={() => {
-          if (inputRef.current && selectedElement) {
+          if (inputRef.current) {
             const inputValue = inputRef.current.value;
-            changeTwClass(selectedElement, twClass, inputValue);
+            changeTwClass(twClass, inputValue);
           }
         }}
       >
