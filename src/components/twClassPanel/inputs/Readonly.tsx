@@ -1,6 +1,6 @@
 import { ITailwindClass } from "@/types/tailwind/base";
 import { sourceCodeLocationToIRange } from "@/lib/dom";
-import HighlightCodeButton from "../buttons/HighlightCodeButton";
+import HighlightCodeButton from "../../buttons/HighlightCodeButton";
 
 export default function Default({ twClass }: { twClass: ITailwindClass }) {
   return (

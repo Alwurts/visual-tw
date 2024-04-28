@@ -2,7 +2,6 @@ import {
   CategoryName,
   ITailwindClass,
   SubCategoryNames,
-  TailwindClassesClassified,
   TailwindClassifierPatterns,
 } from "@/types/tailwind/base";
 
@@ -142,7 +141,7 @@ export function classAttributeToTwClasses(classAttribute: {
     const endPosition = startPosition + className.length;
     currentIndex = endPosition + 1;
 
-    return {
+    let classWithCodeLocation = {
       value: className,
       sourceCodeLocation: {
         startLine: classAttribute.sourceCodeLocation.startLine,
@@ -150,60 +149,32 @@ export function classAttributeToTwClasses(classAttribute: {
         endLine: classAttribute.sourceCodeLocation.endLine,
         endCol: classAttribute.sourceCodeLocation.startCol + endPosition,
       },
-    };
-  });
-}
+    } as ITailwindClass;
 
-// Function to categorize classes
-export function categorizeTailwindClasses(tailwindClasses: ITailwindClass[]) {
-  const categorizedClasses = {
-    Backgrounds: {},
-    Layout: {},
-    Flexbox_and_Grid: {},
-    Spacing: {},
-    Sizing: {},
-    Typography: {},
-    Borders: {},
-    Effects: {},
-    Other: {},
-  } as TailwindClassesClassified;
-
-  tailwindClasses.forEach((tailwindClass) => {
     let tailwindClassCategoryFound = false;
-    Object.entries(tailwindPatterns).forEach(([category, subcategories]) => {
-      const categoryName = category as CategoryName;
-      Object.entries(subcategories).forEach(([subcategory, pattern]) => {
-        const subCategoryName = subcategory as SubCategoryNames;
-        if (categoryName !== "Other" && pattern.test(tailwindClass.value)) {
-          if (!categorizedClasses[categoryName]) {
-            categorizedClasses[categoryName] = {};
-          }
-          if (!categorizedClasses[categoryName][subCategoryName]) {
-            categorizedClasses[categoryName][subCategoryName] = [];
-          }
-          categorizedClasses[categoryName][subCategoryName].push({
-            ...tailwindClass,
-            category: categoryName,
-            subcategory: subCategoryName,
-          });
+    Object.entries(tailwindPatterns).some(([category, subcategories]) => {
+      return Object.entries(subcategories).some(([subcategory, pattern]) => {
+        if (pattern.test(classWithCodeLocation.value)) {
           tailwindClassCategoryFound = true;
+          classWithCodeLocation = {
+            ...classWithCodeLocation,
+            category: category as CategoryName,
+            subcategory: subcategory as SubCategoryNames,
+          };
+          return true;
         }
+        return false;
       });
     });
 
     if (!tailwindClassCategoryFound) {
-      if (!categorizedClasses.Other) {
-        categorizedClasses.Other = {};
-      }
-      if (!categorizedClasses.Other[tailwindClass.value]) {
-        categorizedClasses.Other[tailwindClass.value] = [];
-      }
-      categorizedClasses.Other[tailwindClass.value].push({
-        ...tailwindClass,
+      return {
+        ...classWithCodeLocation,
         category: "Other",
-      });
+        subcategory: "Other",
+      };
     }
-  });
 
-  return categorizedClasses;
+    return classWithCodeLocation;
+  });
 }

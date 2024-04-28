@@ -99,7 +99,8 @@ export type SubCategoryNames =
   | StylesTypography
   | StylesBackgrounds
   | StylesBorders
-  | StylesEffects;
+  | StylesEffects
+  | "Other";
 
 export type TailwindClassifierPatterns = {
   Layout: {
@@ -130,8 +131,8 @@ export type TailwindClassifierPatterns = {
 
 export interface ITailwindClass {
   value: string;
-  category?: CategoryName;
-  subcategory?: SubCategoryNames;
+  category: CategoryName;
+  subcategory: SubCategoryNames;
   sourceCodeLocation: {
     startLine: number;
     startCol: number;
