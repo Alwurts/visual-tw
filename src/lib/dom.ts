@@ -196,12 +196,10 @@ function updateSourceCodeLocation(
   const changeFromCol = twClass.sourceCodeLocation.endCol;
 
   const offset = newValue.length - twClass.value.length;
-  console.log("Change", { changeFromLine, changeFromCol, offset });
   const modifyDom = (node: Node) => {
     const nodeSourceCodeLocation = node.sourceCodeLocation;
 
     if (nodeSourceCodeLocation) {
-      /* console.log("Has source code location", nodeSourceCodeLocation); */
       if (nodeSourceCodeLocation.startLine === changeFromLine) {
         if (nodeSourceCodeLocation.startCol > changeFromCol) {
           nodeSourceCodeLocation.startCol += offset;
@@ -264,7 +262,6 @@ function updateSourceCodeLocation(
     }
 
     if ("childNodes" in node) {
-      //console.log("Has child nodes", node.childNodes);
       node.childNodes.forEach(modifyDom);
     }
   };

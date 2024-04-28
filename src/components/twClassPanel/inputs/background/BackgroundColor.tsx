@@ -10,13 +10,13 @@ import { useEditorManager } from "@/hooks/useEditorManager";
 import { sourceCodeLocationToIRange } from "@/lib/dom";
 import { cn } from "@/lib/utils";
 import { ITailwindClass } from "@/types/tailwind/base";
-import bgNames from "@/types/tailwind/bg-";
+import bgNames from "@/types/tailwind/backgroundColor";
 
-interface BgColorPickerProps {
+interface BackgroundColorProps {
   twClass: ITailwindClass;
 }
 
-export default function BgColorPicker({ twClass }: BgColorPickerProps) {
+export default function BackgroundColor({ twClass }: BackgroundColorProps) {
   const changeTwClass = useEditorManager((state) => state.changeTwClass);
   return (
     <div className="flex space-x-1">

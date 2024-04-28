@@ -12,8 +12,15 @@ import { getElementByUUID, getElementsByTagName } from "@/lib/dom";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Command, CommandGroup, CommandItem, CommandList } from "../ui/command";
 import { useState } from "react";
+import { TWindowTabs } from "@/types/EditorManager";
 
-export default function InsertButton() {
+interface InsertHTMLElementButtonProps {
+  insertedBy: TWindowTabs;
+}
+
+export default function InsertHTMLElementButton({
+  insertedBy,
+}: InsertHTMLElementButtonProps) {
   const selectedElement = useEditorManager(({ dom, selectedElementTWId }) => {
     if (!selectedElementTWId) return null;
 
@@ -51,7 +58,7 @@ export default function InsertButton() {
         insertHtmlElement(
           type,
           createInsertParams(selectedLocation.endLine, selectedLocation.endCol),
-          "explorer",
+          insertedBy,
         );
       }
     } else {
@@ -61,7 +68,7 @@ export default function InsertButton() {
         insertHtmlElement(
           type,
           createInsertParams(endLine, endCol),
-          "explorer",
+          insertedBy,
         );
       }
     }

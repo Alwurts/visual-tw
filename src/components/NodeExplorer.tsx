@@ -11,7 +11,7 @@ import { Separator } from "./ui/separator";
 import { getElementVisualTwId, getElementsByTagName } from "@/lib/dom";
 import { cn } from "@/lib/utils";
 import { useEditorManager } from "@/hooks/useEditorManager";
-import InsertButton from "./buttons/InsertButton";
+import InsertHTMLElementButton from "./buttons/InsertHTMLElementButton";
 
 export default function NodeExplorer() {
   const domExplorer = useEditorManager(({ dom }) => {
@@ -30,7 +30,7 @@ export default function NodeExplorer() {
       <Separator className="bg-editor-gray-light" />
       <div className="flex items-center justify-between space-y-1 px-3 py-1">
         <h3 className="text-xs font-semibold uppercase text-white">Document</h3>
-        <InsertButton />
+        <InsertHTMLElementButton insertedBy="explorer" />
       </div>
       {domExplorer ? (
         <div className="flex-grow overflow-y-auto scrollbar scrollbar-thumb-neutral-700">

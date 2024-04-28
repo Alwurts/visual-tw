@@ -1,14 +1,3 @@
-export type CategoryName =
-  | "Layout"
-  | "Flexbox_and_Grid"
-  | "Spacing"
-  | "Sizing"
-  | "Typography"
-  | "Backgrounds"
-  | "Borders"
-  | "Effects"
-  | "Other";
-
 type StylesLayout =
   | "Container"
   | "Box_Sizing"
@@ -102,30 +91,20 @@ export type SubCategoryNames =
   | StylesEffects
   | "Other";
 
-export type TailwindClassifierPatterns = {
-  Layout: {
-    [key in StylesLayout]: RegExp;
-  };
-  Flexbox_and_Grid: {
-    [key in StylesFlexboxAndGrid]: RegExp;
-  };
-  Spacing: {
-    [key in StylesSpacing]: RegExp;
-  };
-  Sizing: {
-    [key in StylesSizing]: RegExp;
-  };
-  Typography: {
-    [key in StylesTypography]: RegExp;
-  };
-  Backgrounds: {
-    [key in StylesBackgrounds]: RegExp;
-  };
-  Borders: {
-    [key in StylesBorders]: RegExp;
-  };
-  Effects: {
-    [key in StylesEffects]: RegExp;
+export type CategoryName =
+  | "Layout"
+  | "Flexbox_and_Grid"
+  | "Spacing"
+  | "Sizing"
+  | "Typography"
+  | "Backgrounds"
+  | "Borders"
+  | "Effects"
+  | "Other";
+
+export type TailwindRegexPatterns = {
+  [key in CategoryName]?: {
+    [key in SubCategoryNames]?: RegExp;
   };
 };
 
@@ -142,13 +121,5 @@ export interface ITailwindClass {
 }
 
 export type TailwindClassesClassified = {
-  Layout: { [key: string]: ITailwindClass[] };
-  Flexbox_and_Grid: { [key: string]: ITailwindClass[] };
-  Spacing: { [key: string]: ITailwindClass[] };
-  Sizing: { [key: string]: ITailwindClass[] };
-  Typography: { [key: string]: ITailwindClass[] };
-  Backgrounds: { [key: string]: ITailwindClass[] };
-  Borders: { [key: string]: ITailwindClass[] };
-  Effects: { [key: string]: ITailwindClass[] };
-  Other: { [key: string]: ITailwindClass[] };
+  [key in SubCategoryNames]?: ITailwindClass[];
 };

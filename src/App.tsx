@@ -70,10 +70,10 @@ function App() {
             })}
           />
           <Panel
-            defaultSize={15}
-            minSize={10}
+            defaultSize={16}
+            minSize={16}
             maxSize={20}
-            className={cn({
+            className={cn("bg-editor-gray-dark", {
               hidden: !openTabs.attributes,
             })}
           >
