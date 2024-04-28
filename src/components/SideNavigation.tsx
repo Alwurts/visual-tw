@@ -37,7 +37,7 @@ export default function SideNavigation({
       />
       <NavigationButton
         onClick={() =>
-          setOpenTabs((prev) => ({ ...prev, code: !prev.monacoEditor }))
+          setOpenTabs((prev) => ({ ...prev, monacoEditor: !prev.monacoEditor }))
         }
         icon={<Code2Icon />}
         text="Code"

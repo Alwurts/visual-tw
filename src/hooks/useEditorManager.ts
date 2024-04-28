@@ -11,6 +11,7 @@ import type { IRange, editor as monacoEditor } from "monaco-editor";
 import { elementSourceCodeLocationToIRange } from "../lib/dom";
 import { TWindowTabs } from "@/types/EditorManager";
 import { ITailwindClass } from "@/types/tailwind/base";
+import { debounce } from "@/lib/utils";
 
 interface EditorManagerState {
   editorRef: React.MutableRefObject<monacoEditor.IStandaloneCodeEditor | null>;
@@ -43,22 +44,38 @@ export const useEditorManager = create<EditorManagerState>((set) => {
     codeUpdatedBy: null,
     updateCode: (newCode) => {
       set(({ codeUpdatedBy }) => {
-        const { dom, code, serializedDom } = domTools.parseHTMLString(newCode);
-        if (codeUpdatedBy === "attributes") {
-          return {
+        const parseNewCode = () => {
+          const { dom, code, serializedDom } =
+            domTools.parseHTMLString(newCode);
+          if (codeUpdatedBy === "attributes") {
+            set({
+              dom,
+              serializedDom,
+              code,
+              codeUpdatedBy: null,
+            });
+            return;
+          }
+          set({
             dom,
             serializedDom,
             code,
             codeUpdatedBy: null,
-          };
-        }
-        return {
-          dom,
-          serializedDom,
-          code,
-          codeUpdatedBy: null,
-          selectedElement: null,
+            selectedElementTWId: null,
+          });
         };
+
+        switch (codeUpdatedBy) {
+          case "attributes":
+          case "explorer":
+          case "viewer":
+            debounce(parseNewCode, 300)();
+            break;
+          default:
+            parseNewCode();
+        }
+
+        return {};
       });
     },
     selectElement: (uuid) => {

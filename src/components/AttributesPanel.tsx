@@ -43,12 +43,19 @@ export default function AttributesPanel() {
       </div>
       <Separator className="bg-editor-gray-light" />
       <div className="flex flex-grow flex-col overflow-y-auto scrollbar scrollbar-thumb-neutral-700">
-        <Section title="All classes">
-          {twClassesCategorized &&
-            twClassesCategorized.map((twClass, index) => (
-              <General key={twClass.value + index} twClass={twClass} />
-            ))}
-        </Section>
+        {selectedElement ? (
+          twClassesCategorized?.length ? (
+            <Section title="All classes">
+              {twClassesCategorized.map((twClass, index) => (
+                <General key={twClass.value + index} twClass={twClass} />
+              ))}
+            </Section>
+          ) : (
+            <div className="mx-auto my-20 text-white">No classes</div>
+          )
+        ) : (
+          <div className="mx-auto my-20 text-white">No element selected</div>
+        )}
       </div>
     </div>
   );
