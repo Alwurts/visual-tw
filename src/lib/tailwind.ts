@@ -126,7 +126,35 @@ const tailwindPatterns: TailwindClassifierPatterns = {
   },
 };
 
-export function classAttributeToTwClasses(classAttribute: {
+function classifyTailwindClass(twClass: ITailwindClass): ITailwindClass {
+  let tailwindClassCategoryFound = false;
+  Object.entries(tailwindPatterns).some(([category, subcategories]) => {
+    return Object.entries(subcategories).some(([subcategory, pattern]) => {
+      if (pattern.test(twClass.value)) {
+        tailwindClassCategoryFound = true;
+        twClass = {
+          ...twClass,
+          category: category as CategoryName,
+          subcategory: subcategory as SubCategoryNames,
+        };
+        return true;
+      }
+      return false;
+    });
+  });
+
+  if (!tailwindClassCategoryFound) {
+    return {
+      ...twClass,
+      category: "Other",
+      subcategory: "Other",
+    };
+  }
+
+  return twClass;
+}
+
+export function splitClassAttributeIntoClasses(classAttribute: {
   value: string;
   sourceCodeLocation: {
     startLine: number;
@@ -135,46 +163,29 @@ export function classAttributeToTwClasses(classAttribute: {
     endCol: number;
   };
 }): ITailwindClass[] {
-  let currentIndex = 7;
-  return classAttribute.value.split(" ").map((className) => {
-    const startPosition = currentIndex;
-    const endPosition = startPosition + className.length;
-    currentIndex = endPosition + 1;
+  let columnTracker = classAttribute.sourceCodeLocation.startCol + 7;
+  const classStrings = classAttribute.value.split(" ");
 
-    let classWithCodeLocation = {
-      value: className,
+  const parsedValues: ITailwindClass[] = [];
+  classStrings.forEach((classString) => {
+    const startCol = columnTracker;
+    columnTracker += classString.length + 1;
+    const endCol = columnTracker - 1;
+
+    const tempTWClass: ITailwindClass = {
+      value: classString,
       sourceCodeLocation: {
         startLine: classAttribute.sourceCodeLocation.startLine,
-        startCol: classAttribute.sourceCodeLocation.startCol + startPosition,
+        startCol: startCol,
         endLine: classAttribute.sourceCodeLocation.endLine,
-        endCol: classAttribute.sourceCodeLocation.startCol + endPosition,
+        endCol: endCol,
       },
-    } as ITailwindClass;
+    };
 
-    let tailwindClassCategoryFound = false;
-    Object.entries(tailwindPatterns).some(([category, subcategories]) => {
-      return Object.entries(subcategories).some(([subcategory, pattern]) => {
-        if (pattern.test(classWithCodeLocation.value)) {
-          tailwindClassCategoryFound = true;
-          classWithCodeLocation = {
-            ...classWithCodeLocation,
-            category: category as CategoryName,
-            subcategory: subcategory as SubCategoryNames,
-          };
-          return true;
-        }
-        return false;
-      });
-    });
-
-    if (!tailwindClassCategoryFound) {
-      return {
-        ...classWithCodeLocation,
-        category: "Other",
-        subcategory: "Other",
-      };
+    if (tempTWClass.value !== "") {
+      parsedValues.push(classifyTailwindClass(tempTWClass));
     }
-
-    return classWithCodeLocation;
   });
+
+  return parsedValues;
 }

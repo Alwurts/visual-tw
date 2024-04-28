@@ -2,10 +2,10 @@ import { Separator } from "./ui/separator";
 import { useMemo } from "react";
 import { useEditorManager } from "@/hooks/useEditorManager";
 import { getElementByUUID } from "@/lib/dom";
-import { classAttributeToTwClasses } from "@/lib/tailwind";
+import { splitClassAttributeIntoClasses } from "@/lib/tailwind";
 
 import Section from "./ui/section";
-import InputClassifier from "./twClassPanel/InputClassifier";
+import General from "./twClassPanel/inputs/General";
 
 export default function AttributesPanel() {
   const selectedElement = useEditorManager(({ dom, selectedElementTWId }) => {
@@ -25,7 +25,7 @@ export default function AttributesPanel() {
         selectedElement.sourceCodeLocation?.attrs?.class;
 
       if (classAttribute && classAttributeSourceCodeLocation) {
-        const twClasses = classAttributeToTwClasses({
+        const twClasses = splitClassAttributeIntoClasses({
           value: classAttribute,
           sourceCodeLocation: classAttributeSourceCodeLocation,
         });
@@ -45,8 +45,8 @@ export default function AttributesPanel() {
       <div className="flex flex-grow flex-col overflow-y-auto scrollbar scrollbar-thumb-neutral-700">
         <Section title="All classes">
           {twClassesCategorized &&
-            twClassesCategorized.map((twClass) => (
-              <InputClassifier key={twClass.value} twClass={twClass} />
+            twClassesCategorized.map((twClass, index) => (
+              <General key={twClass.value + index} twClass={twClass} />
             ))}
         </Section>
       </div>

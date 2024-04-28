@@ -6,11 +6,11 @@ import {
   SquareDashedBottom,
   Text,
 } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { useEditorManager } from "@/hooks/useEditorManager";
 import { getElementByUUID, getElementsByTagName } from "@/lib/dom";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Command, CommandGroup, CommandItem, CommandList } from "./ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Command, CommandGroup, CommandItem, CommandList } from "../ui/command";
 import { useState } from "react";
 
 export default function InsertButton() {
@@ -77,7 +77,7 @@ export default function InsertButton() {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-48 p-0">
-        <Command className="rounded-lg border-red-600 shadow-md">
+        <Command className="rounded-lg shadow-md">
           {/* <CommandInput placeholder="Search" />
           <CommandEmpty>No results found.</CommandEmpty> */}
           <CommandList>

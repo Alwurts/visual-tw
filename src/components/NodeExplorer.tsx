@@ -11,7 +11,7 @@ import { Separator } from "./ui/separator";
 import { getElementVisualTwId, getElementsByTagName } from "@/lib/dom";
 import { cn } from "@/lib/utils";
 import { useEditorManager } from "@/hooks/useEditorManager";
-import InsertButton from "./InsertButton";
+import InsertButton from "./buttons/InsertButton";
 
 export default function NodeExplorer() {
   const domExplorer = useEditorManager(({ dom }) => {

@@ -11,17 +11,22 @@ import { Button } from "./button";
 interface SectionProps {
   title: string;
   children: React.ReactNode;
+  defaultOpen?: boolean;
 }
 
-export default function Section({ title, children }: SectionProps) {
-  const [open, setOpen] = useState(false);
+export default function Section({
+  title,
+  children,
+  defaultOpen,
+}: SectionProps) {
+  const [open, setOpen] = useState(defaultOpen ?? true);
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger asChild>
         <Button
           variant="ghost"
           className={cn(
-            "flex h-full w-full justify-start space-x-1 rounded-none px-2 py-1 text-sm font-normal text-white hover:text-white",
+            "flex h-full w-full justify-start space-x-1 rounded-none px-2 py-1 text-sm font-normal text-white hover:text-white dark:bg-editor-gray-light dark:hover:bg-editor-gray-medium",
           )}
         >
           {open ? (
@@ -32,7 +37,7 @@ export default function Section({ title, children }: SectionProps) {
           <span className="font-light">{title}</span>
         </Button>
       </CollapsibleTrigger>
-      <CollapsibleContent className="flex flex-col space-y-2 p-2">
+      <CollapsibleContent className="space-y-2 px-3 py-3">
         {children}
       </CollapsibleContent>
     </Collapsible>
