@@ -65,7 +65,7 @@ export default function AttributesPanel() {
             <Section
               title="All classes"
               className="space-y-2 px-3 py-4"
-              actions={<InsertTWClassButton insertedBy="attributes" />}
+              actions={<InsertTWClassButton />}
             >
               {twClassesCategorizedArray?.length ? (
                 twClassesCategorizedArray.map((twClasses, index) =>
