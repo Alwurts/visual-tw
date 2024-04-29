@@ -1,16 +1,19 @@
 import { create } from "zustand";
 
-import * as domTools from "../lib/dom";
+import * as domTools from "@/lib/dom";
 import * as editorTools from "@/lib/editor";
+//import * as classTools from "@/lib/classAttribute";
 
 import DEFAULT_EDITOR_CODE from "../lib/editor/defaultEditorCode.html?raw";
 
-import type { Document } from "node_modules/parse5/dist/tree-adapters/default";
+import type {
+  Document,
+  Node,
+} from "node_modules/parse5/dist/tree-adapters/default";
 import { createRef } from "react";
 import type { IRange, editor as monacoEditor } from "monaco-editor";
-import { elementSourceCodeLocationToIRange } from "../lib/dom";
 import { TWindowTabs } from "@/types/EditorManager";
-import { ITailwindClass } from "@/types/tailwind/base";
+import { ITailwindClass, classesClassified } from "@/types/tailwind/base";
 import { debounce } from "@/lib/utils";
 
 interface EditorManagerState {
@@ -18,6 +21,11 @@ interface EditorManagerState {
   dom: Document;
   serializedDom: string;
   code: string;
+  selected: {
+    element: Node;
+    twId: string;
+    class: classesClassified;
+  } | null;
   selectedElementTWId: string | null;
   codeUpdatedBy: TWindowTabs | null;
   updateCode: (newCode: string) => void;
@@ -29,6 +37,7 @@ interface EditorManagerState {
     range: IRange,
     insertedBy: TWindowTabs,
   ) => void;
+  //insertTwClass: (newTwClass: string) => void;
   changeTwClass: (twClass: ITailwindClass, newValue: string) => void;
 }
 
@@ -40,6 +49,7 @@ export const useEditorManager = create<EditorManagerState>((set) => {
     dom: initialParsedCode.dom,
     serializedDom: initialParsedCode.serializedDom,
     code: initialParsedCode.code,
+    selected: null,
     selectedElementTWId: null,
     codeUpdatedBy: null,
     updateCode: (newCode) => {
@@ -81,12 +91,25 @@ export const useEditorManager = create<EditorManagerState>((set) => {
     selectElement: (uuid) => {
       set(({ dom }) => {
         const selectedElement = domTools.getElementByUUID(dom, uuid);
-        if (selectedElement) {
-          const domNodeCodeLocation =
-            elementSourceCodeLocationToIRange(selectedElement);
+        if (selectedElement?.sourceCodeLocation) {
+          const domNodeCodeLocation = domTools.sourceCodeLocationToIRange(
+            selectedElement.sourceCodeLocation,
+          );
           createEditorManager.highlightCode(domNodeCodeLocation);
         }
-        return { selectedElementTWId: uuid };
+        return {
+          selectedElementTWId: uuid,
+          /* selected: {
+            element: selectedElement,
+            twId: uuid,
+            class: classTools.splitClassAttributeIntoClasses({
+              value:
+                selectedElement?.attrs.find((attr) => attr.name === "class")
+                  ?.value || "",
+              sourceCodeLocation: selectedElement?.sourceCodeLocation || {},
+            }),
+          }, */
+        };
       });
     },
     highlightCode: (range) => {
@@ -114,7 +137,16 @@ export const useEditorManager = create<EditorManagerState>((set) => {
       }
       editorTools.insertElements(editor, type, range);
     },
+    /* insertTwClass: (newTwClass) => {
+      const classExists = classTools.checkClassIfClassExists();
+      createEditorManager.insertCode(
+        twClass.value,
+        domTools.sourceCodeLocationToIRange(twClass.sourceCodeLocation),
+        "attributes",
+      );
+    }, */
     changeTwClass: (twClass, newValue) => {
+      if (!twClass.sourceCodeLocation) return;
       createEditorManager.insertCode(
         newValue,
         domTools.sourceCodeLocationToIRange(twClass.sourceCodeLocation),

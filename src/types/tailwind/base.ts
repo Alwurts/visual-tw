@@ -1,3 +1,5 @@
+import { SourceCodeLocation } from "@/types/parse5";
+
 type StylesLayout =
   | "Container"
   | "Box_Sizing"
@@ -110,12 +112,7 @@ export type TailwindRegexPatterns = {
 
 type ITailwindClassBase = {
   value: string;
-  sourceCodeLocation?: {
-    startLine: number;
-    startCol: number;
-    endLine: number;
-    endCol: number;
-  };
+  sourceCodeLocation?: SourceCodeLocation;
 };
 
 export type ITailwindClassClassified = {

@@ -3,6 +3,7 @@ import * as parse5 from "parse5";
 import DEFAULT_HEAD_CODE from "./editor/defaultHeadCode.html?raw";
 import VIEWER_CODE from "./viewer.js?raw";
 import { IRange } from "monaco-editor";
+import { SourceCodeLocation } from "@/types/parse5";
 
 export function parseHTMLString(html: string) {
   const document = parse5.parse(html, {
@@ -80,39 +81,9 @@ export function getElementByUUID(dom: Node, uuid: string): Node | null {
   return result;
 }
 
-export function elementSourceCodeLocationToIRange(element: Node): IRange {
-  if (!element.sourceCodeLocation) {
-    return {
-      startLineNumber: 0,
-      startColumn: 0,
-      endLineNumber: 0,
-      endColumn: 0,
-    };
-  }
-  return sourceCodeLocationToIRange(element.sourceCodeLocation);
-}
-
-export function sourceCodeLocationToIRange(sourceCodeLocation: {
-  startLine: number;
-  startCol: number;
-  endLine: number;
-  endCol: number;
-}): IRange {
-  if (
-    !sourceCodeLocation ||
-    !sourceCodeLocation.startLine ||
-    !sourceCodeLocation.startCol ||
-    !sourceCodeLocation.endLine ||
-    !sourceCodeLocation.endCol
-  ) {
-    return {
-      startLineNumber: 0,
-      startColumn: 0,
-      endLineNumber: 0,
-      endColumn: 0,
-    };
-  }
-
+export function sourceCodeLocationToIRange(
+  sourceCodeLocation: SourceCodeLocation,
+): IRange {
   return {
     startLineNumber: sourceCodeLocation.startLine,
     startColumn: sourceCodeLocation.startCol,

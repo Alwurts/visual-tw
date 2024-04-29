@@ -1,3 +1,4 @@
+import { SourceCodeLocation } from "@/types/parse5";
 import {
   CategoryName,
   ITailwindClass,
@@ -46,12 +47,7 @@ function classifyTailwindClass(
 
 export function splitClassAttributeIntoClasses(classAttribute: {
   value: string;
-  sourceCodeLocation: {
-    startLine: number;
-    startCol: number;
-    endLine: number;
-    endCol: number;
-  };
+  sourceCodeLocation: SourceCodeLocation;
 }): classesClassified {
   let columnTracker = classAttribute.sourceCodeLocation.startCol + 7;
   const classStrings = classAttribute.value.split(" ");
