@@ -1,9 +1,9 @@
-import { ITailwindClass } from "@/types/tailwind/base";
+import { ITailwindClassClassified } from "@/types/tailwind/base";
 import BackgroundColor from "@/components/twClassPanel/inputs/background/BackgroundColor";
 import Default from "@/components/twClassPanel/inputs/Readonly";
 
 interface InputClassifierProps {
-  twClass: ITailwindClass;
+  twClass: ITailwindClassClassified;
 }
 
 export default function InputClassifier({ twClass }: InputClassifierProps) {

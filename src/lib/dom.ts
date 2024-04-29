@@ -1,9 +1,8 @@
-import { Node, Document } from "node_modules/parse5/dist/tree-adapters/default";
+import { Node } from "node_modules/parse5/dist/tree-adapters/default";
 import * as parse5 from "parse5";
 import DEFAULT_HEAD_CODE from "./editor/defaultHeadCode.html?raw";
 import VIEWER_CODE from "./viewer.js?raw";
 import { IRange } from "monaco-editor";
-import { ITailwindClass } from "@/types/tailwind/base";
 
 export function parseHTMLString(html: string) {
   const document = parse5.parse(html, {
@@ -164,107 +163,4 @@ export function setElementAttributeValue(
 
 export function getElementVisualTwId(node: Node) {
   return getElementAttributeValue(node, "visual-tw-id");
-}
-
-export function changeElementTWClass(
-  dom: Document,
-  uuid: string,
-  twClass: ITailwindClass,
-  newValue: string,
-) {
-  const node = getElementByUUID(dom, uuid);
-  if (!node) return;
-
-  const classAttribute = getElementAttributeValue(node, "class");
-  if (!classAttribute) return;
-
-  const newClassAttribute = classAttribute.replace(twClass.value, newValue);
-
-  setElementAttributeValue(node, "class", newClassAttribute);
-
-  updateSourceCodeLocation(dom, twClass, newValue);
-
-  return { dom, node };
-}
-
-function updateSourceCodeLocation(
-  dom: Node,
-  twClass: ITailwindClass,
-  newValue: string,
-) {
-  const changeFromLine = twClass.sourceCodeLocation.endLine;
-  const changeFromCol = twClass.sourceCodeLocation.endCol;
-
-  const offset = newValue.length - twClass.value.length;
-  const modifyDom = (node: Node) => {
-    const nodeSourceCodeLocation = node.sourceCodeLocation;
-
-    if (nodeSourceCodeLocation) {
-      if (nodeSourceCodeLocation.startLine === changeFromLine) {
-        if (nodeSourceCodeLocation.startCol > changeFromCol) {
-          nodeSourceCodeLocation.startCol += offset;
-        }
-      }
-
-      if (nodeSourceCodeLocation.endLine === changeFromLine) {
-        if (nodeSourceCodeLocation.endCol > changeFromCol) {
-          nodeSourceCodeLocation.endCol += offset;
-        }
-      }
-
-      if ("attrs" in nodeSourceCodeLocation && nodeSourceCodeLocation.attrs) {
-        Object.values(nodeSourceCodeLocation.attrs).forEach(
-          (attrSourceCodeLocation) => {
-            if (attrSourceCodeLocation.startLine === changeFromLine) {
-              if (attrSourceCodeLocation.startCol > changeFromCol) {
-                attrSourceCodeLocation.startCol += offset;
-              }
-            }
-
-            if (attrSourceCodeLocation.endLine === changeFromLine) {
-              if (attrSourceCodeLocation.endCol > changeFromCol) {
-                attrSourceCodeLocation.endCol += offset;
-              }
-            }
-          },
-        );
-
-        if (nodeSourceCodeLocation.startTag) {
-          const startTagSourceCodeLocation = nodeSourceCodeLocation.startTag;
-          if (startTagSourceCodeLocation.startLine === changeFromLine) {
-            if (startTagSourceCodeLocation.startCol > changeFromCol) {
-              startTagSourceCodeLocation.startCol += offset;
-            }
-          }
-
-          if (startTagSourceCodeLocation.endLine === changeFromLine) {
-            if (startTagSourceCodeLocation.endCol > changeFromCol) {
-              startTagSourceCodeLocation.endCol += offset;
-            }
-          }
-        }
-
-        if (nodeSourceCodeLocation.endTag) {
-          const endTagSourceCodeLocation = nodeSourceCodeLocation.endTag;
-          if (endTagSourceCodeLocation.startLine === changeFromLine) {
-            if (endTagSourceCodeLocation.startCol > changeFromCol) {
-              endTagSourceCodeLocation.startCol += offset;
-            }
-          }
-
-          if (endTagSourceCodeLocation.endLine === changeFromLine) {
-            if (endTagSourceCodeLocation.endCol > changeFromCol) {
-              endTagSourceCodeLocation.endCol += offset;
-            }
-          }
-        }
-      }
-    }
-
-    if ("childNodes" in node) {
-      node.childNodes.forEach(modifyDom);
-    }
-  };
-
-  modifyDom(dom);
 }

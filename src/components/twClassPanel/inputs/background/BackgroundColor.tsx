@@ -40,9 +40,11 @@ export default function BackgroundColor({ twClass }: BackgroundColorProps) {
           ))}
         </SelectContent>
       </Select>
-      <HighlightCodeButton
-        range={sourceCodeLocationToIRange(twClass.sourceCodeLocation)}
-      />
+      {twClass.sourceCodeLocation && (
+        <HighlightCodeButton
+          range={sourceCodeLocationToIRange(twClass.sourceCodeLocation)}
+        />
+      )}
     </div>
   );
 }

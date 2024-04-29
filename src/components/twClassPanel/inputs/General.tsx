@@ -50,16 +50,20 @@ export default function General({ twClass }: { twClass: ITailwindClass }) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-fit">
-          <DropdownMenuItem
-            onSelect={() => {
-              highlightCode(
-                sourceCodeLocationToIRange(twClass.sourceCodeLocation),
-              );
-            }}
-          >
-            <Search className="mr-2 h-4 w-4" />
-            Locate code
-          </DropdownMenuItem>
+          {twClass.sourceCodeLocation && (
+            <DropdownMenuItem
+              onSelect={() => {
+                if (twClass.sourceCodeLocation) {
+                  highlightCode(
+                    sourceCodeLocationToIRange(twClass.sourceCodeLocation),
+                  );
+                }
+              }}
+            >
+              <Search className="mr-2 h-4 w-4" />
+              Locate code
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem
             className="text-red-600 dark:focus:bg-red-800"
             onSelect={() => {

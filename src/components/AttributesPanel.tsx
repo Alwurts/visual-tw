@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useEditorManager } from "@/hooks/useEditorManager";
 import { getElementByUUID } from "@/lib/dom";
-import { splitClassAttributeIntoClasses } from "@/lib/tailwind";
+import { splitClassAttributeIntoClasses } from "@/lib/classAttribute";
 
 import { Separator } from "@/components/ui/separator";
 import Section from "@/components/ui/section";
@@ -40,7 +40,7 @@ export default function AttributesPanel() {
 
   const twClassesCategorizedArray = useMemo(() => {
     if (!twClassesCategorized) return [];
-    return Object.values(twClassesCategorized);
+    return Object.values(twClassesCategorized).flat();
   }, [twClassesCategorized]);
 
   return (
@@ -68,11 +68,9 @@ export default function AttributesPanel() {
               actions={<InsertTWClassButton />}
             >
               {twClassesCategorizedArray?.length ? (
-                twClassesCategorizedArray.map((twClasses, index) =>
-                  twClasses.map((twClass) => (
-                    <General key={twClass.value + index} twClass={twClass} />
-                  )),
-                )
+                twClassesCategorizedArray.map((twClass, index) => (
+                  <General key={twClass.value + index} twClass={twClass} />
+                ))
               ) : (
                 <p className="my-7 text-center text-white">No classes</p>
               )}

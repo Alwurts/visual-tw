@@ -108,18 +108,23 @@ export type TailwindRegexPatterns = {
   };
 };
 
-export interface ITailwindClass {
+type ITailwindClassBase = {
   value: string;
-  category?: CategoryName;
-  subcategory?: SubCategoryNames;
-  sourceCodeLocation: {
+  sourceCodeLocation?: {
     startLine: number;
     startCol: number;
     endLine: number;
     endCol: number;
   };
-}
+};
 
-export type TailwindClassesClassified = {
-  [key in SubCategoryNames]?: ITailwindClass[];
+export type ITailwindClassClassified = {
+  category: CategoryName;
+  subcategory: SubCategoryNames;
+} & ITailwindClassBase;
+
+export type ITailwindClass = ITailwindClassBase | ITailwindClassClassified;
+
+export type classesClassified = {
+  [key in SubCategoryNames]?: ITailwindClassClassified[];
 };

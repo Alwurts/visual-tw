@@ -2,8 +2,9 @@ import {
   CategoryName,
   ITailwindClass,
   SubCategoryNames,
-  TailwindClassesClassified,
+  classesClassified,
   TailwindRegexPatterns,
+  ITailwindClassClassified,
 } from "@/types/tailwind/base";
 
 const tailwindPatterns: TailwindRegexPatterns = {
@@ -15,12 +16,12 @@ const tailwindPatterns: TailwindRegexPatterns = {
   },
 };
 
-function classifyTailwindClass(twClass: ITailwindClass): ITailwindClass {
-  let tailwindClassCategoryFound = false;
+function classifyTailwindClass(
+  twClass: ITailwindClass,
+): ITailwindClassClassified {
   Object.entries(tailwindPatterns).some(([category, subcategories]) => {
     return Object.entries(subcategories).some(([subcategory, pattern]) => {
       if (pattern.test(twClass.value)) {
-        tailwindClassCategoryFound = true;
         twClass = {
           ...twClass,
           category: category as CategoryName,
@@ -32,15 +33,15 @@ function classifyTailwindClass(twClass: ITailwindClass): ITailwindClass {
     });
   });
 
-  if (!tailwindClassCategoryFound) {
-    return {
-      ...twClass,
-      category: "Other",
-      subcategory: "Other",
-    };
+  if ("category" in twClass && twClass.category && twClass.subcategory) {
+    return twClass;
   }
 
-  return twClass;
+  return {
+    ...twClass,
+    category: "Other",
+    subcategory: "Other",
+  };
 }
 
 export function splitClassAttributeIntoClasses(classAttribute: {
@@ -51,11 +52,11 @@ export function splitClassAttributeIntoClasses(classAttribute: {
     endLine: number;
     endCol: number;
   };
-}): TailwindClassesClassified {
+}): classesClassified {
   let columnTracker = classAttribute.sourceCodeLocation.startCol + 7;
   const classStrings = classAttribute.value.split(" ");
 
-  const parsedValuesSubCategories: TailwindClassesClassified = {};
+  const parsedValuesSubCategories: classesClassified = {};
   classStrings.forEach((classString) => {
     const startCol = columnTracker;
     columnTracker += classString.length + 1;
@@ -71,23 +72,51 @@ export function splitClassAttributeIntoClasses(classAttribute: {
       },
     };
 
-    //console.log("tempTWClass", tempTWClass);
-
     if (tempTWClass.value !== "") {
       const classifiedTWClass = classifyTailwindClass(tempTWClass);
-      console.log("classifiedTWClass", classifiedTWClass);
 
-      if (!parsedValuesSubCategories[classifiedTWClass.subcategory!]) {
-        parsedValuesSubCategories[classifiedTWClass.subcategory!] = [];
+      if (!parsedValuesSubCategories[classifiedTWClass.subcategory]) {
+        parsedValuesSubCategories[classifiedTWClass.subcategory] = [];
       }
 
-      parsedValuesSubCategories[classifiedTWClass.subcategory!]?.push(
+      parsedValuesSubCategories[classifiedTWClass.subcategory]?.push(
         classifiedTWClass,
       );
     }
   });
 
-  console.log("parsedValuesSubCategories", parsedValuesSubCategories);
-
   return parsedValuesSubCategories;
+}
+
+export function checkClassIfClassExists(
+  currentClasses: classesClassified,
+  newClassValue: string,
+): ITailwindClass | null {
+  let foundClass: ITailwindClass | null = null;
+
+  const classifiedNewClass = classifyTailwindClass({
+    value: newClassValue,
+  });
+
+  // If we already have a tailwind class of that subcategory like Background_Color
+  if (classifiedNewClass.subcategory !== "Other") {
+    const subcategory = currentClasses[classifiedNewClass.subcategory];
+    if (subcategory && subcategory.length > 0) {
+      return subcategory[0];
+    }
+  }
+
+  // If we don't have a tailwind class of that subcategory like Background_Color
+  // then check if any of the other classes has the same value
+  Object.values(currentClasses).some((twClasses) => {
+    return twClasses.some((twClass) => {
+      if (twClass.value === newClassValue) {
+        foundClass = twClass;
+        return true;
+      }
+      return false;
+    });
+  });
+
+  return foundClass;
 }
