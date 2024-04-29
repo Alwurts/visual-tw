@@ -7,6 +7,7 @@ import {
   TailwindRegexPatterns,
   ITailwindClassClassified,
 } from "@/types/tailwind/base";
+import { Node } from "node_modules/parse5/dist/tree-adapters/default";
 
 const tailwindPatterns: TailwindRegexPatterns = {
   Typography: {
@@ -45,7 +46,7 @@ function classifyTailwindClass(
   };
 }
 
-export function splitClassAttributeIntoClasses(classAttribute: {
+function splitClassAttributeStringIntoClasses(classAttribute: {
   value: string;
   sourceCodeLocation: SourceCodeLocation;
 }): classesClassified {
@@ -82,6 +83,25 @@ export function splitClassAttributeIntoClasses(classAttribute: {
   });
 
   return parsedValuesSubCategories;
+}
+
+export function parseElementClassAttribute(element: Node) {
+  if ("attrs" in element) {
+    const classAttribute = element.attrs.find((attr) => attr.name === "class")
+      ?.value;
+
+    const classAttributeSourceCodeLocation =
+      element.sourceCodeLocation?.attrs?.class;
+
+    if (classAttribute && classAttributeSourceCodeLocation) {
+      const twClasses = splitClassAttributeStringIntoClasses({
+        value: classAttribute,
+        sourceCodeLocation: classAttributeSourceCodeLocation,
+      });
+
+      return twClasses;
+    }
+  }
 }
 
 export function checkClassIfClassExists(

@@ -1,7 +1,5 @@
 import { useMemo } from "react";
 import { useEditorManager } from "@/hooks/useEditorManager";
-import { getElementByUUID } from "@/lib/dom";
-import { splitClassAttributeIntoClasses } from "@/lib/classAttribute";
 
 import { Separator } from "@/components/ui/separator";
 import Section from "@/components/ui/section";
@@ -10,33 +8,10 @@ import { Alignment } from "@/components/twClassPanel/inputs/typography/Alignment
 import InsertTWClassButton from "./buttons/InsertTWClassButton";
 
 export default function AttributesPanel() {
-  const selectedElement = useEditorManager(({ dom, selectedElementTWId }) => {
-    if (!selectedElementTWId) return null;
-
-    const selectedElement = getElementByUUID(dom, selectedElementTWId);
-    return selectedElement;
-  });
-
-  const twClassesCategorized = useMemo(() => {
-    if (selectedElement && "attrs" in selectedElement) {
-      const classAttribute = selectedElement.attrs.find(
-        (attr) => attr.name === "class",
-      )?.value;
-
-      const classAttributeSourceCodeLocation =
-        selectedElement.sourceCodeLocation?.attrs?.class;
-
-      if (classAttribute && classAttributeSourceCodeLocation) {
-        const twClasses = splitClassAttributeIntoClasses({
-          value: classAttribute,
-          sourceCodeLocation: classAttributeSourceCodeLocation,
-        });
-
-        return twClasses;
-      }
-    }
-    return null;
-  }, [selectedElement]);
+  const selectedElement = useEditorManager((state) => state.selected?.element);
+  const twClassesCategorized = useEditorManager(
+    (state) => state.selected?.class,
+  );
 
   const twClassesCategorizedArray = useMemo(() => {
     if (!twClassesCategorized) return [];

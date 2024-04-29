@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 import * as domTools from "@/lib/dom";
 import * as editorTools from "@/lib/editor";
-//import * as classTools from "@/lib/classAttribute";
+import * as classTools from "@/lib/classAttribute";
 
 import DEFAULT_EDITOR_CODE from "../lib/editor/defaultEditorCode.html?raw";
 
@@ -24,9 +24,8 @@ interface EditorManagerState {
   selected: {
     element: Node;
     twId: string;
-    class: classesClassified;
+    class: classesClassified | null;
   } | null;
-  selectedElementTWId: string | null;
   codeUpdatedBy: TWindowTabs | null;
   updateCode: (newCode: string) => void;
   selectElement: (uuid: string) => void;
@@ -50,28 +49,44 @@ export const useEditorManager = create<EditorManagerState>((set) => {
     serializedDom: initialParsedCode.serializedDom,
     code: initialParsedCode.code,
     selected: null,
-    selectedElementTWId: null,
     codeUpdatedBy: null,
     updateCode: (newCode) => {
-      set(({ codeUpdatedBy }) => {
+      set(({ codeUpdatedBy, selected }) => {
         const parseNewCode = () => {
           const { dom, code, serializedDom } =
             domTools.parseHTMLString(newCode);
-          if (codeUpdatedBy === "attributes") {
-            set({
+
+          // Do not reset the selected element if the code was updated by the attributes panel
+          if (selected && codeUpdatedBy === "attributes") {
+            const newSelectedElement = domTools.getElementByUUID(
               dom,
-              serializedDom,
-              code,
-              codeUpdatedBy: null,
-            });
-            return;
+              selected.twId,
+            );
+            if (newSelectedElement) {
+              const twClasses =
+                classTools.parseElementClassAttribute(newSelectedElement);
+
+              set({
+                dom,
+                serializedDom,
+                code,
+                selected: {
+                  element: newSelectedElement,
+                  twId: selected.twId,
+                  class: twClasses ?? null,
+                },
+                codeUpdatedBy: null,
+              });
+              return;
+            }
           }
+
           set({
             dom,
             serializedDom,
             code,
             codeUpdatedBy: null,
-            selectedElementTWId: null,
+            selected: null,
           });
         };
 
@@ -91,25 +106,30 @@ export const useEditorManager = create<EditorManagerState>((set) => {
     selectElement: (uuid) => {
       set(({ dom }) => {
         const selectedElement = domTools.getElementByUUID(dom, uuid);
-        if (selectedElement?.sourceCodeLocation) {
-          const domNodeCodeLocation = domTools.sourceCodeLocationToIRange(
-            selectedElement.sourceCodeLocation,
-          );
-          createEditorManager.highlightCode(domNodeCodeLocation);
+
+        if (selectedElement) {
+          // On selecting an element, highlight the code
+          if (selectedElement.sourceCodeLocation) {
+            const domNodeCodeLocation = domTools.sourceCodeLocationToIRange(
+              selectedElement.sourceCodeLocation,
+            );
+            createEditorManager.highlightCode(domNodeCodeLocation);
+          }
+
+          const twClasses =
+            classTools.parseElementClassAttribute(selectedElement);
+
+          return {
+            selectedElementTWId: uuid,
+            selected: {
+              element: selectedElement,
+              twId: uuid,
+              class: twClasses ?? null,
+            },
+          };
         }
-        return {
-          selectedElementTWId: uuid,
-          /* selected: {
-            element: selectedElement,
-            twId: uuid,
-            class: classTools.splitClassAttributeIntoClasses({
-              value:
-                selectedElement?.attrs.find((attr) => attr.name === "class")
-                  ?.value || "",
-              sourceCodeLocation: selectedElement?.sourceCodeLocation || {},
-            }),
-          }, */
-        };
+
+        return {};
       });
     },
     highlightCode: (range) => {

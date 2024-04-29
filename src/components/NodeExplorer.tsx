@@ -60,9 +60,7 @@ function NodeCollapsible({ node, level }: { node: Node; level: number }) {
 
   const nodeUuid = useMemo(() => getElementVisualTwId(node), [node]);
 
-  const selectedElementTWId = useEditorManager(
-    (state) => state.selectedElementTWId,
-  );
+  const selectedElementTWId = useEditorManager((state) => state.selected?.twId);
 
   const selectElement = useEditorManager((state) => state.selectElement);
 
