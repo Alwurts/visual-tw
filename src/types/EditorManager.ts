@@ -13,3 +13,8 @@ const windowTabs = [
 ] as const;
 
 export type TWindowTabs = (typeof windowTabs)[number];
+
+export type ActionResponse = {
+  message: string;
+  isError: boolean;
+} | void;

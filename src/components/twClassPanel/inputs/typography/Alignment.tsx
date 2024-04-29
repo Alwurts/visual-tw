@@ -20,7 +20,7 @@ export function Alignment({ defaultClass }: AlignmentProps) {
         onClick={(e) => {
           e.preventDefault();
           if (defaultClass) {
-            changeTwClass(defaultClass, "text-left");
+            changeTwClass(defaultClass, "text-left", "attributes");
           }
         }}
       >
@@ -33,7 +33,7 @@ export function Alignment({ defaultClass }: AlignmentProps) {
         onClick={(e) => {
           e.preventDefault();
           if (defaultClass) {
-            changeTwClass(defaultClass, "text-center");
+            changeTwClass(defaultClass, "text-center", "attributes");
           }
         }}
       >
@@ -46,7 +46,7 @@ export function Alignment({ defaultClass }: AlignmentProps) {
         onClick={(e) => {
           e.preventDefault();
           if (defaultClass) {
-            changeTwClass(defaultClass, "text-right");
+            changeTwClass(defaultClass, "text-right", "attributes");
           }
         }}
       >
@@ -59,7 +59,7 @@ export function Alignment({ defaultClass }: AlignmentProps) {
         onClick={(e) => {
           e.preventDefault();
           if (defaultClass) {
-            changeTwClass(defaultClass, "text-justify");
+            changeTwClass(defaultClass, "text-justify", "attributes");
           }
         }}
       >

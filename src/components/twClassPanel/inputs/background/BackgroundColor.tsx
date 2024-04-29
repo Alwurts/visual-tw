@@ -23,7 +23,7 @@ export default function BackgroundColor({ twClass }: BackgroundColorProps) {
       <Select
         defaultValue={twClass.value}
         onValueChange={(newValue) => {
-          changeTwClass(twClass, newValue);
+          changeTwClass(twClass, newValue, "attributes");
         }}
       >
         <SelectTrigger className="bg-editor-gray-dark text-white">

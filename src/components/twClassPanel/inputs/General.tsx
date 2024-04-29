@@ -28,7 +28,7 @@ export default function General({ twClass }: { twClass: ITailwindClass }) {
         onBlur={(e) => {
           const inputValue = e.target.value;
           if (inputValue !== twClass.value) {
-            changeTwClass(twClass, inputValue);
+            changeTwClass(twClass, inputValue, "attributes");
           }
           setInputFocused(false);
         }}
@@ -67,7 +67,7 @@ export default function General({ twClass }: { twClass: ITailwindClass }) {
           <DropdownMenuItem
             className="text-red-600 dark:focus:bg-red-800"
             onSelect={() => {
-              changeTwClass(twClass, "");
+              changeTwClass(twClass, "", "attributes");
             }}
           >
             <TrashIcon className="mr-2 h-4 w-4" />

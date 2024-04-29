@@ -12,7 +12,7 @@ import type {
 } from "node_modules/parse5/dist/tree-adapters/default";
 import { createRef } from "react";
 import type { IRange, editor as monacoEditor } from "monaco-editor";
-import { TWindowTabs } from "@/types/EditorManager";
+import { ActionResponse, TWindowTabs } from "@/types/EditorManager";
 import { ITailwindClass } from "@/types/tailwind/base";
 import { debounce } from "@/lib/utils";
 
@@ -27,22 +27,33 @@ interface EditorManagerState {
     class: ReturnType<typeof classTools.parseElementClassAttribute> | null;
   } | null;
   codeUpdatedBy: TWindowTabs | null;
-  updateCode: (newCode: string) => void;
-  selectElement: (uuid: string) => void;
-  highlightCode: (range: IRange) => void;
-  insertCode: (code: string, range: IRange, insertedBy: TWindowTabs) => void;
+  updateCode: (newCode: string) => ActionResponse;
+  selectElement: (uuid: string) => ActionResponse;
+  highlightCode: (range: IRange) => ActionResponse;
+  insertCode: (
+    code: string,
+    range: IRange,
+    insertedBy: TWindowTabs,
+  ) => ActionResponse;
   insertHtmlElementCode: (
     type: "h1" | "h2" | "h3" | "div" | "span" | "p",
     range: IRange,
     insertedBy: TWindowTabs,
-  ) => void;
-  //insertTwClass: (newTwClass: string) => void;
-  changeTwClass: (twClass: ITailwindClass, newValue: string) => void;
+  ) => ActionResponse;
+  insertTwClass: (
+    newTwClass: string,
+    insertedBy: TWindowTabs,
+  ) => ActionResponse;
+  changeTwClass: (
+    twClass: ITailwindClass,
+    newValue: string,
+    changedBy: TWindowTabs,
+  ) => ActionResponse;
 }
 
 const initialParsedCode = domTools.parseHTMLString(DEFAULT_EDITOR_CODE);
 
-export const useEditorManager = create<EditorManagerState>((set) => {
+export const useEditorManager = create<EditorManagerState>((set, get) => {
   const createEditorManager: EditorManagerState = {
     editorRef: createRef(),
     dom: initialParsedCode.dom,
@@ -51,87 +62,86 @@ export const useEditorManager = create<EditorManagerState>((set) => {
     selected: null,
     codeUpdatedBy: null,
     updateCode: (newCode) => {
-      set(({ codeUpdatedBy, selected }) => {
-        const parseNewCode = () => {
-          const { dom, code, serializedDom } =
-            domTools.parseHTMLString(newCode);
+      const currentState = get();
+      const codeUpdatedBy = currentState.codeUpdatedBy;
+      const selected = currentState.selected;
 
-          // Do not reset the selected element if the code was updated by the attributes panel
-          if (selected && codeUpdatedBy === "attributes") {
-            const newSelectedElement = domTools.getElementByUUID(
-              dom,
-              selected.twId,
-            );
-            if (newSelectedElement) {
-              const twClasses =
-                classTools.parseElementClassAttribute(newSelectedElement);
+      const parseNewCode = () => {
+        const { dom, code, serializedDom } = domTools.parseHTMLString(newCode);
 
-              set({
-                dom,
-                serializedDom,
-                code,
-                selected: {
-                  element: newSelectedElement,
-                  twId: selected.twId,
-                  class: twClasses ?? null,
-                },
-                codeUpdatedBy: null,
-              });
-              return;
-            }
-          }
-
-          set({
+        // Do not reset the selected element if the code was updated by the attributes panel
+        if (selected && codeUpdatedBy === "attributes") {
+          const newSelectedElement = domTools.getElementByUUID(
             dom,
-            serializedDom,
-            code,
-            codeUpdatedBy: null,
-            selected: null,
-          });
-        };
+            selected.twId,
+          );
+          if (newSelectedElement) {
+            const twClasses =
+              classTools.parseElementClassAttribute(newSelectedElement);
 
-        switch (codeUpdatedBy) {
-          case "attributes":
-          case "explorer":
-          case "viewer":
-            parseNewCode();
-            break;
-          case "monacoEditor":
-          default:
-            debounce(parseNewCode, 700, "updateCode")();
+            set({
+              dom,
+              serializedDom,
+              code,
+              selected: {
+                element: newSelectedElement,
+                twId: selected.twId,
+                class: twClasses ?? null,
+              },
+              codeUpdatedBy: null,
+            });
+            return;
+          }
         }
 
-        return {};
-      });
+        set({
+          dom,
+          serializedDom,
+          code,
+          codeUpdatedBy: null,
+          selected: null,
+        });
+      };
+
+      switch (codeUpdatedBy) {
+        case "attributes":
+        case "explorer":
+        case "viewer":
+          parseNewCode();
+          break;
+        case "monacoEditor":
+        default:
+          debounce(parseNewCode, 700, "updateCode")();
+      }
     },
     selectElement: (uuid) => {
-      set(({ dom }) => {
-        const selectedElement = domTools.getElementByUUID(dom, uuid);
+      const currentState = get();
 
-        if (selectedElement) {
-          // On selecting an element, highlight the code
-          if (selectedElement.sourceCodeLocation) {
-            const domNodeCodeLocation = domTools.sourceCodeLocationToIRange(
-              selectedElement.sourceCodeLocation,
-            );
-            createEditorManager.highlightCode(domNodeCodeLocation);
-          }
+      const newSelectedElement = domTools.getElementByUUID(
+        currentState.dom,
+        uuid,
+      );
 
-          const twClasses =
-            classTools.parseElementClassAttribute(selectedElement);
-
-          return {
-            selectedElementTWId: uuid,
-            selected: {
-              element: selectedElement,
-              twId: uuid,
-              class: twClasses ?? null,
-            },
-          };
+      if (newSelectedElement) {
+        // On selecting an element, highlight the code
+        if (newSelectedElement.sourceCodeLocation) {
+          const domNodeCodeLocation = domTools.sourceCodeLocationToIRange(
+            newSelectedElement.sourceCodeLocation,
+          );
+          createEditorManager.highlightCode(domNodeCodeLocation);
         }
 
-        return {};
-      });
+        const twClasses =
+          classTools.parseElementClassAttribute(newSelectedElement);
+
+        set({
+          selected: {
+            element: newSelectedElement,
+            twId: uuid,
+            class: twClasses ?? null,
+          },
+        });
+      }
     },
     highlightCode: (range) => {
       if (!createEditorManager.editorRef.current) return;
@@ -158,20 +168,41 @@ export const useEditorManager = create<EditorManagerState>((set) => {
       }
       editorTools.insertElements(editor, type, range);
     },
-    /* insertTwClass: (newTwClass) => {
-      const classExists = classTools.checkClassIfClassExists();
-      createEditorManager.insertCode(
-        twClass.value,
-        domTools.sourceCodeLocationToIRange(twClass.sourceCodeLocation),
-        "attributes",
-      );
-    }, */
-    changeTwClass: (twClass, newValue) => {
+    insertTwClass: (newTwClass, insertedBy) => {
+      const currentState = get();
+      const currentClass = currentState.selected?.class;
+
+      if (currentClass && currentClass.sourceCodeLocation) {
+        const classExists = classTools.checkClassIfClassExists(
+          currentClass.classes,
+          newTwClass,
+        );
+
+        if (classExists) {
+          return {
+            message: "Class already exists",
+            isError: true,
+          };
+        }
+
+        createEditorManager.insertCode(
+          " " + newTwClass,
+          domTools.sourceCodeLocationToIRange({
+            startLine: currentClass.sourceCodeLocation.endLine,
+            startCol: currentClass.sourceCodeLocation.endCol - 1,
+            endLine: currentClass.sourceCodeLocation.endLine,
+            endCol: currentClass.sourceCodeLocation.endCol - 1,
+          }),
+          insertedBy,
+        );
+      }
+    },
+    changeTwClass: (twClass, newValue, changedBy) => {
       if (!twClass.sourceCodeLocation) return;
       createEditorManager.insertCode(
         newValue,
         domTools.sourceCodeLocationToIRange(twClass.sourceCodeLocation),
-        "attributes",
+        changedBy,
       );
     },
   };
