@@ -5,23 +5,21 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-let timeout: NodeJS.Timeout | null;
+const timeouts: Map<string, NodeJS.Timeout> = new Map();
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function debounce<F extends (...args: any[]) => any>(
   func: F,
   wait: number,
-): (...args: Parameters<F>) => ReturnType<F> {
-  return function executedFunction(
-    ...args: Parameters<F>
-  ): ReturnType<F> | void {
-    const later = () => {
-      clearTimeout(timeout!);
-      func(...args);
-    };
-
-    if (timeout) {
-      clearTimeout(timeout);
+  identifier: string,
+): (...args: Parameters<F>) => void {
+  return function executedFunction(...args: Parameters<F>): void {
+    if (timeouts.has(identifier)) {
+      clearTimeout(timeouts.get(identifier)!);
     }
-    timeout = setTimeout(later, wait);
-  } as ReturnType<F>;
+    const timeout = setTimeout(() => {
+      func(...args);
+      timeouts.delete(identifier);
+    }, wait);
+    timeouts.set(identifier, timeout);
+  };
 }

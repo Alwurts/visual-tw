@@ -10,7 +10,7 @@ import InsertTWClassButton from "./buttons/InsertTWClassButton";
 export default function AttributesPanel() {
   const selectedElement = useEditorManager((state) => state.selected?.element);
   const twClassesCategorized = useEditorManager(
-    (state) => state.selected?.class,
+    (state) => state.selected?.class?.classes,
   );
 
   const twClassesCategorizedArray = useMemo(() => {

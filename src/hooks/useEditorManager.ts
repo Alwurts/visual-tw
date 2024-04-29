@@ -13,7 +13,7 @@ import type {
 import { createRef } from "react";
 import type { IRange, editor as monacoEditor } from "monaco-editor";
 import { TWindowTabs } from "@/types/EditorManager";
-import { ITailwindClass, classesClassified } from "@/types/tailwind/base";
+import { ITailwindClass } from "@/types/tailwind/base";
 import { debounce } from "@/lib/utils";
 
 interface EditorManagerState {
@@ -24,7 +24,7 @@ interface EditorManagerState {
   selected: {
     element: Node;
     twId: string;
-    class: classesClassified | null;
+    class: ReturnType<typeof classTools.parseElementClassAttribute> | null;
   } | null;
   codeUpdatedBy: TWindowTabs | null;
   updateCode: (newCode: string) => void;
@@ -94,10 +94,11 @@ export const useEditorManager = create<EditorManagerState>((set) => {
           case "attributes":
           case "explorer":
           case "viewer":
-            debounce(parseNewCode, 300)();
-            break;
-          default:
             parseNewCode();
+            break;
+          case "monacoEditor":
+          default:
+            debounce(parseNewCode, 700, "updateCode")();
         }
 
         return {};

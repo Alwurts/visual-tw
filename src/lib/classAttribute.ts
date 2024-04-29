@@ -99,7 +99,11 @@ export function parseElementClassAttribute(element: Node) {
         sourceCodeLocation: classAttributeSourceCodeLocation,
       });
 
-      return twClasses;
+      return {
+        value: classAttribute,
+        sourceCodeLocation: classAttributeSourceCodeLocation,
+        classes: twClasses,
+      };
     }
   }
 }
