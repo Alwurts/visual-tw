@@ -22,6 +22,14 @@ export function parseHTMLString(html: string) {
         node.childNodes.push(scriptNode.childNodes[0]);
       }
 
+      // Disable links for the visualizer to work correctly
+      if (node.tagName === "a") {
+        const aHref = node.attrs.find((attr) => attr.name === "href");
+        if (aHref) {
+          aHref.value = "javascript:void(0)";
+        }
+      }
+
       if (node.sourceCodeLocation) {
         const nodeIdentifier = `${node.sourceCodeLocation.startLine}-${node.sourceCodeLocation.startCol}`;
 
@@ -34,6 +42,8 @@ export function parseHTMLString(html: string) {
   });
 
   const serializedDom = parse5.serialize(document);
+
+  console.log(document)
 
   return {
     code: html,
