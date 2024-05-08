@@ -30,7 +30,7 @@ export default function NodeExplorer() {
       <Separator className="bg-editor-gray-light" />
       <div className="flex items-center justify-between space-y-1 px-3 py-1">
         <h3 className="text-xs font-semibold uppercase text-white">Document</h3>
-        <InsertHTMLElementButton insertedBy="explorer" />
+        <InsertHTMLElementButton usedBy="explorer" />
       </div>
       {domExplorer ? (
         <div className="flex-grow overflow-y-auto scrollbar scrollbar-thumb-neutral-700">

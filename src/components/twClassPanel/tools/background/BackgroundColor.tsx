@@ -9,8 +9,8 @@ import {
 import { useEditorManager } from "@/hooks/useEditorManager";
 import { sourceCodeLocationToIRange } from "@/lib/dom";
 import { cn } from "@/lib/utils";
-import { ITailwindClass } from "@/types/tailwind/base";
-import bgNames from "@/types/tailwind/backgroundColor";
+import { ITailwindClass } from "@/types/tailwind";
+import bgNames from "@/lib/tailwind/backgroundColor";
 
 interface BackgroundColorProps {
   twClass: ITailwindClass;

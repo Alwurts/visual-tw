@@ -6,15 +6,18 @@ import {
   classesClassified,
   TailwindRegexPatterns,
   ITailwindClassClassified,
-} from "@/types/tailwind/base";
+} from "@/types/tailwind";
 import { Node } from "node_modules/parse5/dist/tree-adapters/default";
 
 const tailwindPatterns: TailwindRegexPatterns = {
+  Layout: {
+    Display:
+      /\b(block|inline-block|inline|flex|inline-flex|table|inline-table|table-caption|table-cell|table-column|table-column-group|table-footer-group|table-header-group|table-row-group|table-row|flow-root|grid|inline-grid|contents|list-item|hidden)\b/g,
+    Overflow:
+      /\b(overflow-(auto|hidden|clip|visible|scroll)|overflow-(x|y)-(auto|hidden|clip|visible|scroll))\b/g,
+  },
   Typography: {
     Text_Align: /\b(text-left|text-center|text-right|text-justify)\b/g,
-  },
-  Backgrounds: {
-    Background_Color: /\b(bg-[a-zA-Z]+(?:-\d+)?)\b/g,
   },
 };
 

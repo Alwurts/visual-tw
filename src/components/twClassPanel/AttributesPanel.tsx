@@ -3,9 +3,11 @@ import { useEditorManager } from "@/hooks/useEditorManager";
 
 import { Separator } from "@/components/ui/separator";
 import Section from "@/components/ui/section";
-import General from "@/components/twClassPanel/inputs/General";
-import { Alignment } from "@/components/twClassPanel/inputs/typography/Alignment";
-import InsertTWClassButton from "./buttons/InsertTWClassButton";
+import General from "@/components/twClassPanel/tools/General";
+import { Alignment } from "@/components/twClassPanel/tools/typography/Alignment";
+import InsertTWClassButton from "../buttons/InsertTWClassButton";
+import { Display } from "./tools/layout/Display";
+import { Overflow } from "./tools/size/Overflow";
 
 export default function AttributesPanel() {
   const selectedElement = useEditorManager((state) => state.selected?.element);
@@ -40,23 +42,49 @@ export default function AttributesPanel() {
             <Section
               title="All classes"
               className="space-y-2 px-3 py-4"
-              actions={<InsertTWClassButton insertedBy="attributes" />}
+              actions={<InsertTWClassButton usedBy="attributes" />}
             >
               {twClassesCategorizedArray?.length ? (
                 twClassesCategorizedArray.map((twClass, index) => (
-                  <General key={twClass.value + index} twClass={twClass} />
+                  <General
+                    key={twClass.value + index}
+                    twClass={twClass}
+                    usedBy="attributes"
+                  />
                 ))
               ) : (
                 <p className="my-7 text-center text-white">No classes</p>
               )}
             </Section>
+            <Section title="Layout" className="space-y-2 px-4 py-4">
+              <div className="flex flex-col space-y-2">
+                <span className="text-sm font-semibold text-white">
+                  Display
+                </span>
+                <Display
+                  currentTWClass={twClassesCategorized?.Display?.[0]}
+                  usedBy="attributes"
+                />
+              </div>
+              <div className="flex flex-col space-y-2">
+                <span className="text-sm font-semibold text-white">
+                  Overflow
+                </span>
+                <Overflow
+                  type="all"
+                  currentTWClass={twClassesCategorized?.Overflow?.[0]}
+                  usedBy="attributes"
+                />
+              </div>
+            </Section>
             <Section title="Typography" className="space-y-2 px-4 py-4">
-              <div className="flex items-baseline justify-between space-x-2">
+              <div className="flex flex-col space-y-2">
                 <span className="text-sm font-semibold text-white">
                   Alignment
                 </span>
                 <Alignment
-                  defaultClass={twClassesCategorized?.Text_Align?.[0]}
+                  currentTWClass={twClassesCategorized?.Text_Align?.[0]}
+                  usedBy="attributes"
                 />
               </div>
             </Section>

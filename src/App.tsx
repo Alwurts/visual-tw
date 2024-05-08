@@ -8,7 +8,7 @@ import { useState } from "react";
 import { TWindowTabs } from "./types/EditorManager";
 import { cn } from "./lib/utils";
 import NodeExplorer from "./components/NodeExplorer";
-import AttributesPanel from "./components/AttributesPanel";
+import AttributesPanel from "./components/twClassPanel/AttributesPanel";
 
 function App() {
   const [openTabs, setOpenTabs] = useState<{

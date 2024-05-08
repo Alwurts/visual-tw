@@ -13,7 +13,7 @@ import type {
 import { createRef } from "react";
 import type { IRange, editor as monacoEditor } from "monaco-editor";
 import { ActionResponse, TWindowTabs } from "@/types/EditorManager";
-import { ITailwindClass } from "@/types/tailwind/base";
+import { ITailwindClass } from "@/types/tailwind";
 import { debounce } from "@/lib/utils";
 
 interface EditorManagerState {

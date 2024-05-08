@@ -15,11 +15,11 @@ import { useState } from "react";
 import { TWindowTabs } from "@/types/EditorManager";
 
 interface InsertHTMLElementButtonProps {
-  insertedBy: TWindowTabs;
+  usedBy: TWindowTabs;
 }
 
 export default function InsertHTMLElementButton({
-  insertedBy,
+  usedBy: insertedBy,
 }: InsertHTMLElementButtonProps) {
   const selectedElement = useEditorManager(({ selected }) => selected?.element);
   const insertHtmlElement = useEditorManager(

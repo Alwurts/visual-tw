@@ -12,7 +12,7 @@ import { useEditorManager } from "@/hooks/useEditorManager";
 import { ActionResponse, TWindowTabs } from "@/types/EditorManager";
 
 interface InsertTWClassButtonProps {
-  insertedBy: TWindowTabs;
+  usedBy: TWindowTabs;
 }
 
 export default function InsertTWClassButton(props: InsertTWClassButtonProps) {
@@ -54,7 +54,7 @@ export default function InsertTWClassButton(props: InsertTWClassButtonProps) {
               if (inputRef.current) {
                 const newTwClass = inputRef.current.value;
                 if (newTwClass && newTwClass.length > 0) {
-                  const res = insertTwClass(newTwClass, props.insertedBy);
+                  const res = insertTwClass(newTwClass, props.usedBy);
                   if (res && res.isError) {
                     setError(res);
                     return;

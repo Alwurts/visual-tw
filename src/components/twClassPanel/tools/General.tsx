@@ -1,4 +1,4 @@
-import { ITailwindClass } from "@/types/tailwind/base";
+import { ITailwindClass } from "@/types/tailwind";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,8 +13,14 @@ import { sourceCodeLocationToIRange } from "@/lib/dom";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { TWindowTabs } from "@/types/EditorManager";
 
-export default function General({ twClass }: { twClass: ITailwindClass }) {
+interface GeneralProps {
+  twClass: ITailwindClass;
+  usedBy: TWindowTabs;
+}
+
+export default function General({ twClass, usedBy }: GeneralProps) {
   const [isInputFocused, setInputFocused] = useState(false);
 
   const highlightCode = useEditorManager((state) => state.highlightCode);
@@ -28,7 +34,7 @@ export default function General({ twClass }: { twClass: ITailwindClass }) {
         onBlur={(e) => {
           const inputValue = e.target.value;
           if (inputValue !== twClass.value) {
-            changeTwClass(twClass, inputValue, "attributes");
+            changeTwClass(twClass, inputValue, usedBy);
           }
           setInputFocused(false);
         }}
@@ -67,7 +73,7 @@ export default function General({ twClass }: { twClass: ITailwindClass }) {
           <DropdownMenuItem
             className="text-red-600 dark:focus:bg-red-800"
             onSelect={() => {
-              changeTwClass(twClass, "", "attributes");
+              changeTwClass(twClass, "", usedBy);
             }}
           >
             <TrashIcon className="mr-2 h-4 w-4" />
