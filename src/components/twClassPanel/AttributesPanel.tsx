@@ -8,6 +8,10 @@ import { Alignment } from "@/components/twClassPanel/tools/typography/Alignment"
 import InsertTWClassButton from "../buttons/InsertTWClassButton";
 import { Display } from "./tools/layout/Display";
 import { Overflow } from "./tools/size/Overflow";
+import BackgroundColor from "./tools/background/BackgroundColor";
+import TextColor from "./tools/typography/TextColor";
+import FontSize from "./tools/typography/FontSize";
+import FontWeight from "./tools/typography/FontWeight";
 
 export default function AttributesPanel() {
   const selectedElement = useEditorManager((state) => state.selected?.element);
@@ -43,6 +47,7 @@ export default function AttributesPanel() {
               title="All classes"
               className="space-y-2 px-3 py-4"
               actions={<InsertTWClassButton usedBy="attributes" />}
+              defaultOpen={false}
             >
               {twClassesCategorizedArray?.length ? (
                 twClassesCategorizedArray.map((twClass, index) => (
@@ -84,6 +89,44 @@ export default function AttributesPanel() {
                 </span>
                 <Alignment
                   currentTWClass={twClassesCategorized?.Text_Align?.[0]}
+                  usedBy="attributes"
+                />
+              </div>
+              <div className="flex flex-col space-y-2">
+                <span className="text-sm font-semibold text-white">
+                  Text Color
+                </span>
+                <TextColor
+                  currentTWClass={twClassesCategorized?.Text_Color?.[0]}
+                  usedBy="attributes"
+                />
+              </div>
+              <div className="flex flex-col space-y-2">
+                <span className="text-sm font-semibold text-white">
+                  Font Size
+                </span>
+                <FontSize
+                  currentTWClass={twClassesCategorized?.Font_Size?.[0]}
+                  usedBy="attributes"
+                />
+              </div>
+              <div className="flex flex-col space-y-2">
+                <span className="text-sm font-semibold text-white">
+                  Font Weight
+                </span>
+                <FontWeight
+                  currentTWClass={twClassesCategorized?.Font_Weight?.[0]}
+                  usedBy="attributes"
+                />
+              </div>
+            </Section>
+            <Section title="Background" className="space-y-2 px-4 py-4">
+              <div className="flex flex-col space-y-2">
+                <span className="text-sm font-semibold text-white">
+                  Background Color
+                </span>
+                <BackgroundColor
+                  currentTWClass={twClassesCategorized?.BackgroundColor?.[0]}
                   usedBy="attributes"
                 />
               </div>

@@ -18,6 +18,15 @@ const tailwindPatterns: TailwindRegexPatterns = {
   },
   Typography: {
     Text_Align: /\b(text-left|text-center|text-right|text-justify)\b/g,
+    Text_Color:
+      /\b(text-(transparent|black|white|(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)(?:-(?:50|100|200|300|400|500|600|700|800|900|950))?))\b/g,
+    Font_Size: /\b(text-(xs|sm|base|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl|8xl|9xl))\b/g,
+    Font_Weight:
+      /\b(font-(hairline|thin|light|normal|medium|semibold|bold|extrabold|black))\b/g,
+  },
+  Backgrounds: {
+    BackgroundColor:
+      /\b(?:bg-(?:inherit|current|transparent|black|white|(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)(?:-(?:50|100|200|300|400|500|600|700|800|900|950))?))\b/,
   },
 };
 
