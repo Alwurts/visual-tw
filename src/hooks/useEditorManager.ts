@@ -24,17 +24,6 @@ export const useEditorManager = create<EditorManagerState>((set, get) => ({
     const codeUpdatedBy = currentState.codeUpdatedBy?.by;
     const codeUpdatedType = currentState.codeUpdatedBy?.type;
     const selected = currentState.selected;
-    console.log(
-      "Code updated by",
-      JSON.parse(
-        JSON.stringify(
-          {
-            codeUpdatedBy,
-            codeUpdatedType,
-          } ?? {},
-        ),
-      ),
-    );
 
     const parseNewCode = () => {
       const { dom, code, serializedDom } = domTools.parseHTMLString(newCode);
@@ -72,7 +61,6 @@ export const useEditorManager = create<EditorManagerState>((set, get) => ({
         case "explorer":
         case "viewer":
           if (codeUpdatedType !== "FORMAT_CODE") {
-            console.log("Reformatting code")
             get().formatEditorCode(codeUpdatedBy);
           }
           break;
@@ -137,7 +125,6 @@ export const useEditorManager = create<EditorManagerState>((set, get) => ({
         type: "FORMAT_CODE",
       },
     });
-    console.log("Formatting code by", formatedBy);
 
     editorTools.formatEditorCode(editor);
   },

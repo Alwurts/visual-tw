@@ -64,6 +64,19 @@ function NodeCollapsible({ node, level }: { node: Node; level: number }) {
 
   const selectElement = useEditorManager((state) => state.selectElement);
 
+  if ("value" in node) {
+    return (
+      <span
+        style={{
+          paddingLeft: `${level * 11}px`,
+        }}
+        className="text-sm font-light text-white"
+      >
+        {node.nodeName}
+      </span>
+    );
+  }
+
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <CollapsibleTrigger asChild>
