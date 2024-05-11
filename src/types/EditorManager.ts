@@ -33,6 +33,8 @@ export type ActionResponse = {
 } | void;
 
 export interface EditorManagerState {
+  projectId: string | null;
+  setProjectId: (projectId: string) => void;
   editorRef: React.MutableRefObject<monacoEditor.IStandaloneCodeEditor | null>;
   viewerRef: React.MutableRefObject<HTMLIFrameElement | null>;
   dom: Document;
@@ -68,5 +70,5 @@ export interface EditorManagerState {
     newValue: string,
     changedBy: TWindowTabs,
   ) => ActionResponse;
-  saveNewVersion: (commitMessage: string) => Promise<Commit[]>;
+  saveNewVersion: (commitMessage: string) => Promise<Commit[] | void>;
 }

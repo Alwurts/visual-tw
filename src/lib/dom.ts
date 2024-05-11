@@ -1,7 +1,7 @@
 import { Node } from "node_modules/parse5/dist/tree-adapters/default";
 import * as parse5 from "parse5";
 import DEFAULT_HEAD_CODE from "./editor/defaultHeadCode.html?raw";
-import VIEWER_CODE from "./viewer.js?raw";
+import VIEWER_CODE from "./viewerInternal.js?raw";
 import { IRange } from "monaco-editor";
 import { SourceCodeLocation } from "@/types/parse5";
 
