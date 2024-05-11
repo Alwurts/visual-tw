@@ -12,9 +12,13 @@ import BackgroundColor from "./tools/background/BackgroundColor";
 import TextColor from "./tools/typography/TextColor";
 import FontSize from "./tools/typography/FontSize";
 import FontWeight from "./tools/typography/FontWeight";
+import { Textarea } from "../ui/textarea";
+import { Label } from "../ui/label";
+import { htmlTextWhitespaceHandling } from "@/lib/dom";
 
 export default function AttributesPanel() {
-  const selectedElement = useEditorManager((state) => state.selected?.element);
+  const selected = useEditorManager((state) => state.selected);
+  const selectedElement = selected?.element;
   const twClassesCategorized = useEditorManager(
     (state) => state.selected?.class?.classes,
   );
@@ -25,13 +29,13 @@ export default function AttributesPanel() {
   }, [twClassesCategorized]);
 
   return (
-    <div className="flex max-h-full flex-col">
+    <div key={selected?.twId} className="flex max-h-full flex-col">
       <div className="flex h-10 flex-shrink-0 items-center justify-between px-5">
         <h3 className="text-xs uppercase text-white">Attributes</h3>
       </div>
       <Separator className="bg-editor-gray-light" />
       <div className="flex flex-grow flex-col overflow-y-auto scrollbar scrollbar-thumb-neutral-700">
-        {selectedElement ? (
+        {selectedElement && "attrs" in selectedElement ? (
           <>
             <Section title="Details" className="space-y-2 px-4 py-4">
               <div className="flex flex-col space-y-2">
@@ -43,6 +47,21 @@ export default function AttributesPanel() {
                 </div>
               </div>
             </Section>
+            {selectedElement.childNodes.length === 1 &&
+              "value" in selectedElement.childNodes[0] && (
+                <Section title="Text" className="space-y-2 px-4 py-4">
+                  <div className="flex flex-col space-y-2">
+                    <Label htmlFor="textContent">Text content</Label>
+                    <Textarea
+                      defaultValue={htmlTextWhitespaceHandling(
+                        selectedElement.childNodes[0].value,
+                      )}
+                      rows={5}
+                      id="textContent"
+                    />
+                  </div>
+                </Section>
+              )}
             <Section
               title="All classes"
               className="space-y-2 px-3 py-4"
@@ -63,18 +82,14 @@ export default function AttributesPanel() {
             </Section>
             <Section title="Layout" className="space-y-2 px-4 py-4">
               <div className="flex flex-col space-y-2">
-                <span className="text-sm font-semibold text-white">
-                  Display
-                </span>
+                <Label>Display</Label>
                 <Display
                   currentTWClass={twClassesCategorized?.Display?.[0]}
                   usedBy="attributes"
                 />
               </div>
               <div className="flex flex-col space-y-2">
-                <span className="text-sm font-semibold text-white">
-                  Overflow
-                </span>
+                <Label>Overflow</Label>
                 <Overflow
                   type="all"
                   currentTWClass={twClassesCategorized?.Overflow?.[0]}
@@ -84,36 +99,28 @@ export default function AttributesPanel() {
             </Section>
             <Section title="Typography" className="space-y-2 px-4 py-4">
               <div className="flex flex-col space-y-2">
-                <span className="text-sm font-semibold text-white">
-                  Alignment
-                </span>
+                <Label>Alignment</Label>
                 <Alignment
                   currentTWClass={twClassesCategorized?.Text_Align?.[0]}
                   usedBy="attributes"
                 />
               </div>
               <div className="flex flex-col space-y-2">
-                <span className="text-sm font-semibold text-white">
-                  Text Color
-                </span>
+                <Label>Text Color</Label>
                 <TextColor
                   currentTWClass={twClassesCategorized?.Text_Color?.[0]}
                   usedBy="attributes"
                 />
               </div>
               <div className="flex flex-col space-y-2">
-                <span className="text-sm font-semibold text-white">
-                  Font Size
-                </span>
+                <Label>Font Size</Label>
                 <FontSize
                   currentTWClass={twClassesCategorized?.Font_Size?.[0]}
                   usedBy="attributes"
                 />
               </div>
               <div className="flex flex-col space-y-2">
-                <span className="text-sm font-semibold text-white">
-                  Font Weight
-                </span>
+                <Label>Font Weight</Label>
                 <FontWeight
                   currentTWClass={twClassesCategorized?.Font_Weight?.[0]}
                   usedBy="attributes"
@@ -122,9 +129,7 @@ export default function AttributesPanel() {
             </Section>
             <Section title="Background" className="space-y-2 px-4 py-4">
               <div className="flex flex-col space-y-2">
-                <span className="text-sm font-semibold text-white">
-                  Background Color
-                </span>
+                <Label>Background Color</Label>
                 <BackgroundColor
                   currentTWClass={twClassesCategorized?.BackgroundColor?.[0]}
                   usedBy="attributes"

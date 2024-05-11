@@ -1,6 +1,6 @@
 import { ITailwindClassClassified } from "@/types/tailwind";
 import fontSizeNames from "@/lib/tailwindNames/fontSize";
-import { TWindowTabs } from "@/types/EditorManager";
+import { TWindowTabs } from "@/types/editorManager";
 import SelectOption from "../../components/SelectOption";
 
 interface FontSizeProps {
@@ -14,6 +14,9 @@ export default function FontSize({ currentTWClass, usedBy }: FontSizeProps) {
       currentTWClass={currentTWClass}
       selectItems={fontSizeNames}
       selectPlaceholder="Select Font Size"
+      selectItemDisplay={(item) => {
+        return <span>{item}</span>;
+      }}
       usedBy={usedBy}
     />
   );

@@ -35,7 +35,7 @@ export default function NodeExplorer() {
       {domExplorer ? (
         <div className="flex-grow overflow-y-auto scrollbar scrollbar-thumb-neutral-700">
           {domExplorer.map((node, index) => {
-            if ("attrs" in node && "childNodes" in node) {
+            if ("attrs" in node) {
               return (
                 <NodeCollapsible
                   key={`${node.nodeName}-${1}-${index}`}
@@ -60,7 +60,7 @@ function NodeCollapsible({ node, level }: { node: Node; level: number }) {
 
   const nodeUuid = useMemo(() => getElementVisualTwId(node), [node]);
 
-  const selectedElementTWId = useEditorManager((state) => state.selected?.twId);
+  const selectedElement = useEditorManager((state) => state.selected);
 
   const selectElement = useEditorManager((state) => state.selectElement);
 
@@ -74,7 +74,7 @@ function NodeCollapsible({ node, level }: { node: Node; level: number }) {
           }}
           className={cn(
             "flex h-full w-full justify-start space-x-1 rounded-none p-0 text-sm font-normal text-white hover:text-white",
-            selectedElementTWId && selectedElementTWId === nodeUuid
+            selectedElement && selectedElement.twId === nodeUuid
               ? "bg-editor-accent dark:hover:bg-editor-accent"
               : "dark:hover:bg-editor-gray-medium",
           )}
@@ -95,18 +95,20 @@ function NodeCollapsible({ node, level }: { node: Node; level: number }) {
         </Button>
       </CollapsibleTrigger>
 
-      <CollapsibleContent className="relative">
-        <Separator
-          orientation="vertical"
-          style={{
-            left: `${level * 12}px`,
-          }}
-          className="absolute z-50 bg-editor-gray-light"
-        />
-        {"childNodes" in node &&
-          !!node.childNodes.length &&
-          node.childNodes.map((child, index) => {
-            if ("attrs" in child || node.childNodes.length === 1)
+      {"childNodes" in node && !!node.childNodes.length && (
+        <CollapsibleContent className="relative">
+          <Separator
+            orientation="vertical"
+            style={{
+              left: `${level * 12}px`,
+            }}
+            className="absolute z-50 dark:bg-editor-gray-light"
+          />
+          {node.childNodes.map((child, index) => {
+            if (
+              "attrs" in child ||
+              (node.childNodes.length === 1 && "value" in child)
+            )
               return (
                 <NodeCollapsible
                   level={level + 1}
@@ -115,7 +117,8 @@ function NodeCollapsible({ node, level }: { node: Node; level: number }) {
                 />
               );
           })}
-      </CollapsibleContent>
+        </CollapsibleContent>
+      )}
     </Collapsible>
   );
 }

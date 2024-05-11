@@ -4,20 +4,19 @@ import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
 import { CopyIcon, Paintbrush } from "lucide-react";
 import { useEditorManager } from "@/hooks/useEditorManager";
-import * as editorTools from "@/lib/editor";
 
 const CodeEditor = () => {
   const editorRef = useEditorManager((state) => state.editorRef);
   const initialCode = useEditorManager((state) => state.code);
 
   const updateCode = useEditorManager((state) => state.updateCode);
+  const formatEditorCode = useEditorManager((state) => state.formatEditorCode);
 
-  function formatEditorCode() {
-    editorRef.current?.getAction("editor.action.formatDocument")?.run();
+  /* function formatEditorCode() {
     if (editorRef.current) {
       editorTools.formatEditorCode(editorRef.current);
     }
-  }
+  } */
 
   function copyEditorCode() {
     const editorCode = editorRef.current?.getValue();
@@ -44,7 +43,11 @@ const CodeEditor = () => {
           <Button size="tool" variant="tool" onClick={copyEditorCode}>
             <CopyIcon className="h-4 w-4 flex-shrink-0" />
           </Button>
-          <Button size="tool" variant="tool" onClick={formatEditorCode}>
+          <Button
+            size="tool"
+            variant="tool"
+            onClick={() => formatEditorCode("monacoEditor")}
+          >
             <Paintbrush className="h-4 w-4 flex-shrink-0" />
           </Button>
         </div>

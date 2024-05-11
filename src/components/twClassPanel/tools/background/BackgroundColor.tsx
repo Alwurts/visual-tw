@@ -1,6 +1,6 @@
 import { ITailwindClassClassified } from "@/types/tailwind";
 import bgNames from "@/lib/tailwindNames/backgroundColor";
-import { TWindowTabs } from "@/types/EditorManager";
+import { TWindowTabs } from "@/types/editorManager";
 import SelectOption from "../../components/SelectOption";
 import { cn } from "@/lib/utils";
 

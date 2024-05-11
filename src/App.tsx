@@ -5,7 +5,7 @@ import CodeEditor from "./components/CodeEditor";
 import CodeViewer from "./components/CodeViewer";
 import SideNavigation from "./components/SideNavigation";
 import { useState } from "react";
-import { TWindowTabs } from "./types/EditorManager";
+import { TWindowTabs } from "./types/editorManager";
 import { cn } from "./lib/utils";
 import NodeExplorer from "./components/NodeExplorer";
 import AttributesPanel from "./components/twClassPanel/AttributesPanel";

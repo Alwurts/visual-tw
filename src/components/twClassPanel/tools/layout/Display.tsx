@@ -1,5 +1,5 @@
 import { ITailwindClassClassified } from "@/types/tailwind";
-import { TWindowTabs } from "@/types/EditorManager";
+import { TWindowTabs } from "@/types/editorManager";
 import { ToggleButtonGroup } from "../../components/ToggleButtonGroup";
 import {
   ALargeSmall,

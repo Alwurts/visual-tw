@@ -13,7 +13,7 @@ import { sourceCodeLocationToIRange } from "@/lib/dom";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { TWindowTabs } from "@/types/EditorManager";
+import { TWindowTabs } from "@/types/editorManager";
 
 interface GeneralProps {
   twClass: ITailwindClass;
@@ -25,6 +25,7 @@ export default function General({ twClass, usedBy }: GeneralProps) {
 
   const highlightCode = useEditorManager((state) => state.highlightCode);
   const changeTwClass = useEditorManager((state) => state.changeTwClass);
+  const deleteCode = useEditorManager((state) => state.deleteCode);
 
   return (
     <div className="flex items-center justify-stretch">
@@ -73,7 +74,12 @@ export default function General({ twClass, usedBy }: GeneralProps) {
           <DropdownMenuItem
             className="text-red-600 dark:focus:bg-red-800"
             onSelect={() => {
-              changeTwClass(twClass, "", usedBy);
+              if (twClass.sourceCodeLocation) {
+                deleteCode(
+                  sourceCodeLocationToIRange(twClass.sourceCodeLocation),
+                  usedBy,
+                );
+              }
             }}
           >
             <TrashIcon className="mr-2 h-4 w-4" />

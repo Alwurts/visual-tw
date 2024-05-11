@@ -1,9 +1,6 @@
-export type ViewerElementHoveredMessage = {
-  type: "elementhovered";
+export type ViewerMessage = {
+  type: "viewer-element-selected";
   data: {
-    id: string;
-    name: string;
+    uuid: string;
   };
 };
-
-export type ViewerMessage = ViewerElementHoveredMessage;

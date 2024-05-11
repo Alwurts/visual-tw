@@ -12,7 +12,7 @@ import { getElementsByTagName } from "@/lib/dom";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Command, CommandGroup, CommandItem, CommandList } from "../ui/command";
 import { useState } from "react";
-import { TWindowTabs } from "@/types/EditorManager";
+import { TWindowTabs } from "@/types/editorManager";
 
 interface InsertHTMLElementButtonProps {
   usedBy: TWindowTabs;

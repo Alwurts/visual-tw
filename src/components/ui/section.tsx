@@ -45,7 +45,14 @@ export default function Section({
         </CollapsibleTrigger>
         {actions}
       </div>
-      <CollapsibleContent className={className}>{children}</CollapsibleContent>
+      <CollapsibleContent
+        className={cn(
+          className,
+          "overflow-x-auto scrollbar scrollbar-thumb-neutral-700",
+        )}
+      >
+        {children}
+      </CollapsibleContent>
     </Collapsible>
   );
 }

@@ -6,50 +6,9 @@ import * as classTools from "@/lib/classAttribute";
 
 import DEFAULT_EDITOR_CODE from "../lib/editor/defaultEditorCode.html?raw";
 
-import type {
-  Document,
-  Node,
-} from "node_modules/parse5/dist/tree-adapters/default";
 import { createRef } from "react";
-import type { IRange, editor as monacoEditor } from "monaco-editor";
-import { ActionResponse, TWindowTabs } from "@/types/EditorManager";
-import { ITailwindClass } from "@/types/tailwind";
 import { debounce } from "@/lib/utils";
-
-interface EditorManagerState {
-  editorRef: React.MutableRefObject<monacoEditor.IStandaloneCodeEditor | null>;
-  dom: Document;
-  serializedDom: string;
-  code: string;
-  selected: {
-    element: Node;
-    twId: string;
-    class: ReturnType<typeof classTools.parseElementClassAttribute> | null;
-  } | null;
-  codeUpdatedBy: TWindowTabs | null;
-  updateCode: (newCode: string) => ActionResponse;
-  selectElement: (uuid: string) => ActionResponse;
-  highlightCode: (range: IRange) => ActionResponse;
-  insertCode: (
-    code: string,
-    range: IRange,
-    insertedBy: TWindowTabs,
-  ) => ActionResponse;
-  insertHtmlElementCode: (
-    type: "h1" | "h2" | "h3" | "div" | "span" | "p",
-    range: IRange,
-    insertedBy: TWindowTabs,
-  ) => ActionResponse;
-  insertTwClass: (
-    newTwClass: string,
-    insertedBy: TWindowTabs,
-  ) => ActionResponse;
-  changeTwClass: (
-    twClass: ITailwindClass,
-    newValue: string,
-    changedBy: TWindowTabs,
-  ) => ActionResponse;
-}
+import type { EditorManagerState } from "@/types/editorManager";
 
 const initialParsedCode = domTools.parseHTMLString(DEFAULT_EDITOR_CODE);
 
@@ -62,14 +21,27 @@ export const useEditorManager = create<EditorManagerState>((set, get) => ({
   codeUpdatedBy: null,
   updateCode: (newCode) => {
     const currentState = get();
-    const codeUpdatedBy = currentState.codeUpdatedBy;
+    const codeUpdatedBy = currentState.codeUpdatedBy?.by;
+    const codeUpdatedType = currentState.codeUpdatedBy?.type;
     const selected = currentState.selected;
+    console.log(
+      "Code updated by",
+      JSON.parse(
+        JSON.stringify(
+          {
+            codeUpdatedBy,
+            codeUpdatedType,
+          } ?? {},
+        ),
+      ),
+    );
 
     const parseNewCode = () => {
       const { dom, code, serializedDom } = domTools.parseHTMLString(newCode);
 
-      // Do not reset the selected element if the code was updated by the attributes panel
-      if (selected && codeUpdatedBy === "attributes") {
+      // Which event to re-select the selected element
+      let newSelected;
+      if (codeUpdatedBy === "attributes" && selected) {
         const newSelectedElement = domTools.getElementByUUID(
           dom,
           selected.twId,
@@ -78,18 +50,11 @@ export const useEditorManager = create<EditorManagerState>((set, get) => ({
           const twClasses =
             classTools.parseElementClassAttribute(newSelectedElement);
 
-          set({
-            dom,
-            serializedDom,
-            code,
-            selected: {
-              element: newSelectedElement,
-              twId: selected.twId,
-              class: twClasses ?? null,
-            },
-            codeUpdatedBy: null,
-          });
-          return;
+          newSelected = {
+            element: newSelectedElement,
+            twId: selected.twId,
+            class: twClasses ?? null,
+          };
         }
       }
 
@@ -98,20 +63,29 @@ export const useEditorManager = create<EditorManagerState>((set, get) => ({
         serializedDom,
         code,
         codeUpdatedBy: null,
-        selected: null,
+        selected: newSelected ?? null,
       });
+
+      // Which event to format code for
+      switch (codeUpdatedBy) {
+        case "attributes":
+        case "explorer":
+        case "viewer":
+          if (codeUpdatedType !== "FORMAT_CODE") {
+            console.log("Reformatting code")
+            get().formatEditorCode(codeUpdatedBy);
+          }
+          break;
+      }
     };
 
-    switch (codeUpdatedBy) {
-      case "attributes":
-      case "explorer":
-      case "viewer":
-        parseNewCode();
-        break;
-      case "monacoEditor":
-      default:
-        debounce(parseNewCode, 700, "updateCode")();
+    // Which event to debounce or not
+    if (codeUpdatedBy === undefined && codeUpdatedType !== "FORMAT_CODE") {
+      debounce(parseNewCode, 700, "UPDATE_CODE")();
+      return;
     }
+
+    parseNewCode();
   },
   selectElement: (uuid) => {
     const currentState = get();
@@ -152,22 +126,50 @@ export const useEditorManager = create<EditorManagerState>((set, get) => ({
       column: range.endColumn,
     });
   },
-  insertCode: (code, range, insertedBy) => {
+  formatEditorCode: (formatedBy) => {
     const editorRef = get().editorRef;
     if (!editorRef.current) return;
     const editor = editorRef.current;
-    if (insertedBy) {
-      set({ codeUpdatedBy: insertedBy });
-    }
+
+    set({
+      codeUpdatedBy: {
+        by: formatedBy,
+        type: "FORMAT_CODE",
+      },
+    });
+    console.log("Formatting code by", formatedBy);
+
+    editorTools.formatEditorCode(editor);
+  },
+  deleteCode: (range, deletedBy) => {
+    get().insertCode("", range, {
+      by: deletedBy,
+      type: "DELETE_CODE",
+    });
+  },
+  insertCode: (code, range, codeUpdateBy) => {
+    const editorRef = get().editorRef;
+    if (!editorRef.current) return;
+    const editor = editorRef.current;
+
+    set({
+      codeUpdatedBy: codeUpdateBy,
+    });
+
     editorTools.insertCode(editor, range, code);
   },
   insertHtmlElementCode: (type, range, insertedBy) => {
     const editorRef = get().editorRef;
     if (!editorRef.current) return;
     const editor = editorRef.current;
-    if (insertedBy) {
-      set({ codeUpdatedBy: insertedBy });
-    }
+
+    set({
+      codeUpdatedBy: {
+        by: insertedBy,
+        type: "INSERT_HTML_ELEMENT",
+      },
+    });
+
     editorTools.insertElements(editor, type, range);
   },
   insertTwClass: (newTwClass, insertedBy) => {
@@ -199,7 +201,10 @@ export const useEditorManager = create<EditorManagerState>((set, get) => ({
             endLine: currentClass.sourceCodeLocation.endLine,
             endCol: currentClass.sourceCodeLocation.endCol - 1,
           }),
-          insertedBy,
+          {
+            by: insertedBy,
+            type: "INSERT_TW_CLASS",
+          },
         );
       } else if (currentSelected.element.sourceCodeLocation) {
         const newClass = ` class="${newTwClass}"`;
@@ -216,7 +221,10 @@ export const useEditorManager = create<EditorManagerState>((set, get) => ({
             1,
         });
 
-        currentState.insertCode(newClass, newClassRange, insertedBy);
+        currentState.insertCode(newClass, newClassRange, {
+          by: insertedBy,
+          type: "INSERT_TW_CLASS",
+        });
       }
     }
   },
@@ -225,7 +233,10 @@ export const useEditorManager = create<EditorManagerState>((set, get) => ({
     get().insertCode(
       newValue,
       domTools.sourceCodeLocationToIRange(twClass.sourceCodeLocation),
-      changedBy,
+      {
+        by: changedBy,
+        type: "CHANGE_TW_CLASS",
+      },
     );
   },
 }));

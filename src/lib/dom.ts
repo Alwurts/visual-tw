@@ -43,8 +43,6 @@ export function parseHTMLString(html: string) {
 
   const serializedDom = parse5.serialize(document);
 
-  console.log(document)
-
   return {
     code: html,
     serializedDom: serializedDom,
@@ -144,4 +142,14 @@ export function setElementAttributeValue(
 
 export function getElementVisualTwId(node: Node) {
   return getElementAttributeValue(node, "visual-tw-id");
+}
+
+export function htmlTextWhitespaceHandling(text: string): string {
+  return (
+    text
+      // Replace new lines and tabs with spaces
+      .replace(/\s+/g, " ")
+      // Trim leading and trailing whitespace
+      .trim()
+  );
 }
