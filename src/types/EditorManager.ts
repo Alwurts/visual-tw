@@ -5,6 +5,7 @@ import type {
 import type { IRange, editor as monacoEditor } from "monaco-editor";
 import { ITailwindClass } from "@/types/tailwind";
 import * as classTools from "@/lib/classAttribute";
+import { Commit } from "@/lib/db/indexdb";
 
 const windowTabs = [
   "explorer",
@@ -33,6 +34,7 @@ export type ActionResponse = {
 
 export interface EditorManagerState {
   editorRef: React.MutableRefObject<monacoEditor.IStandaloneCodeEditor | null>;
+  viewerRef: React.MutableRefObject<HTMLIFrameElement | null>;
   dom: Document;
   serializedDom: string;
   code: string;
@@ -66,4 +68,5 @@ export interface EditorManagerState {
     newValue: string,
     changedBy: TWindowTabs,
   ) => ActionResponse;
+  saveNewVersion: (commitMessage: string) => Promise<Commit[]>;
 }

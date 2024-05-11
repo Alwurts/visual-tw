@@ -9,6 +9,8 @@ import ZoomSelect from "./ZoomSelect";
 
 const CodeViewer = () => {
   const iframeContainerRef = useRef(null); // New ref for iframe's parent container
+  //const iframeRef = useRef<HTMLIFrameElement>(null);
+  const iframeRef = useEditorManager((state) => state.viewerRef);
 
   const srcDoc = useEditorManager((state) => state.serializedDom);
 
@@ -92,6 +94,13 @@ const CodeViewer = () => {
           >
             <Laptop className="h-4 w-4 flex-shrink-0" />
           </Button>
+          {/* <Button
+            size="tool"
+            variant="tool"
+            onClick={() => captureScreenshot()}
+          >
+            <Camera className="h-4 w-4 flex-shrink-0" />
+          </Button> */}
         </div>
       </div>
       <Separator className="bg-editor-gray-light" />
@@ -101,6 +110,7 @@ const CodeViewer = () => {
       >
         <iframe
           title="Rendered Output"
+          ref={iframeRef}
           className={cn(
             "m-auto rounded-xl border-2 border-black bg-white",
             screenSizes[screenSize],

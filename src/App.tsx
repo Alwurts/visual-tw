@@ -7,8 +7,9 @@ import SideNavigation from "./components/SideNavigation";
 import { useState } from "react";
 import { TWindowTabs } from "./types/editorManager";
 import { cn } from "./lib/utils";
-import NodeExplorer from "./components/NodeExplorer";
+//import NodeExplorer from "./components/NodeExplorer";
 import AttributesPanel from "./components/twClassPanel/AttributesPanel";
+import VersionControlPanel from "./components/VersionControlPanel";
 
 function App() {
   const [openTabs, setOpenTabs] = useState<{
@@ -20,8 +21,8 @@ function App() {
     attributes: true,
   });
 
-  return (
-    <main className="bg-editor-black">
+  return ( 
+    <main className="bg-editor-black ">
       <nav className="h-[32px] bg-editor-gray-medium px-3 py-1">
         <h1 className="font-bold text-white">
           Visual<span className="text-editor-accent">TW</span>
@@ -38,7 +39,8 @@ function App() {
             minSize={10}
             maxSize={15}
           >
-            <NodeExplorer />
+            {/* <NodeExplorer /> */}
+            <VersionControlPanel />
           </Panel>
           <PanelResizeHandle
             className={cn("ResizeHandle", {

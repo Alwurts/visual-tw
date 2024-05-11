@@ -47,8 +47,8 @@ export default function Section({
       </div>
       <CollapsibleContent
         className={cn(
-          className,
           "overflow-x-auto scrollbar scrollbar-thumb-neutral-700",
+          className,
         )}
       >
         {children}

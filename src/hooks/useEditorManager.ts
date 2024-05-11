@@ -9,11 +9,14 @@ import DEFAULT_EDITOR_CODE from "../lib/editor/defaultEditorCode.html?raw";
 import { createRef } from "react";
 import { debounce } from "@/lib/utils";
 import type { EditorManagerState } from "@/types/editorManager";
+import html2canvas from "html2canvas";
+import { db } from "@/lib/db/indexdb";
 
 const initialParsedCode = domTools.parseHTMLString(DEFAULT_EDITOR_CODE);
 
 export const useEditorManager = create<EditorManagerState>((set, get) => ({
   editorRef: createRef(),
+  viewerRef: createRef(),
   dom: initialParsedCode.dom,
   serializedDom: initialParsedCode.serializedDom,
   code: initialParsedCode.code,
@@ -225,5 +228,36 @@ export const useEditorManager = create<EditorManagerState>((set, get) => ({
         type: "CHANGE_TW_CLASS",
       },
     );
+  },
+  saveNewVersion: async (commitMessage) => {
+    const viewerRef = get().viewerRef;
+
+    const iframeDocument =
+      viewerRef.current?.contentDocument ||
+      viewerRef.current?.contentWindow?.document;
+
+    if (!iframeDocument) {
+      return [];
+    }
+
+    const screenshotCanvas = await html2canvas(iframeDocument.body);
+    const screenshotDataUrl = screenshotCanvas.toDataURL("image/png");
+
+    try {
+      const id = await db.commits.add({
+        projectId: 1,
+        commitMessage,
+        version: 1,
+        fileContent: get().code,
+        screenshot: screenshotDataUrl,
+        timestamp: new Date(),
+      });
+      const loadedCommits = await db.commits.toArray();
+      console.log(`Screenshot saved with ID: ${id}`);
+      return loadedCommits;
+    } catch (error) {
+      console.error("Failed to save screenshot:", error);
+    }
+    return [];
   },
 }));

@@ -27,6 +27,8 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "cmdk": "^1.0.0",
+    "dexie": "^4.0.4",
+    "html2canvas": "^1.4.1",
     "lucide-react": "^0.368.0",
     "monaco-editor": "^0.47.0",
     "parse5": "^7.1.2",
