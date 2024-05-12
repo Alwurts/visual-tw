@@ -10,7 +10,7 @@ const timeouts: Map<string, NodeJS.Timeout> = new Map();
 export function debounce<F extends (...args: any[]) => any>(
   func: F,
   wait: number,
-  identifier: "UPDATE_CODE",
+  identifier: "UPDATE_CODE" | "UPDATE_NODE_TEXT",
 ): (...args: Parameters<F>) => void {
   return function executedFunction(...args: Parameters<F>): void {
     if (timeouts.has(identifier)) {

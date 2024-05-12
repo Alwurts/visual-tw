@@ -1,4 +1,4 @@
-import { Node } from "node_modules/parse5/dist/tree-adapters/default";
+import { Node, TextNode } from "node_modules/parse5/dist/tree-adapters/default";
 import * as parse5 from "parse5";
 import DEFAULT_HEAD_CODE from "./editor/defaultHeadCode.html?raw";
 import VIEWER_CODE from "./viewerInternal.js?raw";
@@ -152,4 +152,61 @@ export function htmlTextWhitespaceHandling(text: string): string {
       // Trim leading and trailing whitespace
       .trim()
   );
+}
+
+export function trimValueAndUpdateLocation(textNode: TextNode): TextNode {
+  const originalValue = textNode.value;
+  const trimmedValue = originalValue.trim();
+
+  if (textNode.sourceCodeLocation) {
+    const leadingTrimmed = originalValue.substring(
+      0,
+      originalValue.length - originalValue.trimStart().length,
+    );
+
+    let leadingColTracker = textNode.sourceCodeLocation.startCol;
+    let leadingLineTracker = textNode.sourceCodeLocation.startLine;
+    let leadingOffsetTracker = textNode.sourceCodeLocation.startOffset;
+    leadingTrimmed.split("").forEach((char) => {
+      if (char === "\n") {
+        leadingLineTracker++;
+        leadingOffsetTracker++;
+        leadingColTracker = 1;
+      } else {
+        leadingColTracker++;
+        leadingOffsetTracker++;
+      }
+    });
+
+    let trailingColTracker = leadingColTracker;
+    let trailingLineTracker = leadingLineTracker;
+    let trailingOffsetTracker = leadingOffsetTracker;
+    trimmedValue.split("").forEach((char) => {
+      if (char === "\n") {
+        trailingLineTracker++;
+        trailingOffsetTracker++;
+        trailingColTracker = 1;
+      } else {
+        trailingColTracker++;
+        trailingOffsetTracker++;
+      }
+    });
+
+    return {
+      ...textNode,
+      value: trimmedValue,
+      sourceCodeLocation: {
+        startCol: leadingColTracker,
+        startLine: leadingLineTracker,
+        endCol: trailingColTracker,
+        endLine: trailingLineTracker,
+        startOffset: leadingOffsetTracker,
+        endOffset: trailingOffsetTracker,
+      },
+    };
+  }
+  return {
+    ...textNode,
+    value: trimmedValue,
+  };
 }

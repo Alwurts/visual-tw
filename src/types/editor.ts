@@ -35,7 +35,8 @@ export type UpdateCodeEvent = {
     | "FORMAT_CODE"
     | "DELETE_CODE"
     | "INSERT_TW_CLASS"
-    | "CHANGE_TW_CLASS";
+    | "CHANGE_TW_CLASS"
+    | "CHANGE_NODE_TEXT";
 };
 
 export type ActionResponse = {

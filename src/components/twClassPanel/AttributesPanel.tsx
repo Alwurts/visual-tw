@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useEditorManager } from "@/hooks/useEditorManager";
+import { debounce } from "@/lib/utils";
 
 import { Separator } from "@/components/ui/separator";
 import Section from "@/components/ui/section";
@@ -14,11 +15,15 @@ import FontSize from "./tools/typography/FontSize";
 import FontWeight from "./tools/typography/FontWeight";
 import { Textarea } from "../ui/textarea";
 import { Label } from "../ui/label";
-import { htmlTextWhitespaceHandling } from "@/lib/dom";
+import {
+  sourceCodeLocationToIRange,
+  trimValueAndUpdateLocation,
+} from "@/lib/dom";
 import { cn } from "@/lib/utils";
 
 export default function AttributesPanel({ className }: { className?: string }) {
   const selected = useEditorManager((state) => state.selected);
+  const insertCode = useEditorManager((state) => state.insertCode);
   const selectedElement = selected?.element;
   const twClassesCategorized = useEditorManager(
     (state) => state.selected?.class?.classes,
@@ -70,20 +75,46 @@ export default function AttributesPanel({ className }: { className?: string }) {
               </div>
             </Section>
             {selectedElement.childNodes.length === 1 &&
-              "value" in selectedElement.childNodes[0] && (
-                <Section title="Text" className="space-y-2 px-4 py-4">
-                  <div className="flex flex-col space-y-2">
-                    <Label htmlFor="textContent">Text content</Label>
-                    <Textarea
-                      defaultValue={htmlTextWhitespaceHandling(
-                        selectedElement.childNodes[0].value,
-                      )}
-                      rows={5}
-                      id="textContent"
-                    />
-                  </div>
-                </Section>
-              )}
+              "value" in selectedElement.childNodes[0] &&
+              (() => {
+                const textContent = trimValueAndUpdateLocation(
+                  selectedElement.childNodes[0],
+                );
+                return (
+                  <Section title="Text" className="space-y-2 px-4 py-4">
+                    <div className="flex flex-col space-y-2">
+                      <Label htmlFor="textContent">Text content</Label>
+                      <Textarea
+                        defaultValue={textContent.value}
+                        rows={5}
+                        id="textContent"
+                        onChange={(e) => {
+                          debounce(
+                            () => {
+                              const newValue = e.target.value;
+                              console.log("newValue", { newValue });
+                              if (textContent.sourceCodeLocation) {
+                                insertCode(
+                                  newValue,
+                                  sourceCodeLocationToIRange(
+                                    textContent.sourceCodeLocation,
+                                  ),
+                                  {
+                                    type: "CHANGE_NODE_TEXT",
+                                    by: "attributes",
+                                  },
+                                );
+                              }
+                            },
+                            700,
+                            "UPDATE_NODE_TEXT",
+                          )();
+                        }}
+                      />
+                    </div>
+                  </Section>
+                );
+              })()}
             <Section
               title="All classes"
               className="space-y-2 px-3 py-4"
