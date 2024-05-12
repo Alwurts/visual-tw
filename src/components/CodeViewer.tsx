@@ -68,6 +68,7 @@ const CodeViewer = () => {
   }, [selectElement]);
 
   //console.log("srcDoc", srcDoc)
+  // TODO Add buttont to trigger selection mode on or off
 
   return (
     <div className="flex h-full flex-col">

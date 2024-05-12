@@ -29,8 +29,11 @@ function Home() {
   }, []);
 
   return (
-    <BaseLayout className="flex flex-col items-center space-y-10 py-10">
-      <div className="flex flex-grow w-full max-w-screen-md items-stretch space-x-4">
+    <BaseLayout
+      projectName="No project selected"
+      className="flex flex-col items-center space-y-10 py-10"
+    >
+      <div className="flex w-full max-w-screen-md flex-grow items-stretch space-x-4">
         <div className="flex flex-shrink-0 flex-col items-center space-y-2 px-8 py-20">
           <h2 className="text-white">Create project</h2>
           <NewProject />
@@ -66,7 +69,7 @@ function Home() {
                         {new Date(project.updatedAt).toLocaleString()}
                       </p>
                     </div>
-                    <div className="rounded-md bg-editor-gray-light w-40">
+                    <div className="w-40 rounded-md bg-editor-gray-light">
                       <img
                         src={project.screenshot}
                         alt="Screenshot at commit"

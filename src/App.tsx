@@ -10,8 +10,11 @@ import AttributesPanel from "./components/twClassPanel/AttributesPanel";
 import VersionControlPanel from "./components/VersionControlPanel";
 import BaseLayout from "./components/layout/Base";
 import RightNavigation from "./components/RightNavigation";
+import { useEditorManager } from "./hooks/useEditorManager";
 
 function App() {
+  const projectName = useEditorManager((state) => state.project?.name);
+
   const [tabManager, setTabManager] = useState<WindowManager>({
     left: {
       explorer: true,
@@ -30,31 +33,10 @@ function App() {
     return Object.values(tabManager.right).filter((v) => v).length === 0;
   }, [tabManager.right]);
 
-  //const { id } = useParams<{ id: string }>();
-
-  /* useEffect(() => {
-    const initiateProject = async () => {
-      if (id) {
-        const loadedProject = await setProject(id);
-        if (!loadedProject) {
-          navigate("/");
-        }
-      }
-    };
-    initiateProject();
-  }, [id, navigate, setProject]); */
-
-  /* if (!project) {
-    return (
-      <BaseLayout>
-        loading
-      </BaseLayout>
-    )
-  } */
-
   return (
     <BaseLayout
       className="flex"
+      projectName={projectName}
       toolbar={
         <RightNavigation
           openTabs={tabManager.right}

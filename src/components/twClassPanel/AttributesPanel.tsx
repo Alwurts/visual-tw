@@ -29,6 +29,8 @@ export default function AttributesPanel({ className }: { className?: string }) {
     return Object.values(twClassesCategorized).flat();
   }, [twClassesCategorized]);
 
+  // TODO Change text content of the selected element when the textarea is changed
+
   return (
     <div
       key={selected?.twId}
@@ -44,18 +46,29 @@ export default function AttributesPanel({ className }: { className?: string }) {
             <Section title="Details" className="space-y-2 px-4 py-4">
               <div className="flex flex-col space-y-2">
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm font-semibold text-white">Tag:</span>
+                  <Label>Tag:</Label>
                   <span className="text-sm text-white">
                     {selectedElement.nodeName}
                   </span>
                 </div>
+                <div className="flex flex-col items-start space-y-1">
+                  <Label>Attributes</Label>
+                  <div className="pl-2">
+                    {selectedElement.attrs.map((attr, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center space-x-2 overflow-x-hidden"
+                      >
+                        <Label>{attr.name}:</Label>
+                        <p className="whitespace-nowrap text-sm text-white">
+                          {attr.value}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </Section>
-            {
-              {
-                /* TODO Submit text on change */
-              }
-            }
             {selectedElement.childNodes.length === 1 &&
               "value" in selectedElement.childNodes[0] && (
                 <Section title="Text" className="space-y-2 px-4 py-4">

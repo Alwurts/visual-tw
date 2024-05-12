@@ -14,7 +14,7 @@ import type { EditorManagerState } from "@/types/editor";
 //const initialParsedCode = domTools.parseHTMLString(DEFAULT_EDITOR_CODE);
 
 // TODO Add tracking unsaved changes and prompt user to save before leaving
-
+// TODO Add html validation, show errors and prevent saving if there are errors
 export const useEditorManager = create<EditorManagerState>((set, get) => ({
   project: null,
   initiateProject: async (projectId) => {
