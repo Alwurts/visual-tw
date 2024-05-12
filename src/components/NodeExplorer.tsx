@@ -15,6 +15,7 @@ import InsertHTMLElementButton from "./buttons/InsertHTMLElementButton";
 
 export default function NodeExplorer({ className }: { className?: string }) {
   const domExplorer = useEditorManager(({ dom }) => {
+    if (!dom) return;
     const bodyNode = getElementsByTagName(dom, "body")[0];
     if ("childNodes" in bodyNode === true) {
       const bodyChilds = bodyNode.childNodes;

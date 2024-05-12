@@ -5,13 +5,15 @@ import * as editorTools from "@/lib/editor";
 import * as classTools from "@/lib/classAttribute";
 import * as dbTools from "@/lib/db/proxy";
 
-import DEFAULT_EDITOR_CODE from "../lib/editor/defaultEditorCode.html?raw";
+//import DEFAULT_EDITOR_CODE from "../lib/editor/defaultEditorCode.html?raw";
 
 import { createRef } from "react";
 import { debounce } from "@/lib/utils";
 import type { EditorManagerState } from "@/types/editor";
 
-const initialParsedCode = domTools.parseHTMLString(DEFAULT_EDITOR_CODE);
+//const initialParsedCode = domTools.parseHTMLString(DEFAULT_EDITOR_CODE);
+
+// TODO Add tracking unsaved changes and prompt user to save before leaving
 
 export const useEditorManager = create<EditorManagerState>((set, get) => ({
   project: null,
@@ -25,14 +27,14 @@ export const useEditorManager = create<EditorManagerState>((set, get) => ({
         codeUpdatedBy: { by: "monacoEditor", type: "INITIALIZE_PROJECT" },
       });
       get().updateCode(currentCommit.fileContent);
-      return project;
+      return { project, code: currentCommit.fileContent };
     }
   },
   editorRef: createRef(),
   viewerRef: createRef(),
-  dom: initialParsedCode.dom,
-  serializedDom: initialParsedCode.serializedDom,
-  code: initialParsedCode.code,
+  dom: null,
+  serializedDom: null,
+  code: null,
   selected: null,
   codeUpdatedBy: null,
   updateCode: (newCode) => {
@@ -97,6 +99,8 @@ export const useEditorManager = create<EditorManagerState>((set, get) => ({
   },
   selectElement: (uuid) => {
     const currentState = get();
+
+    if (!currentState.dom) return;
 
     const newSelectedElement = domTools.getElementByUUID(
       currentState.dom,
@@ -249,13 +253,15 @@ export const useEditorManager = create<EditorManagerState>((set, get) => ({
   saveNewVersion: async (commitMessage) => {
     const viewerRef = get().viewerRef;
     const projectId = get().project?.id;
-    if (!projectId || !viewerRef.current) return;
+    const code = get().code;
+    const serializedDom = get().serializedDom;
+    if (!projectId || !viewerRef.current || !code || !serializedDom) return;
     const result = await dbTools.createNewCommit(
-      get().code,
+      code,
       commitMessage,
       commitMessage,
       projectId,
-      get().serializedDom,
+      serializedDom,
     );
     return result;
   },

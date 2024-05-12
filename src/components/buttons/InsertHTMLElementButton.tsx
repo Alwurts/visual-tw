@@ -29,6 +29,7 @@ export default function InsertHTMLElementButton({
   const [open, setOpen] = useState(false);
 
   const domExplorer = useEditorManager(({ dom }) => {
+    if (!dom) return;
     const bodyNode = getElementsByTagName(dom, "body")[0];
     if ("childNodes" in bodyNode === true) {
       const bodyChilds = bodyNode.childNodes;

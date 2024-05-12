@@ -110,7 +110,7 @@ export default function VersionControlPanel({
                       <img
                         src={commit.screenshot}
                         alt="Screenshot at commit"
-                        className="h-32 w-full object-scale-down"
+                        className="h-32 w-full object-contain"
                       />
                     </div>
                   </div>

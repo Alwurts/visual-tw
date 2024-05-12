@@ -7,6 +7,7 @@ export interface Project {
   description?: string;
   createdAt: Date;
   updatedAt: Date;
+  screenshot: string;
   currentVersion: string;
 }
 

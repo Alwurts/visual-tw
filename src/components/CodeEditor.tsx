@@ -4,10 +4,11 @@ import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
 import { CopyIcon, Paintbrush } from "lucide-react";
 import { useEditorManager } from "@/hooks/useEditorManager";
+import { useNavigate, useParams } from "react-router-dom";
 
 const CodeEditor = () => {
   const editorRef = useEditorManager((state) => state.editorRef);
-  const initialCode = useEditorManager((state) => state.code);
+  //const initialCode = useEditorManager((state) => state.code);
 
   const updateCode = useEditorManager((state) => state.updateCode);
   const formatEditorCode = useEditorManager((state) => state.formatEditorCode);
@@ -24,11 +25,25 @@ const CodeEditor = () => {
       updateCode(code);
     }
   };
+  const initiateProject = useEditorManager((state) => state.initiateProject);
+  const navigate = useNavigate();
+
+  const { id } = useParams<{ id: string }>();
 
   const initializeEditor = (editor: monacoEditor.IStandaloneCodeEditor) => {
     editorRef.current = editor;
-    // TODO Initialize editor with code from db 
-    editor.setValue(initialCode);
+
+    const initiate = async () => {
+      if (id) {
+        const loadedProject = await initiateProject(id);
+        if (loadedProject) {
+          editor.setValue(loadedProject.code);
+        } else {
+          navigate("/");
+        }
+      }
+    };
+    initiate();
   };
 
   return (

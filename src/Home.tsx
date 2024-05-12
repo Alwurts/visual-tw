@@ -42,7 +42,7 @@ function Home() {
         <div className="flex h-full flex-grow flex-col px-6 py-2">
           <p className="text-sm text-white">Or select an existing project</p>
           {projects.length > 0 ? (
-            <ul className="mt-4 space-y-2 overflow-y-auto pr-4 scrollbar scrollbar-thumb-neutral-700">
+            <ul className="mt-4 space-y-4 overflow-y-auto pr-4 scrollbar scrollbar-thumb-neutral-700">
               {projects
                 .sort((a, b) => {
                   return (
@@ -65,6 +65,13 @@ function Home() {
                         <b>Last updated at: </b>
                         {new Date(project.updatedAt).toLocaleString()}
                       </p>
+                    </div>
+                    <div className="rounded-md bg-editor-gray-light w-40">
+                      <img
+                        src={project.screenshot}
+                        alt="Screenshot at commit"
+                        className="h-24 w-full object-contain"
+                      />
                     </div>
                     <div className="flex items-center space-x-1">
                       <Button

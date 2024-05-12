@@ -51,6 +51,11 @@ export default function AttributesPanel({ className }: { className?: string }) {
                 </div>
               </div>
             </Section>
+            {
+              {
+                /* TODO Submit text on change */
+              }
+            }
             {selectedElement.childNodes.length === 1 &&
               "value" in selectedElement.childNodes[0] && (
                 <Section title="Text" className="space-y-2 px-4 py-4">

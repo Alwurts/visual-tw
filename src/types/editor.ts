@@ -45,12 +45,15 @@ export type ActionResponse = {
 
 export interface EditorManagerState {
   project: Project | null;
-  initiateProject: (projectId: string) => Promise<Project | void>;
+  initiateProject: (projectId: string) => Promise<{
+    project: Project;
+    code: string;
+  } | void>;
   editorRef: React.MutableRefObject<monacoEditor.IStandaloneCodeEditor | null>;
   viewerRef: React.MutableRefObject<HTMLIFrameElement | null>;
-  dom: Document;
-  serializedDom: string;
-  code: string;
+  dom: Document | null;
+  serializedDom: string | null;
+  code: string | null;
   selected: {
     element: Node;
     twId: string;

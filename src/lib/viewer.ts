@@ -3,8 +3,8 @@ import html2canvas from "html2canvas";
 export async function htmlStringToPng(html: string) {
   const iframe = document.createElement("iframe");
   iframe.srcdoc = html;
-  iframe.width = `${1024}px`;
-  iframe.height = `${768}px`;
+  iframe.width = `${330}px`;
+  iframe.height = `${620}px`;
 
   iframe.style.position = "absolute";
   iframe.style.left = "-9999px";
@@ -21,7 +21,7 @@ export async function htmlStringToPng(html: string) {
     iframe.contentDocument || iframe.contentWindow?.document;
 
   if (!iframeDocument) {
-    return;
+    throw new Error("Failed to get iframe document");
   }
 
   const screenshotCanvas = await html2canvas(iframeDocument.body);

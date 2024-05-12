@@ -67,6 +67,8 @@ const CodeViewer = () => {
     };
   }, [selectElement]);
 
+  //console.log("srcDoc", srcDoc)
+
   return (
     <div className="flex h-full flex-col">
       <div className="flex h-10 flex-shrink-0 items-center justify-between px-6">
@@ -108,19 +110,27 @@ const CodeViewer = () => {
         className="h-full w-full flex-grow overflow-auto scrollbar scrollbar-thumb-neutral-700"
         ref={iframeContainerRef}
       >
-        <iframe
-          title="Rendered Output"
-          ref={iframeRef}
-          className={cn(
-            "m-auto rounded-xl border-2 border-black bg-white",
-            screenSizes[screenSize],
-          )}
-          srcDoc={srcDoc}
-          style={{
-            transform: `scale(${derivedZoom})`,
-            transformOrigin: "center",
-          }}
-        />
+        {
+          <iframe
+            title="Rendered Output"
+            ref={iframeRef}
+            className={cn(
+              "m-auto rounded-xl border-2 border-black bg-white",
+              screenSizes[screenSize],
+              { hidden: !srcDoc },
+            )}
+            srcDoc={srcDoc ?? undefined}
+            style={{
+              transform: `scale(${derivedZoom})`,
+              transformOrigin: "center",
+            }}
+          />
+        }
+        {!srcDoc && (
+          <div className="flex h-full items-center justify-center text-sm text-white">
+            No document loaded
+          </div>
+        )}
       </div>
     </div>
   );

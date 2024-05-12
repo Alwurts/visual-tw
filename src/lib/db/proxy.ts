@@ -8,31 +8,33 @@ export async function createNewProject(name: string, description?: string) {
   const newProjectId = nanoid(7);
 
   const { serializedDom } = domTools.parseHTMLString(DEFAULT_EDITOR_CODE);
-
   const screenshotDataUrl = await htmlStringToPng(serializedDom);
 
-  const firstCommitId = await db.commits.add({
-    id: nanoid(7),
-    projectId: newProjectId,
-    title: "Initial commit",
-    description,
-    fileContent: DEFAULT_EDITOR_CODE,
-    screenshot: screenshotDataUrl ?? "",
-    timestamp: new Date(),
+  return db.transaction("rw", db.projects, db.commits, async () => {
+    const firstCommitId = await db.commits.add({
+      id: nanoid(7),
+      projectId: newProjectId,
+      title: "Initial commit",
+      description,
+      fileContent: DEFAULT_EDITOR_CODE,
+      screenshot: screenshotDataUrl,
+      timestamp: new Date(),
+    });
+
+    const newDate = new Date();
+
+    const projectId = await db.projects.add({
+      id: newProjectId,
+      name,
+      description,
+      createdAt: newDate,
+      updatedAt: newDate,
+      screenshot: screenshotDataUrl,
+      currentVersion: firstCommitId,
+    });
+
+    return projectId;
   });
-
-  const newDate = new Date();
-
-  const id = await db.projects.add({
-    id: newProjectId,
-    name,
-    description,
-    createdAt: newDate,
-    updatedAt: newDate,
-    currentVersion: firstCommitId,
-  });
-
-  return id;
 }
 
 export async function getProjects() {
@@ -44,8 +46,10 @@ export async function getProject(projectId: string) {
 }
 
 export async function deleteProject(projectId: string) {
-  await db.projects.delete(projectId);
-  await db.commits.where({ projectId }).delete();
+  db.transaction("rw", db.projects, db.commits, async () => {
+    await db.projects.delete(projectId);
+    await db.commits.where({ projectId }).delete();
+  });
 }
 
 export async function renameProject(projectId: string, newName: string) {
@@ -69,12 +73,7 @@ export async function createNewCommit(
 ) {
   const screenshotDataUrl = await htmlStringToPng(serializedDom);
 
-  if (!screenshotDataUrl) {
-    return;
-  }
-
-  try {
-    // TODO add transaction for versioning and updating currentVersion
+  return db.transaction("rw", db.commits, db.projects, async () => {
     const newCommitId = await db.commits.add({
       id: nanoid(7),
       projectId,
@@ -87,12 +86,11 @@ export async function createNewCommit(
 
     await db.projects.update(projectId, {
       currentVersion: newCommitId,
+      screenshot: screenshotDataUrl,
       updatedAt: new Date(),
     });
 
     const loadedCommits = await getCommits(projectId);
     return loadedCommits;
-  } catch (error) {
-    console.error("Failed to save screenshot:", error);
-  }
+  });
 }
