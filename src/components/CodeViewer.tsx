@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Separator } from "./ui/separator";
-import { Button } from "./ui/button";
-import { Laptop, Pointer, Smartphone, Tablet } from "lucide-react";
+import { Laptop, Maximize, Smartphone, Tablet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEditorManager } from "@/hooks/useEditorManager";
-import { ViewerMessage } from "@/types/Viewer";
+import { ViewerMessage, ViewerSetOverlayShow } from "@/types/Viewer";
 import ZoomSelect from "./ZoomSelect";
+import { Toggle } from "./ui/toggle";
+import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
 
 const CodeViewer = () => {
   const iframeContainerRef = useRef(null); // New ref for iframe's parent container
@@ -74,42 +75,56 @@ const CodeViewer = () => {
     <div className="flex h-full flex-col">
       <div className="flex h-10 flex-shrink-0 items-center justify-between px-6">
         <h2 className="text-xs uppercase text-white">Display</h2>
-        <div className="flex items-center space-x-1">
+        <div className="flex items-center">
           <ZoomSelect handleZoomChange={setZoom} zoom={zoom} />
-          <Button
-            size="tool"
-            variant="tool"
-            onClick={() => handleScreenSizeChange("mobile")}
-          >
-            <Smartphone className="h-4 w-4 flex-shrink-0" />
-          </Button>
-          <Button
-            size="tool"
-            variant="tool"
-            onClick={() => handleScreenSizeChange("tablet")}
-          >
-            <Tablet className="h-4 w-4 flex-shrink-0" />
-          </Button>
-          <Button
-            size="tool"
-            variant="tool"
-            onClick={() => handleScreenSizeChange("desktop")}
-          >
-            <Laptop className="h-4 w-4 flex-shrink-0" />
-          </Button>
-          <Button
-            size="tool"
-            variant="tool"
-            onClick={() => {
-              const viewer = iframeRef.current;
-              viewer?.contentWindow?.postMessage(
-                { type: "toggle-overlay" },
-                "*",
-              );
+          <ToggleGroup
+            type="single"
+            aria-label="Screen Size"
+            value={screenSize}
+            className="ml-1 mr-5"
+            onValueChange={(e) => {
+              handleScreenSizeChange(e as "mobile" | "tablet" | "desktop");
             }}
           >
-            <Pointer className="h-4 w-4 flex-shrink-0" />
-          </Button>
+            <ToggleGroupItem
+              title="Mobile"
+              value="mobile"
+              size="sm"
+              aria-label="Mobile"
+            >
+              <Smartphone className="h-4 w-4 flex-shrink-0" />
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              title="Tablet"
+              value="tablet"
+              size="sm"
+              aria-label="Tablet"
+            >
+              <Tablet className="h-4 w-4 flex-shrink-0" />
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              title="Desktop"
+              value="desktop"
+              size="sm"
+              aria-label="Desktop"
+            >
+              <Laptop className="h-4 w-4 flex-shrink-0" />
+            </ToggleGroupItem>
+          </ToggleGroup>
+          <Toggle
+            onPressedChange={(e) => {
+              const viewer = iframeRef.current;
+              const toggleOverlayMessage: ViewerSetOverlayShow = {
+                type: "viewer-set-overlay-show",
+                data: { newValue: e },
+              };
+              viewer?.contentWindow?.postMessage(toggleOverlayMessage, "*");
+            }}
+            size="fit"
+            aria-label="Toggle bold"
+          >
+            <Maximize className="h-4 w-4" />
+          </Toggle>
         </div>
       </div>
       <Separator className="bg-editor-gray-light" />

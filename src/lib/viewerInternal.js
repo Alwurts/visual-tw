@@ -64,7 +64,7 @@ document.addEventListener("mouseover", function (event) {
 
 document.addEventListener("mouseout", function () {
   if (!showOverlay) return;
-  
+
   var existingOverlay = document.getElementById("hoverOverlay");
   var existingMarginOverlay = document.getElementById("hoverMarginOverlay");
   if (existingOverlay) existingOverlay.remove();
@@ -89,10 +89,7 @@ document.addEventListener("click", function (event) {
 });
 
 window.addEventListener("message", function (event) {
-  console.log("event", event);
-  // Check the type of the received message
-  if (event.data.type === "toggle-overlay") {
-    // Toggle the showOverlay variable
-    showOverlay = !showOverlay;
+  if (event.data.type === "viewer-set-overlay-show") {
+    showOverlay = event.data.data.newValue;
   }
 });

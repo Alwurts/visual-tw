@@ -10,14 +10,15 @@ const toggleVariants = cva(
     variants: {
       variant: {
         default:
-          "dark:bg-editor-gray-medium dark:text-white dark:hover:bg-editor-accent dark:hover:text-stone-50 dark:data-[state=on]:bg-editor-accent",
+          "dark:bg-editor-gray-medium dark:text-white dark:hover:bg-editor-accent dark:hover:text-stone-50 dark:data-[state=on]:bg-editor-accent/90",
         outline:
           "border border-stone-200 bg-transparent hover:bg-stone-100 hover:text-stone-900 dark:border-stone-800 dark:hover:bg-stone-800 dark:hover:text-stone-50",
-      },
+        },
       size: {
         default: "h-10 px-3",
-        sm: "h-8 px-2",
+        sm: "h-7 px-[6px]",
         lg: "h-11 px-5",
+        fit: "h-fit w-auto p-1",
       },
     },
     defaultVariants: {

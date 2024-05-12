@@ -42,7 +42,6 @@ export function ToggleButtonGroup({
             title={item.value}
             value={item.value}
             size="sm"
-            className="h-7 px-[6px]"
             aria-label={item["aria-label"]}
             onClick={() => handleToolChange(item.value)}
           >
