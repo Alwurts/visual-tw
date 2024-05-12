@@ -4,7 +4,7 @@ import { Button } from "./ui/button";
 import { Laptop, Smartphone, Tablet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEditorManager } from "@/hooks/useEditorManager";
-import { ViewerMessage } from "@/types/viewer";
+import { ViewerMessage } from "@/types/Viewer";
 import ZoomSelect from "./ZoomSelect";
 
 const CodeViewer = () => {

@@ -1,6 +1,6 @@
 import { ITailwindClassClassified } from "@/types/tailwind";
 import fontWeightNames from "@/lib/tailwindNames/fontWeight";
-import { TWindowTabs } from "@/types/editorManager";
+import { TWindowTabs } from "@/types/editor";
 import SelectOption from "../../components/SelectOption";
 
 interface FontWeightProps {

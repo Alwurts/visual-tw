@@ -1,7 +1,7 @@
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { ITailwindClassClassified } from "@/types/tailwind";
 import { useEditorManager } from "@/hooks/useEditorManager";
-import { TWindowTabs } from "@/types/editorManager";
+import { TWindowTabs } from "@/types/editor";
 import { cloneElement } from "react";
 
 interface ToggleButtonGroupProps {

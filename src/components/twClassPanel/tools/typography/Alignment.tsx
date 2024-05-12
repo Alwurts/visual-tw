@@ -1,7 +1,7 @@
 import { AlignCenter, AlignJustify, AlignLeft, AlignRight } from "lucide-react";
 
 import { ITailwindClassClassified } from "@/types/tailwind";
-import { TWindowTabs } from "@/types/editorManager";
+import { TWindowTabs } from "@/types/editor";
 import { ToggleButtonGroup } from "../../components/ToggleButtonGroup";
 
 interface AlignmentProps {

@@ -13,7 +13,7 @@ import { sourceCodeLocationToIRange } from "@/lib/dom";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { TWindowTabs } from "@/types/editorManager";
+import { TWindowTabs } from "@/types/editor";
 
 interface GeneralProps {
   twClass: ITailwindClass;

@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/popover";
 import { Label } from "../ui/label";
 import { useEditorManager } from "@/hooks/useEditorManager";
-import { ActionResponse, TWindowTabs } from "@/types/editorManager";
+import { ActionResponse, TWindowTabs } from "@/types/editor";
 
 interface InsertTWClassButtonProps {
   usedBy: TWindowTabs;

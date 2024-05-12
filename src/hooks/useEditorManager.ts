@@ -9,7 +9,7 @@ import DEFAULT_EDITOR_CODE from "../lib/editor/defaultEditorCode.html?raw";
 
 import { createRef } from "react";
 import { debounce } from "@/lib/utils";
-import type { EditorManagerState } from "@/types/editorManager";
+import type { EditorManagerState } from "@/types/editor";
 
 const initialParsedCode = domTools.parseHTMLString(DEFAULT_EDITOR_CODE);
 

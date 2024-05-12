@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/select";
 import { useEditorManager } from "@/hooks/useEditorManager";
 import { ITailwindClassClassified } from "@/types/tailwind";
-import { TWindowTabs } from "@/types/editorManager";
+import { TWindowTabs } from "@/types/editor";
 
 interface SelectOptionProps {
   currentTWClass?: ITailwindClassClassified;

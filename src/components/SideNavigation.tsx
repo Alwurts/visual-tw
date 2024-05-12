@@ -2,7 +2,7 @@ import { Code2Icon, FolderTree, Palette } from "lucide-react";
 import { Button } from "./ui/button";
 import React, { ButtonHTMLAttributes, cloneElement } from "react";
 import { cn } from "@/lib/utils";
-import { TWindowTabs } from "@/types/editorManager";
+import { TWindowTabs } from "@/types/editor";
 import {
   Tooltip,
   TooltipContent,
