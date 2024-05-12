@@ -12,9 +12,19 @@ const windowTabs = [
   "monacoEditor",
   "viewer",
   "attributes",
+  "versionControl",
 ] as const;
 
 export type TWindowTabs = (typeof windowTabs)[number];
+
+export type WindowManager = {
+  left: {
+    [K in TWindowTabs]?: boolean;
+  };
+  right: {
+    [K in TWindowTabs]?: boolean;
+  };
+};
 
 export type UpdateCodeEvent = {
   by: TWindowTabs;

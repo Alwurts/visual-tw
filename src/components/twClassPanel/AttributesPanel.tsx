@@ -15,8 +15,9 @@ import FontWeight from "./tools/typography/FontWeight";
 import { Textarea } from "../ui/textarea";
 import { Label } from "../ui/label";
 import { htmlTextWhitespaceHandling } from "@/lib/dom";
+import { cn } from "@/lib/utils";
 
-export default function AttributesPanel() {
+export default function AttributesPanel({ className }: { className?: string }) {
   const selected = useEditorManager((state) => state.selected);
   const selectedElement = selected?.element;
   const twClassesCategorized = useEditorManager(
@@ -29,7 +30,10 @@ export default function AttributesPanel() {
   }, [twClassesCategorized]);
 
   return (
-    <div key={selected?.twId} className="flex max-h-full flex-col">
+    <div
+      key={selected?.twId}
+      className={cn("flex max-h-full flex-col", className)}
+    >
       <div className="flex h-10 flex-shrink-0 items-center justify-between px-5">
         <h3 className="text-xs uppercase text-white">Attributes</h3>
       </div>

@@ -1,28 +1,38 @@
-import "./App.css";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import CodeEditor from "./components/CodeEditor";
 import CodeViewer from "./components/CodeViewer";
-import SideNavigation from "./components/SideNavigation";
-import { useEffect, useState } from "react";
-import { TWindowTabs } from "@/types/editor";
+import LeftNavigation from "./components/LeftNavigation";
+import { useEffect, useMemo, useState } from "react";
+import { WindowManager } from "@/types/editor";
 import { cn } from "./lib/utils";
-//import NodeExplorer from "./components/NodeExplorer";
+import NodeExplorer from "./components/NodeExplorer";
 import AttributesPanel from "./components/twClassPanel/AttributesPanel";
 import VersionControlPanel from "./components/VersionControlPanel";
 import { useParams } from "react-router-dom";
 import { useEditorManager } from "./hooks/useEditorManager";
+import BaseLayout from "./components/layout/Base";
+import RightNavigation from "./components/RightNavigation";
 
 function App() {
   const setProjectId = useEditorManager((state) => state.setProjectId);
 
-  const [openTabs, setOpenTabs] = useState<{
-    [K in TWindowTabs]: boolean;
-  }>({
-    explorer: true,
-    monacoEditor: true,
-    viewer: true,
-    attributes: true,
+  const [tabManager, setTabManager] = useState<WindowManager>({
+    left: {
+      explorer: true,
+      versionControl: false,
+    },
+    right: {
+      attributes: true,
+    },
   });
+
+  const isLeftSideActive = useMemo(() => {
+    return Object.values(tabManager.left).filter((v) => v).length === 0;
+  }, [tabManager.left]);
+
+  const isRightSideActive = useMemo(() => {
+    return Object.values(tabManager.right).filter((v) => v).length === 0;
+  }, [tabManager.right]);
 
   const { id } = useParams<{ id: string }>();
 
@@ -33,73 +43,79 @@ function App() {
   }, [id, setProjectId]);
 
   return (
-    <main className="bg-editor-black ">
-      <nav className="h-[32px] bg-editor-gray-medium px-3 py-1">
-        <h1 className="font-bold text-white">
-          Visual
-          <span className="text-editor-accent">TW</span>
-        </h1>
-      </nav>
-      <div className="flex h-[calc(100dvh-32px)]">
-        {id && (
-          <>
-            <SideNavigation openTabs={openTabs} setOpenTabs={setOpenTabs} />
-            <PanelGroup direction="horizontal" className="bg-editor-black">
-              <Panel
+    <BaseLayout
+      className="flex"
+      toolbar={
+        <RightNavigation
+          openTabs={tabManager.right}
+          setOpenTabs={setTabManager}
+        />
+      }
+    >
+      {id && (
+        <>
+          <LeftNavigation
+            openTabs={tabManager.left}
+            setOpenTabs={setTabManager}
+          />
+          <PanelGroup direction="horizontal" className="bg-editor-black">
+            <Panel
+              className={cn({
+                hidden: isLeftSideActive,
+              })}
+              defaultSize={15}
+              minSize={10}
+              maxSize={15}
+            >
+              <NodeExplorer
                 className={cn({
-                  hidden: !openTabs.explorer,
-                })}
-                defaultSize={15}
-                minSize={10}
-                maxSize={15}
-              >
-                {/* <NodeExplorer /> */}
-                <VersionControlPanel />
-              </Panel>
-              <PanelResizeHandle
-                className={cn("ResizeHandle", {
-                  hidden: !openTabs.explorer,
+                  hidden: !tabManager.left.explorer,
                 })}
               />
-
-              <Panel
-                minSize={30}
+              <VersionControlPanel
                 className={cn({
-                  hidden: !openTabs.monacoEditor,
-                })}
-              >
-                <CodeEditor />
-              </Panel>
-              <PanelResizeHandle
-                className={cn("ResizeHandle", {
-                  hidden: !openTabs.monacoEditor,
+                  hidden: !tabManager.left.versionControl,
                 })}
               />
+            </Panel>
+            <PanelResizeHandle
+              className={cn("ResizeHandle", {
+                hidden: isLeftSideActive,
+              })}
+            />
 
-              <Panel minSize={30}>
-                <CodeViewer />
-              </Panel>
+            <Panel minSize={30}>
+              <CodeEditor />
+            </Panel>
+            <PanelResizeHandle className="ResizeHandle" />
 
-              <PanelResizeHandle
-                className={cn("ResizeHandle", {
-                  hidden: !openTabs.attributes,
+            <Panel minSize={30}>
+              <CodeViewer />
+            </Panel>
+
+            <PanelResizeHandle
+              className={cn("ResizeHandle", {
+                hidden: isRightSideActive,
+              })}
+            />
+            <Panel
+              defaultSize={16}
+              minSize={16}
+              maxSize={20}
+              className={cn("bg-editor-gray-dark", {
+                hidden: isRightSideActive,
+              })}
+            >
+              <AttributesPanel
+                className={cn({
+                  hidden: !tabManager.right.attributes,
                 })}
               />
-              <Panel
-                defaultSize={16}
-                minSize={16}
-                maxSize={20}
-                className={cn("bg-editor-gray-dark", {
-                  hidden: !openTabs.attributes,
-                })}
-              >
-                <AttributesPanel />
-              </Panel>
-            </PanelGroup>
-          </>
-        )}
-      </div>
-    </main>
+            </Panel>
+          </PanelGroup>
+        </>
+      )}
+    </BaseLayout>
   );
 }
 

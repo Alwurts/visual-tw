@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { useEditorManager } from "@/hooks/useEditorManager";
 import InsertHTMLElementButton from "./buttons/InsertHTMLElementButton";
 
-export default function NodeExplorer() {
+export default function NodeExplorer({ className }: { className?: string }) {
   const domExplorer = useEditorManager(({ dom }) => {
     const bodyNode = getElementsByTagName(dom, "body")[0];
     if ("childNodes" in bodyNode === true) {
@@ -23,7 +23,7 @@ export default function NodeExplorer() {
   });
 
   return (
-    <div className="flex h-full flex-col bg-editor-gray-dark">
+    <div className={cn("flex h-full flex-col bg-editor-gray-dark", className)}>
       <div className="flex h-10 items-center px-6">
         <h2 className="text-xs uppercase text-white">Explorer</h2>
       </div>

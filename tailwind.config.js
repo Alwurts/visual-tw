@@ -34,6 +34,7 @@ export default {
         "accordion-up": "accordion-up 0.2s ease-out",
       },
       colors: {
+        "editor-gray-extra-light": "#636363",
         "editor-gray-light": "#333333",
         "editor-gray-medium": "#3c3c3c",
         "editor-gray-dark": "#252526",

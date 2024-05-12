@@ -8,8 +8,13 @@ import { Textarea } from "./ui/textarea";
 import { useEditorManager } from "@/hooks/useEditorManager";
 import * as dbTools from "@/lib/db/proxy";
 import { useParams } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
-export default function VersionControlPanel() {
+export default function VersionControlPanel({
+  className,
+}: {
+  className?: string;
+}) {
   const saveNewVersion = useEditorManager((state) => state.saveNewVersion);
 
   const [commits, setCommits] = useState<Commit[]>([]);
@@ -53,7 +58,7 @@ export default function VersionControlPanel() {
   }, [id]);
 
   return (
-    <div className="flex max-h-full flex-col">
+    <div className={cn("flex max-h-full flex-col", className)}>
       <div className="flex h-10 flex-shrink-0 items-center justify-between px-5">
         <h3 className="text-xs uppercase text-white">Versions</h3>
       </div>
