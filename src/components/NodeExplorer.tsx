@@ -57,7 +57,7 @@ export default function NodeExplorer({ className }: { className?: string }) {
 }
 
 function NodeCollapsible({ node, level }: { node: Node; level: number }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
 
   const nodeUuid = useMemo(() => getElementVisualTwId(node), [node]);
 

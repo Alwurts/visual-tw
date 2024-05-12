@@ -1,4 +1,8 @@
+var showOverlay = false;
+
 document.addEventListener("mouseover", function (event) {
+  if (!showOverlay) return;
+
   var target = event.target;
   const name = target.tagName;
 
@@ -59,6 +63,8 @@ document.addEventListener("mouseover", function (event) {
 });
 
 document.addEventListener("mouseout", function () {
+  if (!showOverlay) return;
+  
   var existingOverlay = document.getElementById("hoverOverlay");
   var existingMarginOverlay = document.getElementById("hoverMarginOverlay");
   if (existingOverlay) existingOverlay.remove();
@@ -66,6 +72,8 @@ document.addEventListener("mouseout", function () {
 });
 
 document.addEventListener("click", function (event) {
+  if (!showOverlay) return;
+
   var target = event.target;
   const id = target.getAttribute("visual-tw-id");
 
@@ -78,4 +86,13 @@ document.addEventListener("click", function (event) {
     },
     "*",
   );
+});
+
+window.addEventListener("message", function (event) {
+  console.log("event", event);
+  // Check the type of the received message
+  if (event.data.type === "toggle-overlay") {
+    // Toggle the showOverlay variable
+    showOverlay = !showOverlay;
+  }
 });

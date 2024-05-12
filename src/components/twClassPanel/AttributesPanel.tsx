@@ -34,8 +34,6 @@ export default function AttributesPanel({ className }: { className?: string }) {
     return Object.values(twClassesCategorized).flat();
   }, [twClassesCategorized]);
 
-  // TODO Change text content of the selected element when the textarea is changed
-
   return (
     <div
       key={selected?.twId}

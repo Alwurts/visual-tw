@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
-import { Laptop, Smartphone, Tablet } from "lucide-react";
+import { Laptop, Pointer, Smartphone, Tablet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEditorManager } from "@/hooks/useEditorManager";
 import { ViewerMessage } from "@/types/Viewer";
@@ -97,13 +97,19 @@ const CodeViewer = () => {
           >
             <Laptop className="h-4 w-4 flex-shrink-0" />
           </Button>
-          {/* <Button
+          <Button
             size="tool"
             variant="tool"
-            onClick={() => captureScreenshot()}
+            onClick={() => {
+              const viewer = iframeRef.current;
+              viewer?.contentWindow?.postMessage(
+                { type: "toggle-overlay" },
+                "*",
+              );
+            }}
           >
-            <Camera className="h-4 w-4 flex-shrink-0" />
-          </Button> */}
+            <Pointer className="h-4 w-4 flex-shrink-0" />
+          </Button>
         </div>
       </div>
       <Separator className="bg-editor-gray-light" />
