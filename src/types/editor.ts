@@ -5,7 +5,7 @@ import type {
 import type { IRange, editor as monacoEditor } from "monaco-editor";
 import { ITailwindClass } from "@/types/tailwind";
 import * as classTools from "@/lib/classAttribute";
-import { Commit } from "@/lib/db/indexdb";
+import { Commit, Project } from "@/lib/db/indexdb";
 
 const windowTabs = [
   "explorer",
@@ -29,6 +29,7 @@ export type WindowManager = {
 export type UpdateCodeEvent = {
   by: TWindowTabs;
   type:
+    | "INITIALIZE_PROJECT"
     | "INSERT_HTML_ELEMENT"
     | "INSERT_CODE"
     | "FORMAT_CODE"
@@ -43,8 +44,8 @@ export type ActionResponse = {
 } | void;
 
 export interface EditorManagerState {
-  projectId: string | null;
-  setProjectId: (projectId: string) => void;
+  project: Project | null;
+  initiateProject: (projectId: string) => Promise<Project | void>;
   editorRef: React.MutableRefObject<monacoEditor.IStandaloneCodeEditor | null>;
   viewerRef: React.MutableRefObject<HTMLIFrameElement | null>;
   dom: Document;

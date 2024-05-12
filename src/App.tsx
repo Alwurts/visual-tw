@@ -8,13 +8,14 @@ import { cn } from "./lib/utils";
 import NodeExplorer from "./components/NodeExplorer";
 import AttributesPanel from "./components/twClassPanel/AttributesPanel";
 import VersionControlPanel from "./components/VersionControlPanel";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEditorManager } from "./hooks/useEditorManager";
 import BaseLayout from "./components/layout/Base";
 import RightNavigation from "./components/RightNavigation";
 
 function App() {
-  const setProjectId = useEditorManager((state) => state.setProjectId);
+  const setProject = useEditorManager((state) => state.initiateProject);
+  const navigate = useNavigate();
 
   const [tabManager, setTabManager] = useState<WindowManager>({
     left: {
@@ -37,10 +38,16 @@ function App() {
   const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
-    if (id) {
-      setProjectId(id);
-    }
-  }, [id, setProjectId]);
+    const initiateProject = async () => {
+      if (id) {
+        const loadedProject = await setProject(id);
+        if (!loadedProject) {
+          navigate("/");
+        }
+      }
+    };
+    initiateProject();
+  }, [id, navigate, setProject]);
 
   return (
     <BaseLayout

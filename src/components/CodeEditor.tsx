@@ -12,12 +12,6 @@ const CodeEditor = () => {
   const updateCode = useEditorManager((state) => state.updateCode);
   const formatEditorCode = useEditorManager((state) => state.formatEditorCode);
 
-  /* function formatEditorCode() {
-    if (editorRef.current) {
-      editorTools.formatEditorCode(editorRef.current);
-    }
-  } */
-
   function copyEditorCode() {
     const editorCode = editorRef.current?.getValue();
     if (editorCode) {
@@ -33,6 +27,8 @@ const CodeEditor = () => {
 
   const initializeEditor = (editor: monacoEditor.IStandaloneCodeEditor) => {
     editorRef.current = editor;
+    // TODO Initialize editor with code from db 
+    editor.setValue(initialCode);
   };
 
   return (
@@ -56,7 +52,7 @@ const CodeEditor = () => {
       <Editor
         theme="vs-dark"
         defaultLanguage="html"
-        defaultValue={initialCode}
+        //defaultValue={initialCode}
         onMount={initializeEditor}
         onChange={handleEditorChange}
         options={{ fontSize: 14 }}

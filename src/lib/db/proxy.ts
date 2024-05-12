@@ -39,8 +39,25 @@ export async function getProjects() {
   return db.projects.toArray();
 }
 
+export async function getProject(projectId: string) {
+  return db.projects.get(projectId);
+}
+
+export async function deleteProject(projectId: string) {
+  await db.projects.delete(projectId);
+  await db.commits.where({ projectId }).delete();
+}
+
+export async function renameProject(projectId: string, newName: string) {
+  await db.projects.update(projectId, { name: newName });
+}
+
 export async function getCommits(projectId: string) {
   return db.commits.where({ projectId }).toArray();
+}
+
+export async function getCommit(commitId: string) {
+  return db.commits.get(commitId);
 }
 
 export async function createNewCommit(

@@ -14,8 +14,20 @@ import type { EditorManagerState } from "@/types/editor";
 const initialParsedCode = domTools.parseHTMLString(DEFAULT_EDITOR_CODE);
 
 export const useEditorManager = create<EditorManagerState>((set, get) => ({
-  projectId: null,
-  setProjectId: (projectId) => set({ projectId }),
+  project: null,
+  initiateProject: async (projectId) => {
+    const project = await dbTools.getProject(projectId);
+    if (project) {
+      const currentCommit = await dbTools.getCommit(project.currentVersion);
+      if (!currentCommit) return;
+      set({
+        project,
+        codeUpdatedBy: { by: "monacoEditor", type: "INITIALIZE_PROJECT" },
+      });
+      get().updateCode(currentCommit.fileContent);
+      return project;
+    }
+  },
   editorRef: createRef(),
   viewerRef: createRef(),
   dom: initialParsedCode.dom,
@@ -72,7 +84,11 @@ export const useEditorManager = create<EditorManagerState>((set, get) => ({
     };
 
     // Which event to debounce or not
-    if (codeUpdatedBy === undefined && codeUpdatedType !== "FORMAT_CODE") {
+    if (
+      codeUpdatedBy === undefined &&
+      codeUpdatedType !== "FORMAT_CODE" &&
+      codeUpdatedType !== "INITIALIZE_PROJECT"
+    ) {
       debounce(parseNewCode, 700, "UPDATE_CODE")();
       return;
     }
@@ -232,7 +248,7 @@ export const useEditorManager = create<EditorManagerState>((set, get) => ({
   },
   saveNewVersion: async (commitMessage) => {
     const viewerRef = get().viewerRef;
-    const projectId = get().projectId;
+    const projectId = get().project?.id;
     if (!projectId || !viewerRef.current) return;
     const result = await dbTools.createNewCommit(
       get().code,
