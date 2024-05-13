@@ -4,13 +4,15 @@ Check out the live demo [here](https://visual-tw.alwurts.com/).
 
 ## Introduction
 
-Visual TW allows you to easily design websites using HTML and Tailwind CSS. It features a seamless integration of a code editor with a WYSIWYG editor, making it a powerful tool for both beginners and experienced developers.
+Visual TW allows you to easily design websites using HTML and Tailwind CSS. It features a seamless integration of a code editor with a visual editor, making it a powerful tool for both beginners and experienced developers.
 
 ## Features
 
 - **Code Editor**: Dive into coding with an editor that supports HTML and Tailwind CSS.
 - **WYSIWYG Editor**: Visualize your design as quickly modify it.
 - **Responsive Previews**: Instantly see how your designs look on different devices.
+- **Version History**: Locally keep track of your changes and revert to previous versions.
+- **Client-Side Rendering**: All the features run client-side, making it fast and secure.
 
 ## Getting Started
 
@@ -20,9 +22,9 @@ Visual TW allows you to easily design websites using HTML and Tailwind CSS. It f
 
 ## Roadmap
 
-- Add support for version control.
-- Add syntax highlighting and suggestions to the code editor.
+- Add syntax highlighting for errors and suggestions to the code editor.
 - Add AI-powered design suggestions.
+- Add support for frameworks???
 
 ## How to Contribute
 

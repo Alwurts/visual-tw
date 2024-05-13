@@ -35,7 +35,7 @@ export function NewProject() {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="tool" className="dark:bg-editor-accent">
-          Create new project
+          New
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

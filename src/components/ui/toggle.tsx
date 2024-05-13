@@ -10,7 +10,7 @@ const toggleVariants = cva(
     variants: {
       variant: {
         default:
-          "dark:bg-editor-gray-medium dark:text-white dark:hover:bg-editor-accent dark:hover:text-stone-50 dark:data-[state=on]:bg-editor-accent/90",
+          "dark:bg-editor-gray-medium dark:text-white dark:hover:bg-editor-accent dark:hover:text-stone-50 dark:data-[state=on]:bg-editor-accent/70",
         outline:
           "border border-stone-200 bg-transparent hover:bg-stone-100 hover:text-stone-900 dark:border-stone-800 dark:hover:bg-stone-800 dark:hover:text-stone-50",
         },

@@ -118,7 +118,7 @@ const CodeViewer = () => {
               };
               viewer?.contentWindow?.postMessage(toggleOverlayMessage, "*");
             }}
-            size="fit"
+            size="sm"
             aria-label="Toggle bold"
           >
             <Maximize className="h-4 w-4" />
