@@ -35,7 +35,9 @@ export function receiveViewerMessage(
   event: MessageEvent<ViewerMessage>,
   onMessage: (event: MessageEvent<ViewerMessage>["data"]) => void,
 ) {
-  if (event.origin !== "http://localhost:5173") {
+  const url = import.meta.env.VITE_PROJECT_URL;
+  console.log("url", url);
+  if (event.origin !== url) {
     throw new Error("Invalid origin");
   }
   onMessage(event.data);
