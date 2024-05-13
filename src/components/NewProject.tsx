@@ -19,7 +19,6 @@ export function NewProject() {
 
   const createNewProject = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Create new project");
 
     const form = e.target as HTMLFormElement;
     const name = (form.elements.namedItem("name") as HTMLInputElement).value;

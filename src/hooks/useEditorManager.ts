@@ -13,22 +13,32 @@ import type { EditorManagerState } from "@/types/editor";
 
 //const initialParsedCode = domTools.parseHTMLString(DEFAULT_EDITOR_CODE);
 
-// TODO Add tracking unsaved changes and prompt user to save before leaving
 // TODO Add html validation, show errors and prevent saving if there are errors
 export const useEditorManager = create<EditorManagerState>((set, get) => ({
   project: null,
-  initiateProject: async (projectId) => {
+  loadProject: async (projectId) => {
     const project = await dbTools.getProject(projectId);
     if (project) {
-      const currentCommit = await dbTools.getCommit(project.currentVersion);
-      if (!currentCommit) return;
+      /* const currentCommit = await dbTools.getCommit(project.currentCommit);
+      if (!currentCommit) return; */
+      const autoSavedCode = project.autoSavedCode;
       set({
         project,
         codeUpdatedBy: { by: "monacoEditor", type: "INITIALIZE_PROJECT" },
       });
-      get().updateCode(currentCommit.fileContent);
-      return { project, code: currentCommit.fileContent };
+      get().updateCode(autoSavedCode);
+      return { project, code: autoSavedCode };
     }
+  },
+  resetProject: () => {
+    set({
+      project: null,
+      code: null,
+      dom: null,
+      serializedDom: null,
+      selected: null,
+      codeUpdatedBy: null,
+    });
   },
   editorRef: createRef(),
   viewerRef: createRef(),
@@ -42,6 +52,7 @@ export const useEditorManager = create<EditorManagerState>((set, get) => ({
     const codeUpdatedBy = currentState.codeUpdatedBy?.by;
     const codeUpdatedType = currentState.codeUpdatedBy?.type;
     const selected = currentState.selected;
+    const projectId = currentState.project?.id;
 
     const parseNewCode = () => {
       const { dom, code, serializedDom } = domTools.parseHTMLString(newCode);
@@ -82,6 +93,10 @@ export const useEditorManager = create<EditorManagerState>((set, get) => ({
             get().formatEditorCode(codeUpdatedBy);
           }
           break;
+      }
+
+      if (projectId) {
+        dbTools.updateProjectAutoSavedCode(projectId, newCode);
       }
     };
 

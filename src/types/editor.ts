@@ -46,10 +46,11 @@ export type ActionResponse = {
 
 export interface EditorManagerState {
   project: Project | null;
-  initiateProject: (projectId: string) => Promise<{
+  loadProject: (projectId: string) => Promise<{
     project: Project;
     code: string;
   } | void>;
+  resetProject: () => void;
   editorRef: React.MutableRefObject<monacoEditor.IStandaloneCodeEditor | null>;
   viewerRef: React.MutableRefObject<HTMLIFrameElement | null>;
   dom: Document | null;

@@ -2,7 +2,7 @@ import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import CodeEditor from "./components/CodeEditor";
 import CodeViewer from "./components/CodeViewer";
 import LeftNavigation from "./components/LeftNavigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { WindowManager } from "@/types/editor";
 import { cn } from "./lib/utils";
 import NodeExplorer from "./components/NodeExplorer";
@@ -16,6 +16,7 @@ import OrientationError from "./components/layout/OrientationError";
 
 function App() {
   const projectName = useEditorManager((state) => state.project?.name);
+  const resetProject = useEditorManager((state) => state.resetProject);
 
   const [tabManager, setTabManager] = useState<WindowManager>({
     left: {
@@ -36,6 +37,12 @@ function App() {
   }, [tabManager.right]);
 
   const isIncorrectScreen = useCheckScreenDimensions();
+
+  useEffect(() => {
+    return () => {
+      resetProject();
+    };
+  }, [resetProject]);
 
   if (isIncorrectScreen) {
     return <OrientationError />;

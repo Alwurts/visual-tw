@@ -90,7 +90,6 @@ export default function AttributesPanel({ className }: { className?: string }) {
                           debounce(
                             () => {
                               const newValue = e.target.value;
-                              console.log("newValue", { newValue });
                               if (textContent.sourceCodeLocation) {
                                 insertCode(
                                   newValue,

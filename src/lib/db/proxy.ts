@@ -29,12 +29,20 @@ export async function createNewProject(name: string, description?: string) {
       description,
       createdAt: newDate,
       updatedAt: newDate,
+      autoSavedCode: DEFAULT_EDITOR_CODE,
       screenshot: screenshotDataUrl,
-      currentVersion: firstCommitId,
+      currentCommit: firstCommitId,
     });
 
     return projectId;
   });
+}
+
+export async function updateProjectAutoSavedCode(
+  projectId: string,
+  code: string,
+) {
+  await db.projects.update(projectId, { autoSavedCode: code });
 }
 
 export async function getProjects() {
@@ -85,7 +93,7 @@ export async function createNewCommit(
     });
 
     await db.projects.update(projectId, {
-      currentVersion: newCommitId,
+      currentCommit: newCommitId,
       screenshot: screenshotDataUrl,
       updatedAt: new Date(),
     });

@@ -18,7 +18,11 @@ export default function BaseLayout({
   return (
     <main className="bg-editor-black">
       <nav className="flex h-[32px] items-center justify-between bg-editor-gray-medium px-4 py-1">
-        <span className="flex items-center space-x-2">
+        <span
+          className={cn("flex items-center space-x-2", {
+            "mx-auto": !project,
+          })}
+        >
           <h1 className="font-bold text-white">
             Visual-
             <span className="text-editor-accent">TW</span>
@@ -26,11 +30,15 @@ export default function BaseLayout({
           <Badge variant="secondary">beta</Badge>
         </span>
         <div className="flex items-center space-x-1">
-          <h1 className="text-sm text-white">
-            <b>Project: </b>
-            {project?.name || "-"}
-          </h1>
-          {project && <ProjectsDropdown project={project} />}
+          {project && (
+            <>
+              <h1 className="text-sm text-white">
+                <b>Project: </b>
+                {project?.name || "-"}
+              </h1>
+              <ProjectsDropdown project={project} />
+            </>
+          )}
         </div>
         <div>{toolbar}</div>
       </nav>

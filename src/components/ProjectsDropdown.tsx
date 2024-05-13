@@ -14,11 +14,14 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { Input } from "./ui/input";
+import { useEditorManager } from "@/hooks/useEditorManager";
 
 export default function ProjectsDropdown({ project }: { project: Project }) {
   const navigate = useNavigate();
   const [screen, setScreen] = useState<"initial" | "rename">("initial");
   const [projects, setProjects] = useState<Project[]>([]);
+
+  const loadProject = useEditorManager((state) => state.loadProject);
 
   const [open, setOpen] = useState(false);
 
@@ -33,15 +36,14 @@ export default function ProjectsDropdown({ project }: { project: Project }) {
 
   const renameProject = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Rename new project");
 
     const form = e.target as HTMLFormElement;
     const name = (form.elements.namedItem("name") as HTMLInputElement).value;
 
-    console.log("Rename project", project.id, name);
-
     await dbTools.renameProject(project.id, name);
-    navigate(0);
+    loadProject(project.id);
+    setScreen("initial");
+    setOpen(false);
   };
 
   return (

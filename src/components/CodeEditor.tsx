@@ -28,7 +28,7 @@ const CodeEditor = () => {
       updateCode(code);
     }
   };
-  const initiateProject = useEditorManager((state) => state.initiateProject);
+  const loadProject = useEditorManager((state) => state.loadProject);
   const navigate = useNavigate();
 
   const { id } = useParams<{ id: string }>();
@@ -45,7 +45,7 @@ const CodeEditor = () => {
 
     const initiate = async () => {
       if (id) {
-        const loadedProject = await initiateProject(id);
+        const loadedProject = await loadProject(id);
         if (loadedProject) {
           editor.setValue(loadedProject.code);
         } else {

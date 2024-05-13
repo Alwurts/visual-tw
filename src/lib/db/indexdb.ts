@@ -5,10 +5,11 @@ export interface Project {
   id: string;
   name: string;
   description?: string;
+  screenshot: string;
+  autoSavedCode: string;
+  currentCommit: string;
   createdAt: Date;
   updatedAt: Date;
-  screenshot: string;
-  currentVersion: string;
 }
 
 export interface Commit {
