@@ -15,6 +15,8 @@ import {
 } from "./components/ui/dropdown-menu";
 import { cn } from "./lib/utils";
 import XIcon from "./components/icons/XIcon";
+import useCheckScreenDimensions from "./hooks/useCheckScreenDimensions";
+import OrientationError from "./components/layout/OrientationError";
 
 function Home() {
   const navigate = useNavigate();
@@ -30,9 +32,18 @@ function Home() {
     fetchProjects();
   }, []);
 
+  const isIncorrectScreen = useCheckScreenDimensions();
+
+  if (isIncorrectScreen) {
+    return <OrientationError />;
+  }
+
   return (
-    <BaseLayout projectName="No project selected" className="flex items-center">
-      <div className="flex h-full w-full flex-col items-stretch space-y-20 overflow-y-auto px-20 py-24 scrollbar scrollbar-thumb-neutral-700">
+    <BaseLayout
+      projectName="No project selected"
+      className="flex flex-col items-center md:flex-row"
+    >
+      <div className="flex h-full w-full flex-col items-stretch space-y-16 overflow-y-auto px-20 py-14 scrollbar scrollbar-thumb-neutral-700">
         <div className="flex flex-col items-center space-y-3">
           <h2 className="text-white">Create project</h2>
           <NewProject />
@@ -65,7 +76,7 @@ function Home() {
                         {new Date(project.updatedAt).toLocaleString()}
                       </p>
                     </div>
-                    <div className="w-40 ml-auto mr-10 rounded-md bg-editor-gray-light">
+                    <div className="ml-auto mr-10 w-40 rounded-md bg-editor-gray-light">
                       <img
                         src={project.screenshot}
                         alt="Screenshot at commit"
@@ -117,10 +128,11 @@ function Home() {
         orientation="vertical"
         className="dark:bg-editor-gray-medium"
       />
-      <div className="w-4/12 flex-initial px-16 text-white">
+      <div className="h-full w-4/12 flex-initial overflow-y-auto px-4 py-10 text-white scrollbar scrollbar-thumb-neutral-700 lg:px-16">
         <div>
           <h2 className="mb-5 text-xl font-bold text-white">
             Welcome to Visual-TW
+            <span className="text-editor-accent"> beta</span>
           </h2>
           <p className="text-white">
             Visual-TW is a visual editor for HTML and Tailwind CSS. Create and

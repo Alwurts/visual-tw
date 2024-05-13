@@ -57,6 +57,8 @@ const CodeViewer = () => {
 
   useEffect(() => {
     const viewerMessage = ({ data: message }: MessageEvent<ViewerMessage>) => {
+      // TODO Have a message handler function that check the origin of the message
+      // implement env variable for the origin
       if (message.type === "viewer-element-selected") {
         selectElement(message.data.uuid);
    
@@ -68,6 +70,9 @@ const CodeViewer = () => {
       window.removeEventListener("message", viewerMessage);
     };
   }, [iframeRef, selectElement]);
+
+  // TODO Check security around passing html content to srcDoc
+  // Enable sandbox and csp
 
   return (
     <div className="flex h-full flex-col">

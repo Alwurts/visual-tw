@@ -60,7 +60,10 @@ export default function ProjectsDropdown({ project }: { project: Project }) {
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="center" className="mt-1 w-[400px] py-2">
+      <DropdownMenuContent
+        align="center"
+        className="mt-1 max-h-96 w-[400px] overflow-y-auto py-2"
+      >
         {screen === "initial" ? (
           <>
             <DropdownMenuGroup>

@@ -11,6 +11,8 @@ import VersionControlPanel from "./components/VersionControlPanel";
 import BaseLayout from "./components/layout/Base";
 import RightNavigation from "./components/RightNavigation";
 import { useEditorManager } from "./hooks/useEditorManager";
+import useCheckScreenDimensions from "./hooks/useCheckScreenDimensions";
+import OrientationError from "./components/layout/OrientationError";
 
 function App() {
   const projectName = useEditorManager((state) => state.project?.name);
@@ -32,6 +34,12 @@ function App() {
   const isRightSideActive = useMemo(() => {
     return Object.values(tabManager.right).filter((v) => v).length === 0;
   }, [tabManager.right]);
+
+  const isIncorrectScreen = useCheckScreenDimensions();
+
+  if (isIncorrectScreen) {
+    return <OrientationError />;
+  }
 
   return (
     <BaseLayout
