@@ -35,14 +35,20 @@ export function receiveViewerMessage(
   event: MessageEvent<ViewerMessage>,
   onMessage: (event: MessageEvent<ViewerMessage>["data"]) => void,
 ) {
-  const url = import.meta.env.VITE_PROJECT_URL;
-  console.log("url", url);
-  const vercelEnv = import.meta.env
-  console.log("VITE_VERCEL_ENV", import.meta.env.VITE_VERCEL_ENV);
-  console.log("VERCEL_ENV", import.meta.env.VERCEL_ENV);
-  console.log("vercelEnv", vercelEnv);
+  let url = import.meta.env.VITE_VERCEL_PROJECT_PRODUCTION_URL;
+
+  if (import.meta.env.VITE_VERCEL_ENV === undefined) {
+    url = import.meta.env.VITE_LOCAL_PROJECT_URL;
+  }
+
+  console.log("origin", {
+    eventOrigin: event.origin,
+    url,
+  });
+
   if (event.origin !== url) {
     throw new Error("Invalid origin");
   }
+
   onMessage(event.data);
 }
