@@ -37,6 +37,8 @@ export function receiveViewerMessage(
 ) {
   const url = import.meta.env.VITE_PROJECT_URL;
   console.log("url", url);
+  const vercelEnv = import.meta.env.VERCEL_ENV
+  console.log("vercelEnv", vercelEnv);
   if (event.origin !== url) {
     throw new Error("Invalid origin");
   }
