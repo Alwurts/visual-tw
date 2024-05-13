@@ -7,6 +7,7 @@ import { ViewerMessage, ViewerSetOverlayShow } from "@/types/Viewer";
 import ZoomSelect from "./ZoomSelect";
 import { Toggle } from "./ui/toggle";
 import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
+import { receiveViewerMessage } from "@/lib/viewer";
 
 const CodeViewer = () => {
   const iframeContainerRef = useRef(null); // New ref for iframe's parent container
@@ -56,13 +57,12 @@ const CodeViewer = () => {
   }, [screenSize, zoom]);
 
   useEffect(() => {
-    const viewerMessage = ({ data: message }: MessageEvent<ViewerMessage>) => {
-      // TODO Have a message handler function that check the origin of the message
-      // implement env variable for the origin
-      if (message.type === "viewer-element-selected") {
-        selectElement(message.data.uuid);
-   
-      }
+    const viewerMessage = (event: MessageEvent<ViewerMessage>) => {
+      receiveViewerMessage(event, (messageData) => {
+        if (messageData.type === "viewer-element-selected") {
+          selectElement(messageData.data.uuid);
+        }
+      });
     };
 
     window.addEventListener("message", viewerMessage);

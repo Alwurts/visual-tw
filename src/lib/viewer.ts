@@ -1,3 +1,4 @@
+import { ViewerMessage } from "@/types/Viewer";
 import html2canvas from "html2canvas";
 
 export async function htmlStringToPng(html: string) {
@@ -28,4 +29,14 @@ export async function htmlStringToPng(html: string) {
   const screenshotDataUrl = screenshotCanvas.toDataURL("image/png");
 
   return screenshotDataUrl;
+}
+
+export function receiveViewerMessage(
+  event: MessageEvent<ViewerMessage>,
+  onMessage: (event: MessageEvent<ViewerMessage>["data"]) => void,
+) {
+  if (event.origin !== "http://localhost:5173") {
+    throw new Error("Invalid origin");
+  }
+  onMessage(event.data);
 }
