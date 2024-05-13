@@ -59,6 +59,7 @@ const CodeViewer = () => {
     const viewerMessage = ({ data: message }: MessageEvent<ViewerMessage>) => {
       if (message.type === "viewer-element-selected") {
         selectElement(message.data.uuid);
+   
       }
     };
 
@@ -66,10 +67,7 @@ const CodeViewer = () => {
     return () => {
       window.removeEventListener("message", viewerMessage);
     };
-  }, [selectElement]);
-
-  //console.log("srcDoc", srcDoc)
-  // TODO Add buttont to trigger selection mode on or off
+  }, [iframeRef, selectElement]);
 
   return (
     <div className="flex h-full flex-col">

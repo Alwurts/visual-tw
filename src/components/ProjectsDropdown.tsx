@@ -12,7 +12,7 @@ import {
 import { Project } from "@/lib/db/indexdb";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Input } from "./ui/input";
 
 export default function ProjectsDropdown({ project }: { project: Project }) {
@@ -60,18 +60,12 @@ export default function ProjectsDropdown({ project }: { project: Project }) {
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent
-        /* onFocusOutside={() => {
-          console.log("blur", screen);
-        }} */
-        align="center"
-        className="mt-1 w-[400px] py-2"
-      >
+      <DropdownMenuContent align="center" className="mt-1 w-[400px] py-2">
         {screen === "initial" ? (
           <>
             <DropdownMenuGroup>
               <DropdownMenuLabel>Current project</DropdownMenuLabel>
-              <DropdownMenuSeparator className="dark:bg-editor-gray-extra-light mx-1" />
+              <DropdownMenuSeparator className="mx-1 dark:bg-editor-gray-extra-light" />
 
               <div className="flex px-2">
                 <h3 className="text-sm text-white">
@@ -99,8 +93,9 @@ export default function ProjectsDropdown({ project }: { project: Project }) {
                   {new Date(project.updatedAt).toLocaleString()}
                 </p>
               </div>
-              <DropdownMenuSeparator className="dark:bg-editor-gray-extra-light mx-1" />
+              <DropdownMenuSeparator className="mx-1 dark:bg-editor-gray-extra-light" />
             </DropdownMenuGroup>
+
             <DropdownMenuGroup>
               <DropdownMenuLabel>Settings</DropdownMenuLabel>
               <DropdownMenuItem
@@ -141,6 +136,16 @@ export default function ProjectsDropdown({ project }: { project: Project }) {
                   </DropdownMenuItem>
                 );
               })}
+            </DropdownMenuGroup>
+
+            <DropdownMenuGroup>
+              <DropdownMenuLabel>Quick links</DropdownMenuLabel>
+              <DropdownMenuItem asChild className="space-x-1 px-1">
+                <Link to="/">
+                  <ChevronRight className="h-5 w-5 text-editor-accent" />
+                  <span className="font-semibold">Home</span>
+                </Link>
+              </DropdownMenuItem>
             </DropdownMenuGroup>
           </>
         ) : (

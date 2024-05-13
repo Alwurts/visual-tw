@@ -2,6 +2,7 @@ export type ViewerElementSelected = {
   type: "viewer-element-selected";
   data: {
     uuid: string;
+    boundingClientRect: DOMRect;
   };
 };
 
