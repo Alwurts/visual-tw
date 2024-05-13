@@ -2,6 +2,8 @@
 
 Check out the live beta demo [here](https://visual-tw.alwurts.com/).
 
+![visual-tw alwurts com_3bTr2H_](https://github.com/Alwurts/visual-tw/assets/32560488/c94a9f79-aa66-4991-a768-00fdfdd67039)
+
 ## Introduction
 
 Visual TW allows you to easily design websites using HTML and Tailwind CSS. It features a seamless integration of a code editor with a visual editor, making it a powerful tool for both beginners and experienced developers.
