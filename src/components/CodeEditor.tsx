@@ -23,6 +23,8 @@ const CodeEditor = () => {
     }
   }
 
+  // TODO Add second editor with JSX readonly code
+
   const handleEditorChange = (code: string | undefined) => {
     if (code) {
       updateCode(code);

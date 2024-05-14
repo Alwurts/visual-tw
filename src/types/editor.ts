@@ -13,6 +13,7 @@ const windowTabs = [
   "viewer",
   "attributes",
   "versionControl",
+  "assistant",
 ] as const;
 
 export type TWindowTabs = (typeof windowTabs)[number];
@@ -39,7 +40,8 @@ export type UpdateCodeEvent = {
     | "DELETE_CODE"
     | "INSERT_TW_CLASS"
     | "CHANGE_TW_CLASS"
-    | "CHANGE_NODE_TEXT";
+    | "CHANGE_NODE_TEXT"
+    | "CODE_STREAM";
 };
 
 export type ActionResponse = {
@@ -65,6 +67,7 @@ export interface EditorManagerState {
     class: ReturnType<typeof classTools.parseElementClassAttribute> | null;
   } | null;
   codeUpdatedBy: UpdateCodeEvent | null;
+  updateCodeByAssistant: (newCode: string) => ActionResponse;
   updateCode: (newCode: string) => ActionResponse;
   selectElement: (uuid: string) => ActionResponse;
   highlightCode: (range: IRange) => ActionResponse;

@@ -28,7 +28,7 @@ export default function NodeExplorer({ className }: { className?: string }) {
       <div className="flex h-10 items-center px-6">
         <h2 className="text-xs uppercase text-white">Explorer</h2>
       </div>
-      <Separator className="bg-editor-gray-light" />
+      <Separator className="dark:bg-editor-gray-light" />
       <div className="flex items-center justify-between space-y-1 px-3 py-1">
         <h3 className="text-xs font-semibold uppercase text-white">Document</h3>
         <InsertHTMLElementButton usedBy="explorer" />

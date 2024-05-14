@@ -1,4 +1,4 @@
-import { FolderTree, GitBranch } from "lucide-react";
+import { FolderTree, GitBranch, Sparkles } from "lucide-react";
 import { Button } from "./ui/button";
 import React, { ButtonHTMLAttributes, cloneElement } from "react";
 import { cn } from "@/lib/utils";
@@ -27,6 +27,11 @@ export default function LeftNavigation({
       icon: <GitBranch />,
       text: "History",
       key: "versionControl",
+    },
+    {
+      icon: <Sparkles />,
+      text: "Assistant",
+      key: "assistant",
     },
   ];
 

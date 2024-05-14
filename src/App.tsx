@@ -15,6 +15,7 @@ import useCheckScreenDimensions from "./hooks/useCheckScreenDimensions";
 import OrientationError from "./components/layout/OrientationError";
 import { Switch } from "./components/ui/switch";
 import { CodeXml } from "lucide-react";
+import Assistant from "./components/Assistant";
 
 function App() {
   const projectName = useEditorManager((state) => state.project?.name);
@@ -22,11 +23,12 @@ function App() {
 
   const [tabManager, setTabManager] = useState<WindowManager>({
     left: {
-      explorer: true,
+      explorer: false,
       versionControl: false,
+      assistant: true,
     },
     right: {
-      attributes: true,
+      attributes: false,
     },
     center: {
       viewer: true,
@@ -90,9 +92,9 @@ function App() {
           className={cn({
             hidden: isLeftSideActive,
           })}
-          defaultSize={15}
+          defaultSize={25}
           minSize={10}
-          maxSize={15}
+          maxSize={25}
         >
           <NodeExplorer
             className={cn({
@@ -102,6 +104,11 @@ function App() {
           <VersionControlPanel
             className={cn({
               hidden: !tabManager.left.versionControl,
+            })}
+          />
+          <Assistant
+            className={cn({
+              hidden: !tabManager.left.assistant,
             })}
           />
         </Panel>

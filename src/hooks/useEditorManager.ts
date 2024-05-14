@@ -47,12 +47,32 @@ export const useEditorManager = create<EditorManagerState>((set, get) => ({
   code: null,
   selected: null,
   codeUpdatedBy: null,
+  updateCodeByAssistant: (newCode) => {
+    const editor = get().editorRef.current;
+    if (!editor) return;
+
+    console.log("updateCodeByAssistant", newCode);
+
+    set({
+      codeUpdatedBy: { by: "assistant", type: "CODE_STREAM" },
+    });
+
+    editorTools.replaceEntireCode(editor, newCode);
+  },
   updateCode: (newCode) => {
     const currentState = get();
     const codeUpdatedBy = currentState.codeUpdatedBy?.by;
     const codeUpdatedType = currentState.codeUpdatedBy?.type;
     const selected = currentState.selected;
     const projectId = currentState.project?.id;
+
+    console.log("updateCode", {
+      newCode,
+      codeUpdatedBy,
+      codeUpdatedType,
+      selected,
+      projectId,
+    });
 
     const parseNewCode = () => {
       const { dom, code, serializedDom } = domTools.parseHTMLString(newCode);
@@ -84,11 +104,22 @@ export const useEditorManager = create<EditorManagerState>((set, get) => ({
         selected: newSelected ?? null,
       });
 
+      /* if (codeUpdatedBy === "assistant") {
+        console.log("updateCode", {
+          newCode,
+          codeUpdatedBy,
+          codeUpdatedType,
+          selected,
+          projectId,
+        });
+      } */
+
       // Which event to format code for
       switch (codeUpdatedBy) {
         case "attributes":
         case "explorer":
         case "viewer":
+        case "assistant":
           if (codeUpdatedType !== "FORMAT_CODE") {
             get().formatEditorCode(codeUpdatedBy);
           }

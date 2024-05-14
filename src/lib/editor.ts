@@ -8,6 +8,13 @@ export function selectCode(
   editor.revealLineInCenter(range.startLineNumber);
 }
 
+export function replaceEntireCode(
+  editor: monacoEditor.IStandaloneCodeEditor,
+  newCode: string,
+) {
+  editor.setValue(newCode);
+}
+
 export function insertCode(
   editor: monacoEditor.IStandaloneCodeEditor,
   range: IRange,
