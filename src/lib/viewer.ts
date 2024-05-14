@@ -19,15 +19,14 @@ export async function htmlStringToPng(html: string) {
     iframe.onload = resolve;
   });
 
-  const iframeDocument =
-    iframe.contentDocument || iframe.contentWindow?.document;
-
-  if (!iframeDocument) {
-    throw new Error("Failed to get iframe document");
-  }
-
-  const screenshotCanvas = await html2canvas(iframeDocument.body);
+  const screenshotCanvas = await html2canvas(iframe, {
+    width: parseFloat(iframe.width),
+    height: parseFloat(iframe.height)
+  });
   const screenshotDataUrl = screenshotCanvas.toDataURL("image/png");
+
+  // Remove the iframe after taking the screenshot
+  document.body.removeChild(iframe);
 
   return screenshotDataUrl;
 }
