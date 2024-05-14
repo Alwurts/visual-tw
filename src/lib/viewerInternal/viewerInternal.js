@@ -224,3 +224,6 @@ window.addEventListener("load", function () {
     window.parent.location.origin,
   );
 });
+
+window.addEventListener("resize", clearOverlays);
+window.addEventListener("scroll", clearOverlays);
