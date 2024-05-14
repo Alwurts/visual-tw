@@ -14,7 +14,6 @@ import { useEditorManager } from "./hooks/useEditorManager";
 import useCheckScreenDimensions from "./hooks/useCheckScreenDimensions";
 import OrientationError from "./components/layout/OrientationError";
 import { Switch } from "./components/ui/switch";
-import { Label } from "./components/ui/label";
 import { CodeXml } from "lucide-react";
 
 function App() {
