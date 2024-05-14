@@ -13,6 +13,9 @@ import RightNavigation from "./components/RightNavigation";
 import { useEditorManager } from "./hooks/useEditorManager";
 import useCheckScreenDimensions from "./hooks/useCheckScreenDimensions";
 import OrientationError from "./components/layout/OrientationError";
+import { Switch } from "./components/ui/switch";
+import { Label } from "./components/ui/label";
+import { CodeXml } from "lucide-react";
 
 function App() {
   const projectName = useEditorManager((state) => state.project?.name);
@@ -25,6 +28,10 @@ function App() {
     },
     right: {
       attributes: true,
+    },
+    center: {
+      viewer: true,
+      monacoEditor: true,
     },
   });
 
@@ -53,10 +60,29 @@ function App() {
       className="flex"
       projectName={projectName}
       toolbar={
-        <RightNavigation
-          openTabs={tabManager.right}
-          setOpenTabs={setTabManager}
-        />
+        <>
+          <div className="mr-10 flex items-center space-x-2">
+            <CodeXml className="h-5 w-5 text-white" />
+            <Switch
+              id="devModeSwitch"
+              aria-label="Show code Switch"
+              checked={tabManager.center.monacoEditor}
+              onCheckedChange={(checked) => {
+                setTabManager((prev) => ({
+                  ...prev,
+                  center: {
+                    ...prev.center,
+                    monacoEditor: checked,
+                  },
+                }));
+              }}
+            />
+          </div>
+          <RightNavigation
+            openTabs={tabManager.right}
+            setOpenTabs={setTabManager}
+          />
+        </>
       }
     >
       <LeftNavigation openTabs={tabManager.left} setOpenTabs={setTabManager} />
@@ -86,10 +112,19 @@ function App() {
           })}
         />
 
-        <Panel minSize={30}>
+        <Panel
+          className={cn({
+            hidden: !tabManager.center.monacoEditor,
+          })}
+          minSize={30}
+        >
           <CodeEditor />
         </Panel>
-        <PanelResizeHandle className="ResizeHandle" />
+        <PanelResizeHandle
+          className={cn("ResizeHandle", {
+            hidden: !tabManager.center.monacoEditor,
+          })}
+        />
 
         <Panel minSize={30}>
           <CodeViewer />

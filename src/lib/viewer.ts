@@ -1,5 +1,6 @@
 import { ViewerMessage } from "@/types/Viewer";
 import html2canvas from "html2canvas";
+import { getProjectUrl } from "./utils";
 
 export async function htmlStringToPng(html: string) {
   const iframe = document.createElement("iframe");
@@ -35,17 +36,23 @@ export function receiveViewerMessage(
   event: MessageEvent<ViewerMessage>,
   onMessage: (event: MessageEvent<ViewerMessage>["data"]) => void,
 ) {
-  let url = import.meta.env.VITE_VERCEL_PROJECT_PRODUCTION_URL
-    ? "https://" + import.meta.env.VITE_VERCEL_PROJECT_PRODUCTION_URL
-    : undefined;
-
-  if (import.meta.env.VITE_VERCEL_ENV === undefined) {
-    url = import.meta.env.VITE_LOCAL_PROJECT_URL;
-  }
-
-  if (event.origin !== url) {
+  if (event.origin !== getProjectUrl()) {
     throw new Error("Invalid origin");
   }
 
   onMessage(event.data);
+}
+
+export function sendViewerMessage(
+  viewer: HTMLIFrameElement | null,
+  message: ViewerMessage,
+) {
+  const projectUrl = getProjectUrl();
+  if (!projectUrl) {
+    throw new Error("Project URL is not defined");
+  }
+  if (!viewer) {
+    throw new Error("Viewer is not defined");
+  }
+  viewer.contentWindow?.postMessage(message, projectUrl);
 }

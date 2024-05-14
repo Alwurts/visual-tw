@@ -13,4 +13,19 @@ export type ViewerSetOverlayShow = {
   };
 };
 
-export type ViewerMessage = ViewerElementSelected | ViewerSetOverlayShow;
+export type ViewerSettingsRequest = {
+  type: "viewer-settings-request";
+};
+
+export type ViewerSettingsResponse = {
+  type: "viewer-settings-response";
+  data: {
+    showOverlay: boolean;
+  };
+};
+
+export type ViewerMessage =
+  | ViewerElementSelected
+  | ViewerSetOverlayShow
+  | ViewerSettingsRequest
+  | ViewerSettingsResponse;

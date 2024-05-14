@@ -24,6 +24,9 @@ export type WindowManager = {
   right: {
     [K in TWindowTabs]?: boolean;
   };
+  center: {
+    [K in TWindowTabs]?: boolean;
+  };
 };
 
 export type UpdateCodeEvent = {

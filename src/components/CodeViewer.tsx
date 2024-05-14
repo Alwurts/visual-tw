@@ -1,17 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Separator } from "./ui/separator";
-import { Laptop, Maximize, Smartphone, Tablet } from "lucide-react";
+import { Laptop, Smartphone, Tablet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEditorManager } from "@/hooks/useEditorManager";
-import { ViewerMessage, ViewerSetOverlayShow } from "@/types/Viewer";
+import { ViewerMessage } from "@/types/Viewer";
 import ZoomSelect from "./ZoomSelect";
-import { Toggle } from "./ui/toggle";
 import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
 import { receiveViewerMessage } from "@/lib/viewer";
+import ToggleOverlay from "./buttons/ToggleOverlay";
 
 const CodeViewer = () => {
   const iframeContainerRef = useRef(null); // New ref for iframe's parent container
-  //const iframeRef = useRef<HTMLIFrameElement>(null);
+
   const iframeRef = useEditorManager((state) => state.viewerRef);
 
   const srcDoc = useEditorManager((state) => state.serializedDom);
@@ -114,20 +114,7 @@ const CodeViewer = () => {
               <Laptop className="h-4 w-4 flex-shrink-0" />
             </ToggleGroupItem>
           </ToggleGroup>
-          <Toggle
-            onPressedChange={(e) => {
-              const viewer = iframeRef.current;
-              const toggleOverlayMessage: ViewerSetOverlayShow = {
-                type: "viewer-set-overlay-show",
-                data: { newValue: e },
-              };
-              viewer?.contentWindow?.postMessage(toggleOverlayMessage, "*");
-            }}
-            size="sm"
-            aria-label="Toggle bold"
-          >
-            <Maximize className="h-4 w-4" />
-          </Toggle>
+          <ToggleOverlay />
         </div>
       </div>
       <Separator className="bg-editor-gray-light" />

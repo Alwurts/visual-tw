@@ -1,9 +1,6 @@
 var showOverlay = false;
 const overlayTracker = new Set();
 
-document.addEventListener("mouseover", triggerOverlay);
-document.addEventListener("mouseout", handleMouseOut);
-
 function triggerOverlay(event) {
   if (!showOverlay) return;
 
@@ -203,12 +200,27 @@ document.addEventListener("click", function (event) {
         boundingClientRect: rect,
       },
     },
-    "*",
+    window.parent.location.origin,
   );
 });
+
+document.addEventListener("mouseover", triggerOverlay);
+document.addEventListener("mouseout", handleMouseOut);
 
 window.addEventListener("message", function (event) {
   if (event.data.type === "viewer-set-overlay-show") {
     showOverlay = event.data.data.newValue;
   }
+  if (event.data.type === "viewer-settings-response") {
+    showOverlay = event.data.data.showOverlay;
+  }
+});
+
+window.addEventListener("load", function () {
+  window.parent.postMessage(
+    {
+      type: "viewer-settings-request",
+    },
+    window.parent.location.origin,
+  );
 });

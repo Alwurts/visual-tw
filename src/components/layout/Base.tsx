@@ -40,7 +40,7 @@ export default function BaseLayout({
             </>
           )}
         </div>
-        <div>{toolbar}</div>
+        <div className="flex items-center">{toolbar}</div>
       </nav>
       <div className={cn("h-[calc(100dvh-32px)]", className)}>{children}</div>
     </main>
