@@ -52,9 +52,9 @@ function App() {
     };
   }, [resetProject]);
 
-  if (isIncorrectScreen) {
+  /* if (isIncorrectScreen) {
     return <OrientationError />;
-  }
+  } */
 
   return (
     <BaseLayout

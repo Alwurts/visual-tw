@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@langchain/google-genai": "^0.0.12",
     "@langchain/openai": "^0.0.29",
     "@monaco-editor/react": "^4.6.0",
     "@radix-ui/react-collapsible": "^1.0.3",

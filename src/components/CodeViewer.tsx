@@ -8,6 +8,7 @@ import ZoomSelect from "./ZoomSelect";
 import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
 import { receiveViewerMessage } from "@/lib/viewer";
 import ToggleOverlay from "./buttons/ToggleOverlay";
+import { AssistantPrompt } from "./AssistantPrompt";
 
 const CodeViewer = () => {
   const iframeContainerRef = useRef(null); // New ref for iframe's parent container
@@ -17,6 +18,9 @@ const CodeViewer = () => {
   const srcDoc = useEditorManager((state) => state.serializedDom);
 
   const selectElement = useEditorManager((state) => state.selectElement);
+  const getSelectedElementCode = useEditorManager(
+    (state) => state.getSelectedElementCode,
+  );
 
   const [screenSize, setScreenSize] = useState<"mobile" | "tablet" | "desktop">(
     "mobile",
@@ -31,6 +35,8 @@ const CodeViewer = () => {
   const handleScreenSizeChange = (size: "mobile" | "tablet" | "desktop") => {
     setScreenSize(size);
   };
+
+  const [assistantPrompt, setAssistantPrompt] = useState<string | null>(null);
 
   const [zoom, setZoom] = useState<string>("1");
 
@@ -61,6 +67,10 @@ const CodeViewer = () => {
       receiveViewerMessage(event, (messageData) => {
         if (messageData.type === "viewer-element-selected") {
           selectElement(messageData.data.uuid);
+          const selectedElementCode = getSelectedElementCode();
+          if (selectedElementCode) {
+            setAssistantPrompt(selectedElementCode);
+          }
         }
       });
     };
@@ -115,6 +125,10 @@ const CodeViewer = () => {
             </ToggleGroupItem>
           </ToggleGroup>
           <ToggleOverlay />
+          <AssistantPrompt
+            code={assistantPrompt}
+            setCode={setAssistantPrompt}
+          />
         </div>
       </div>
       <Separator className="bg-editor-gray-light" />

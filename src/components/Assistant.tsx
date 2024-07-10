@@ -5,14 +5,13 @@ import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { Label } from "./ui/label";
 
-import { ChatOpenAI } from "@langchain/openai";
-import { StringOutputParser } from "@langchain/core/output_parsers";
 import { useState } from "react";
-import { UI_TAILWIND_EXPERT_PROMPT } from "@/lib/assistant";
+import { sendMessage } from "@/lib/assistant";
 import { useEditorManager } from "@/hooks/useEditorManager";
 
 export default function Assistant({ className }: { className?: string }) {
-  const updateCode = useEditorManager((state) => state.updateCodeByAssistant);
+  const updateCodeByAssistant = useEditorManager((state) => state.updateCodeByAssistant);
+  const saveNewVersion = useEditorManager((state) => state.saveNewVersion);
 
   const [messages, setMessages] = useState<
     {
@@ -33,48 +32,37 @@ export default function Assistant({ className }: { className?: string }) {
   const onSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    setMessages((prev) => [...prev, { name: "user", content: input }]);
+    const newMessage = input;
+    setInput("");
 
-    const chatModel = new ChatOpenAI({
-      apiKey: import.meta.env.VITE_OPENAI_API_KEY,
-      model: "gpt-4o",
-    });
+    setMessages((prev) => [...prev, { name: "user", content: newMessage }]);
 
-    const outputParser = new StringOutputParser();
+    const uiExpertResponse = await sendMessage(
+      newMessage,
+      "google",
+      (chunk) => {
+        setIncomingMessage((prev) => {
+          const prevIncoming = prev ? prev.concat(chunk) : chunk;
+          updateCodeByAssistant(prevIncoming);
+          return prevIncoming;
+        });
+      },
+    );
 
-    const chain = UI_TAILWIND_EXPERT_PROMPT.pipe(chatModel).pipe(outputParser);
-
-    const uiExpertStream = await chain.stream({
-      input,
-    });
-
-    const streamChunks = [];
-    for await (const streamChunk of uiExpertStream) {
-      //console.log(`${streamChunk}|`);
-      streamChunks.push(streamChunk);
-      setIncomingMessage((prev) =>
-        prev ? prev.concat(streamChunk) : streamChunk,
-      );
-      //updateCode(streamChunk);
-    }
-
-    let uiExpertResponse = streamChunks[0];
-
-    for (const chunk of streamChunks) {
-      uiExpertResponse = uiExpertResponse.concat(chunk);
+    if (!uiExpertResponse) {
+      return;
     }
 
     setIncomingMessage(null);
-    updateCode(uiExpertResponse);
+    updateCodeByAssistant(uiExpertResponse);
+    saveNewVersion("Assistant created UI");
     setMessages((prev) => [
       ...prev,
       {
         name: "assistant",
-        content: uiExpertResponse,
+        content: "Done! Let me know if you need anything else.",
       },
     ]);
-
-    setInput("");
   };
   return (
     <div className={cn("flex h-full flex-col bg-editor-gray-dark", className)}>
@@ -98,8 +86,8 @@ export default function Assistant({ className }: { className?: string }) {
             </div>
           ))}
           {incomingMessage && (
-            <div className="my-2 mr-10 flex rounded-lg bg-editor-gray-light p-2 dark:bg-editor-gray-extra-light">
-              <p>{incomingMessage}</p>
+            <div className="my-2 mr-10 flex animate-pulse rounded-lg bg-editor-gray-light p-2 dark:bg-editor-gray-extra-light">
+              <p>...Loading</p>
             </div>
           )}
         </div>

@@ -63,3 +63,10 @@ export function insertElements(
 export function formatEditorCode(editor: monacoEditor.IStandaloneCodeEditor) {
   editor.getAction("editor.action.formatDocument")?.run();
 }
+
+export function getCodeAtRange(
+  editor: monacoEditor.IStandaloneCodeEditor,
+  range: IRange,
+) {
+  return editor.getModel()?.getValueInRange(range);
+}

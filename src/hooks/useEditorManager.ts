@@ -66,14 +66,6 @@ export const useEditorManager = create<EditorManagerState>((set, get) => ({
     const selected = currentState.selected;
     const projectId = currentState.project?.id;
 
-    console.log("updateCode", {
-      newCode,
-      codeUpdatedBy,
-      codeUpdatedType,
-      selected,
-      projectId,
-    });
-
     const parseNewCode = () => {
       const { dom, code, serializedDom } = domTools.parseHTMLString(newCode);
 
@@ -162,17 +154,34 @@ export const useEditorManager = create<EditorManagerState>((set, get) => ({
         currentState.highlightCode(domNodeCodeLocation);
       }
 
-      const twClasses =
+      const elementTWClass =
         classTools.parseElementClassAttribute(newSelectedElement);
 
       set({
         selected: {
           element: newSelectedElement,
           twId: uuid,
-          class: twClasses ?? null,
+          class: elementTWClass ?? null,
         },
       });
+
+      return {
+        element: newSelectedElement,
+        twId: uuid,
+        class: elementTWClass ?? null,
+      };
     }
+  },
+  getSelectedElementCode: () => {
+    const currentState = get();
+    const editor = currentState.editorRef.current;
+    const selectedElement = currentState.selected?.element;
+    if (!editor || !selectedElement?.sourceCodeLocation) return;
+    const codeAtRange = editorTools.getCodeAtRange(
+      editor,
+      domTools.sourceCodeLocationToIRange(selectedElement.sourceCodeLocation),
+    );
+    return codeAtRange;
   },
   highlightCode: (range) => {
     const editorRef = get().editorRef;

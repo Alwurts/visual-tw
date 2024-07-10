@@ -69,8 +69,13 @@ export interface EditorManagerState {
   codeUpdatedBy: UpdateCodeEvent | null;
   updateCodeByAssistant: (newCode: string) => ActionResponse;
   updateCode: (newCode: string) => ActionResponse;
-  selectElement: (uuid: string) => ActionResponse;
+  selectElement: (uuid: string) => {
+    element: Node;
+    twId: string;
+    class: ReturnType<typeof classTools.parseElementClassAttribute> | null;
+  } | void;
   highlightCode: (range: IRange) => ActionResponse;
+  getSelectedElementCode: () => string | void;
   formatEditorCode: (formatedBy: TWindowTabs) => void;
   deleteCode: (range: IRange, deletedBy: TWindowTabs) => ActionResponse;
   insertCode: (

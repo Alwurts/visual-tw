@@ -7,7 +7,7 @@ import { Maximize } from "lucide-react";
 
 export default function ToggleOverlay() {
   const iframeRef = useEditorManager((state) => state.viewerRef);
-  const [showOverlay, setShowOverlay] = useState<boolean>(true);
+  const [showOverlay, setShowOverlay] = useState<boolean>(false);
 
   useEffect(() => {
     const viewerMessage = (event: MessageEvent<ViewerMessage>) => {

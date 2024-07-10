@@ -34,9 +34,9 @@ function Home() {
 
   const isIncorrectScreen = useCheckScreenDimensions();
 
-  if (isIncorrectScreen) {
+  /* if (isIncorrectScreen) {
     return <OrientationError />;
-  }
+  } */
 
   return (
     <BaseLayout
