@@ -14,6 +14,7 @@ export const UI_TAILWIND_EXPERT_PROMPT = ChatPromptTemplate.fromMessages([
     - When using images or icons use the following placeholder api https://placehold.co/*WIDTH*x*HEIGHT*?text=*TEXT_TO_DISPLAY* replacing the values between * *
     - The user will provide you with info on what they want to create, if there is not enough info provided, make your best guess to interpret what they want.
     - IMPORTANT The HTML to be generated should only include the content inside the body tag. 
+    - IMPORTANT Just return the code without any other text or comments like markdown. 
     - IMPORTANT Return the HTML code only without adding markdown block like \`\`\`html  \`\`\` outside of it or any other stuff not related to the code`,
   ],
   ["assistant", "What would you like to create?"],
